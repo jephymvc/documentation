@@ -79,18 +79,75 @@ title: Getting Started
 
 <h3>Working with XAMPP or any LAMP/WAMP system</h3>
 <p>
-	If you are working with option 1 of the requirements, extract the zip file into the 
-	<code>C:/xampp/htdocs</code> or <code>/xampp/htdocs</code>(depending on your device's 
-	operating system) path. That is the contents of /version-x.x directory. You will get 
-	directories <code>cli/</code>, 	<code>jephy-mvc/</code>, <code>public/</code> and 
-	<code>vendor/</code>.
+	If you are working with option 1 of the requirements, extract the zip file and copy the 
+	contents of <code>/version-x.x/src</code> into the <code>C:/xampp/htdocs</code> or 
+	<code>/xampp/htdocs</code>(depending on your device's operating system directory 
+	structure from the root path).  You will get directories <code>jephy-mvc/</code>, 
+	<code>public/</code>, <code>vendor/</code>, <code>composer.json</code> and 
+	<code>composer.lock</code>.
 </p>	
 
 <p>
 	You do not really have to retain the directory structure as it is. You can decide to have 
 	every other directories outside of the <code>C:/xampp/htdocs</code> of <code>/xampp/htdocs</code> 
 	path. But you must have your static files somewhere within the path of 
-	<code>C:/xampp/htdocs</code> of <code>/xampp/htdocs</code>.
+	<code>C:/xampp/htdocs</code> or <code>/xampp/htdocs</code>.
+</p>
+
+<h3>Shared Hosting with Apache</h3>
+<p>
+	If you are working on shared hosting (especially with cPanel), extract the zip file and copy the 
+	contents of <code>/version-x.x/src/public</code> into the <code>/.../public_html</code>. You can 
+	decide to have the  <code>version-x.x/src/jephy-mvc/</code> and <code>version-x.x/src/vendor/</code> 
+	path as a sibling directories to the <code>/.../public_html</code>. The same also applies to working 
+	with XAMPP/WAMP	system.
+</p>
+
+<h3>Shared Hosting with Nginx</h3>
+<p>
+	If you are working on shared hosting (especially with cPanel), extract the zip file and copy the 
+	contents of <code>/version-x.x/src/public</code> into the <code>/.../html</code>. You can 
+	decide to have the  <code>version-x.x/src/jephy-mvc/</code> and <code>version-x.x/src/vendor/</code> 
+	path as a sibling directories to the <code>/.../html</code>.
+</p>
+
+<h3>Cloud/VPS/Dedicated Server Hosting</h3>
+<p>
+	We strongly recommend that you work with a dockerization setup. Ensure you have docker setup runtime
+	installed on the machine and build image of the app from path <code>/version-x.x/</code>. You also 
+	have the option to choose between working with the default <code>Dockerfile</code> or running the 
+	<code>docker-compose.yml</code>
+</p>
+
+<p>
+	However, you will need a reverse-proxy server setup in between your application docker instances and 
+	the public.
+</p>
+
+<h3>Working with Dockerfile</h3>
+<p>
+	Run the following command to build your app image:	
+</p>
+
+<pre>
+docker build -t jephy-mvc-app-image-name ./
+</pre>
+<p>
+<small>N.B.:Use can what is comfortable for you for <code>jephy-mvc-app-image-name</code></small>
+</p>
+
+<p>
+	Run the following command to run your container:	
+</p>
+<pre>
+docker run -d --name jephy-mvc-app-container-name -p 8080:80 jephy-mvc-app-image-name
+</pre>
+<p>
+<small>
+N.B.:Use can what is comfortable for you for <code>jephy-mvc-app-container-name</code>
+and remember that <code>jephy-mvc-app-image-name</code> still refers to your chosen 
+image name above.
+</small>
 </p>
 
 <p>
