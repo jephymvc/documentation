@@ -73,7 +73,7 @@ title: Getting Started
 <div id="installation">
 <h2><span class="sub-heading">#</span>  Installation</h2>
 <p>
-	To install JephyPHP, visit <code>https://github.com/jephymvc/jephy-mvc-01.git</code> and
+	To install JephyPHP, visit <code>{{site.repo_url}}</code> and
 	clone the repository or download the zip file.	
 </p>
 
@@ -100,7 +100,11 @@ title: Getting Started
 	contents of <code>/version-x.x/src/public</code> into the <code>/.../public_html</code>. You can 
 	decide to have the  <code>version-x.x/src/jephy-mvc/</code> and <code>version-x.x/src/vendor/</code> 
 	path as a sibling directories to the <code>/.../public_html</code>. The same also applies to working 
-	with XAMPP/WAMP	system.
+	with XAMPP/WAMP	system. 
+</p>
+<p>
+	See more on 
+	<a href="{{site.documentation_url}}/deployment-guide/#shared-hosting-deployment">Shared Hosting Deployment</a>.
 </p>
 
 <h3>Shared Hosting with Nginx</h3>
@@ -110,6 +114,10 @@ title: Getting Started
 	decide to have the  <code>version-x.x/src/jephy-mvc/</code> and <code>version-x.x/src/vendor/</code> 
 	path as a sibling directories to the <code>/.../html</code>.
 </p>
+<p>
+	See more on 
+	<a href="{{site.documentation_url}}deployment-guide/#shared-hosting-deployment">Shared Hosting Deployment</a>.
+</p>
 
 <h3>Cloud/VPS/Dedicated Server Hosting</h3>
 <p>
@@ -117,6 +125,10 @@ title: Getting Started
 	installed on the machine and build image of the app from path <code>/version-x.x/</code>. You also 
 	have the option to choose between working with the default <code>Dockerfile</code> or running the 
 	<code>docker-compose.yml</code>
+</p>
+<p>
+	See more on 
+	<a href="{{site.documentation_url}}deployment-guide/#vps-dedicated-server-deployment">VPS/Dedicated Server Deployment</a>.
 </p>
 
 <p>
@@ -142,9 +154,10 @@ docker build -t jephy-mvc-app-image-name ./
 <pre>
 docker run -d --name jephy-mvc-app-container-name -p 8080:80 jephy-mvc-app-image-name
 </pre>
+
 <p>
 <small>
-N.B.:Use can what is comfortable for you for <code>jephy-mvc-app-container-name</code>
+N.B.:Use what is comfortable for you for <code>jephy-mvc-app-container-name</code>
 and remember that <code>jephy-mvc-app-image-name</code> still refers to your chosen 
 image name above.
 </small>
