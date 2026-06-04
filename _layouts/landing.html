@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-US" dir="ltr">
 <head>
+<base href="{{ site.documentation_url }}" />
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">	
@@ -210,8 +211,8 @@ ul.custom-list-image > li::before {
 	<div class="container">
 		<nav class="nav-bar">
 			<div class="logo-wrapper">
-				<a href="{{ site.repo_url }}">
-					<img src="{{ site.repo_url }}assets/images/logo.svg" class="nav-bar-logo" />
+				<a href="{{ site.documentation_url }}">
+					<img src="{{ site.documentation_url }}assets/images/logo.svg" class="nav-bar-logo" />
 				</a>
 				<span id="harmbugger">
 					<span></span>
@@ -222,13 +223,15 @@ ul.custom-list-image > li::before {
 			</div>
 			<div class="nav-bar-center-menu">
 				<ul>
-					<li><a href="{{ site.repo_url }}docs/overview/">Documentation</a></li>
-					<li><a href="{{ site.repo_url }}api-references">API</a></li>
+					<li><a href="{{ site.documentation_url }}docs/overview/">Documentation</a></li>
+					<li><a href="{{ site.documentation_url }}docs/apis">API</a></li>
+					{% comment %}
 					<li><a href="{{ site.repo_url }}communities">Community</a></li>
-					<li><a target="_blank" href="{{ site.base_repo_url }}">Github</a></li>
+					{% endcomment %}
+					<li><a target="_blank" href="{{ site.repo_url }}">Github</a></li>
 					<li>
-						<a class="nav-bar-book-appointment-cta" target="_blank" href="{{ site.base_repo_url }}">
-							<img src="{{ site.repo_url }}assets/icons/rocket-launch-white.svg" style="width: 21px;" />
+						<a class="nav-bar-book-appointment-cta" target="_blank" href="{{ site.documentation_url }}">
+							<img src="{{ site.documentation_url }}assets/icons/rocket-launch-white.svg" style="width: 21px;" />
 							Get Started
 						</a>
 					</li>
@@ -249,7 +252,7 @@ ul.custom-list-image > li::before {
 				<div>
 					<div class="tag-label centered-texts white-texts mt-5">
 						<small>
-							<img src="./assets/icons/sparkles-whine.svg" />
+							<img src="{{ site.documentation_url }}assets/icons/sparkles-whine.svg" />
 							v1.0 - Just released
 						</small>
 					</div>
@@ -270,14 +273,14 @@ ul.custom-list-image > li::before {
 					<div class="mt-4">
 						<ul class="flex-row dark-hero-cta justify-content-center">
 							<li>
-								<a href="{{ site.repo_url }}" class="theme-bg">
-									<img src="./assets/icons/book-open-white.svg" />
+								<a href="{{ site.documentation_url }}" class="theme-bg">
+									<img src="{{ site.documentation_url }}assets/icons/book-open-white.svg" />
 									Read the Doc
 								</a>
 							</li>
 							<li>
-								<a target="_blank" href="{{ site.base_repo_url }}">
-									<img src="./assets/icons/github-white.svg" />
+								<a target="_blank" href="{{ site.repo_url }}">
+									<img src="{{ site.documentation_url }}assets/icons/github-white.svg" />
 									View on Github
 								</a>
 							</li>
@@ -291,19 +294,19 @@ ul.custom-list-image > li::before {
 						<ul class="flex-row dark-hero-cta justify-content-center">
 							<li>
 								<a class="grey-texts">
-									<img src="./assets/icons/star-white.svg" />
+									<img src="{{ site.documentation_url }}assets/icons/star-white.svg" />
 									24.8k stars
 								</a>
 							</li>
 							<li>
 								<a class="grey-texts">
-									<img src="./assets/icons/download-white.svg" />
+									<img src="{{ site.documentation_url }}assets/icons/download-white.svg" />
 									1k Downloads
 								</a>
 							</li>
 							<li>
 								<a class="grey-texts">
-									<img src="./assets/icons/git-fork-white.svg" />
+									<img src="{{ site.documentation_url }}assets/icons/git-fork-white.svg" />
 									3.6k Forks
 								</a>
 							</li>
@@ -349,20 +352,17 @@ ul.custom-list-image > li::before {
 					
 					<div class="mb-3">
 						<div class="services-icon">
-							<img src="./assets/icons/lightning.svg" />
+							<img src="{{ site.documentation_url }}assets/icons/lightning.svg" />
 						</div>
 						<h2>Lightning Fast</h2>
 						<h6>FOR SPEED & MINIMAL OVERHEAD</h6>
 					</div>
-
 					
 					<p>
 						A lightweight, high-performance PHP MVC framework designed for 
 						speed and minimal overhead. It is built to be "obsessed with 
 						speed" by loading only the bare essentials.
 					</p>
-				
-										
 					
 				</div>
 			</div>
@@ -372,12 +372,11 @@ ul.custom-list-image > li::before {
 				
 					<div class="mb-3">
 						<div class="services-icon">
-							<img src="./assets/icons/security-white.svg" />
+							<img src="{{ site.documentation_url }}assets/icons/security-white.svg" />
 						</div>
 						<h2>Secured by Default</h2>
 						<h6>ENTERPRISE-GRADE SECURITY.</h6>
-					</div>
-					
+					</div>					
 					
 					<p>
 						A high-performance PHP framework offering extreme speed and 
@@ -393,7 +392,7 @@ ul.custom-list-image > li::before {
 					
 					<div class="mb-3">
 						<div class="services-icon">
-							<img src="./assets/icons/database.svg" />
+							<img src="{{ site.documentation_url }}assets/icons/database.svg" />
 						</div>
 						<h2>Elegant ORM</h2>
 						<h6>INTUITIVE & DEVELOPER FRIENDLY</h6>
@@ -413,7 +412,7 @@ ul.custom-list-image > li::before {
 					
 					<div class="mb-3">
 						<div class="services-icon">
-							<img src="./assets/icons/cloud.svg" />
+							<img src="{{ site.documentation_url }}assets/icons/cloud.svg" />
 						</div>
 						<h2>Hosting Agnostic</h2>
 						<h6>FLEXIBLE AND OPERATES SEAMLESSLY</h6>
@@ -465,13 +464,13 @@ ul.custom-list-image > li::before {
 						
 						
 						<div class="home-slide-cta-btns">
-							<a class="blue-bg" target="_blank" href="https://github.com/jephymvc/jephy-mvc-01.git">
-								<img src="./assets/icons/rocket-launch-white.svg" style="width: 21px;" />
+							<a class="blue-bg" target="_blank" href="{{ site.repo_url }}">
+								<img src="{{ site.documentation_url }}assets/icons/rocket-launch-white.svg" style="width: 21px;" />
 								<span>Get Started</span>
 							</a>
-							<a href="./documentation.html">
+							<a href="{{ site.documentation_url }}/docs/overview">
 								<span>Read Documentation</span>
-								<img src="./assets/icons/arrow-right.svg" style="width: 21px;" />
+								<img src="{{ site.documentation_url }}assets/icons/arrow-right.svg" style="width: 21px;" />
 							</a>							
 						</div>
 						
@@ -495,8 +494,8 @@ ul.custom-list-image > li::before {
 				<div class="col-md-4 col-sm-12 mb-5">
 					<div class="mr-5">
 						<div class="logo-wrapper mb-3">
-							<a href="/">
-								<img src="./assets/images/logo-white.svg" class="nav-bar-logo" />
+							<a href="{{ site.documentation_url }}">
+								<img src="{{ site.documentation_url }}assets/images/logo-white.svg" class="nav-bar-logo" />
 							</a>
 						</div>
 						<p class="grey-texts">
@@ -509,11 +508,11 @@ ul.custom-list-image > li::before {
 					<div>
 						<h6 class="white-texts">Documentation</h6>
 						<ul class="footer-list">
-							<li><a href="/documentation/getting-started">Getting Started</a></li>
-							<li><a href="/documentation/routing">Routing</a></li>
-							<li><a href="/documentation/controllers">Controllers</a></li>							
-							<li><a href="/documentation/database">Database</a></li>							
-							<li><a href="/documentation/stitching">Templating/Stitching</a></li>							
+							<li><a href="{{ site.documentation_url }}docs/getting-started">Getting Started</a></li>
+							<li><a href="{{ site.documentation_url }}docs/routing">Routing</a></li>
+							<li><a href="{{ site.documentation_url }}docs/controllers">Controllers</a></li>							
+							<li><a href="{{ site.documentation_url }}docs/database">Database</a></li>							
+							<li><a href="{{ site.documentation_url }}docs/stitching">Templating/Stitching</a></li>							
 						</ul>
 					</div>
 				</div>
@@ -539,7 +538,7 @@ ul.custom-list-image > li::before {
 						<form id="footer-newsletter-form">
 							<input placeholder="Enter email" />
 							<button>	
-								<img src="./assets/images/icons/white-arrow-right.svg" style="width: 21px;" />
+								<img src="{{ site.documentation_url }}assets/images/icons/white-arrow-right.svg" style="width: 21px;" />
 							</button>
 						</form>
 					</div>					
@@ -553,7 +552,7 @@ ul.custom-list-image > li::before {
 				<div class="col-md-12">
 					<small>
 						<span class="white-texts">&copy; Copyright 2026.</span> 
-						<a class="theme-links" href="http://jephy-mvc.loc">Jephy MVC</a>
+						<a class="theme-links" href="{{ site.documentation_url }}">Jephy MVC</a>
 					</small>
 				</div>
 			</div>
