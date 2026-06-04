@@ -2,8 +2,8 @@
 title: "JephyMVC"
 description: "Complete documentation for the JephyPHP Framework"
 url: "https://jephymvc.github.io"
-#   baseurl: "/jephy-mvc-01"  # Change for project pages  
-baseurl: ""  # Change for project pages  
+baseurl: "/documentation"  # Change for project pages  
+#   baseurl: ""  # Change for project pages  
 theme: null
 
 # Framework info
