@@ -9,7 +9,7 @@ theme: null
 # Framework info
 framework_name: "JephyMVC"
 framework_version: "2.0.0"
-repo_url: "https://github.com/jephymvc/documentation"
+repo_url: "https://github.com/jephymvc/version-1.0"
 #   repo_url: "/"
 official_website: "https://jephymvc.github.io/documentation/"
 documentation_url: "https://jephymvc.github.io/documentation/"
