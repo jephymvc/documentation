@@ -5,15 +5,15 @@ url: "https://jephymvc.github.io"
 baseurl: "/documentation"  # Change for project pages  
 #   baseurl: ""  # Change for project pages  
 theme: null
-
+#https://github.com/jephymvc/documentation
 # Framework info
 framework_name: "JephyMVC"
 framework_version: "2.0.0"
-#   repo_url: "https://jephymvc.github.io/jephy-mvc-01/"
-repo_url: "/"
-official_website: "https://jephymvc.github.io/jephy-mvc-01/"
-documentation_url: "https://jephymvc.github.io/jephy-mvc-01/"
-base_repo_url: "https://github.com/jephymvc/jephy-mvc-01"
+repo_url: "https://jephymvc.github.io/documentation/"
+#   repo_url: "/"
+official_website: "https://jephymvc.github.io/documentation"
+documentation_url: "https://jephymvc.github.io/documentation"
+base_repo_url: "https://jephymvc.github.io/documentation"
 discord_url: ""
 twitter_url: ""
 youtube_url: ""
