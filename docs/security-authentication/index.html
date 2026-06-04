@@ -1,0 +1,2177 @@
+---
+layout: docs
+title: Security and Authentication
+---
+
+<div class="center-breadcrumbs mt-1 mb-4">
+	<div>
+		<a href="{{ site.repo_url }}docs/overview">Docs</a>
+	</div>
+	<span class="breadcrumb-divider">
+		<img src="{{ site.repo_url }}assets/images/icons/arrow-right.svg" />
+	</span>
+
+	<div>Security & Authentication </div>															
+</div>
+
+<h1>Security and Authentication</h1>
+<h2><span class="sub-heading">#</span>  Overview</h2>
+<div id="overview">
+	<p>
+		Security is a critical aspect of any web application. {{ site.title }} provides 
+		a comprehensive set of security tools and authentication methods to protect your 
+		application and user data.
+	</p>
+</div>
+
+
+<div id="form-validation" class="my-4">
+<h2>Form Validation</h2>
+<p>
+	Form validation ensures that data submitted by users meets specific criteria before 
+	being processed, preventing invalid or malicious data from entering your system.
+</p>
+
+<h2>Validation Rules</h2>
+
+<pre>
+<small>php</small>
+
+// jephy-mvc/core/Validation.php
+namespace Core;
+
+class Validation
+{
+    protected $errors = [];
+    protected $data = [];
+    
+    // Available validation rules
+    protected $rules = [
+        'required', 'email', 'min', 'max', 'between', 'numeric', 
+        'integer', 'string', 'array', 'boolean', 'date', 'url',
+        'ip', 'confirmed', 'unique', 'exists', 'regex', 'in'
+    ];
+    
+    public function validate(array $data, array $rules)
+    {
+        $this->data = $data;
+        $this->errors = [];
+        
+        foreach ($rules as $field => $fieldRules) {
+            $fieldRules = explode('|', $fieldRules);
+            $value = $data[$field] ?? null;
+            
+            foreach ($fieldRules as $rule) {
+                $this->applyRule($field, $value, $rule);
+            }
+        }
+        
+        return empty($this->errors);
+    }
+    
+    protected function applyRule($field, $value, $rule)
+    {
+        // Required rule
+        if ($rule === 'required' && empty($value) && $value !== '0') {
+            $this->addError($field, 'This field is required');
+            return;
+        }
+        
+        // Skip other validation if field is empty and not required
+        if (empty($value) && $value !== '0') {
+            return;
+        }
+        
+        // Email rule
+        if ($rule === 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $this->addError($field, 'Must be a valid email address');
+        }
+        
+        // Min length
+        if (strpos($rule, 'min:') === 0) {
+            $min = substr($rule, 4);
+            if (strlen($value) < $min) {
+                $this->addError($field, "Must be at least {$min} characters");
+            }
+        }
+        
+        // Max length
+        if (strpos($rule, 'max:') === 0) {
+            $max = substr($rule, 4);
+            if (strlen($value) > $max) {
+                $this->addError($field, "Must not exceed {$max} characters");
+            }
+        }
+        
+        // Between
+        if (strpos($rule, 'between:') === 0) {
+            $range = substr($rule, 8);
+            list($min, $max) = explode(',', $range);
+            if (strlen($value) < $min || strlen($value) > $max) {
+                $this->addError($field, "Must be between {$min} and {$max} characters");
+            }
+        }
+        
+        // Numeric
+        if ($rule === 'numeric' && !is_numeric($value)) {
+            $this->addError($field, 'Must be a number');
+        }
+        
+        // Integer
+        if ($rule === 'integer' && !filter_var($value, FILTER_VALIDATE_INT)) {
+            $this->addError($field, 'Must be an integer');
+        }
+        
+        // Date
+        if ($rule === 'date' && !strtotime($value)) {
+            $this->addError($field, 'Must be a valid date');
+        }
+        
+        // URL
+        if ($rule === 'url' && !filter_var($value, FILTER_VALIDATE_URL)) {
+            $this->addError($field, 'Must be a valid URL');
+        }
+        
+        // Confirmed (password confirmation)
+        if ($rule === 'confirmed') {
+            $confirmationField = $field . '_confirmation';
+            if ($value !== ($this->data[$confirmationField] ?? null)) {
+                $this->addError($field, 'Confirmation does not match');
+            }
+        }
+    }
+    
+    protected function addError($field, $message)
+    {
+        if (!isset($this->errors[$field])) {
+            $this->errors[$field] = [];
+        }
+        $this->errors[$field][] = $message;
+    }
+    
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+    
+    public function getFirstError($field = null)
+    {
+        if ($field) {
+            return $this->errors[$field][0] ?? null;
+        }
+        
+        foreach ($this->errors as $field => $messages) {
+            return $messages[0];
+        }
+        
+        return null;
+    }
+}
+
+</pre>
+
+<h3>Using Validation in Controllers</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/controllers/AuthController.php
+namespace App\Controllers;
+
+use Core\Controller;
+use Core\Validation;
+use App\Models\User;
+
+class AuthController extends Controller
+{
+    // Registration with validation
+    public function register()
+    {
+        $validator = new Validation();
+        
+        $rules = [
+            'name' => 'required|min:2|max:100',
+            'email' => 'required|email',
+            'password' => 'required|min:6|confirmed',
+            'terms' => 'required'
+        ];
+        
+        $data = $this->request->post();
+        
+        if (!$validator->validate($data, $rules)) {
+            // Return validation errors
+            return $this->json([
+                'success' => false,
+                'errors' => $validator->getErrors()
+            ], 422);
+        }
+        
+        // Create user if validation passes
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT)
+        ]);
+        
+        return $this->json([
+            'success' => true,
+            'message' => 'Registration successful'
+        ]);
+    }
+    
+    // Login validation
+    public function login()
+    {
+        $validator = new Validation();
+        
+        $rules = [
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ];
+        
+        $data = $this->request->post();
+        
+        if (!$validator->validate($data, $rules)) {
+            return $this->json([
+                'success' => false,
+                'errors' => $validator->getErrors()
+            ], 422);
+        }
+        
+        // Authentication logic here
+        // ...
+    }
+}
+
+</pre>
+
+<h3>Custom Validation Rules</h3>
+
+<pre>
+
+<small>php</small>
+
+// Extend validation with custom rules
+class CustomValidation extends Validation
+{
+    public function validate(array $data, array $rules)
+    {
+        // Add custom rule: strong_password
+        $this->addCustomRule('strong_password', function($value, $field) {
+            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $value)) {
+                $this->addError($field, 'Password must contain at least one uppercase, one lowercase, one number, and one special character');
+                return false;
+            }
+            return true;
+        });
+        
+        // Add custom rule: phone
+        $this->addCustomRule('phone', function($value, $field) {
+            if (!preg_match('/^[0-9+\-\s()]{10,20}$/', $value)) {
+                $this->addError($field, 'Invalid phone number format');
+                return false;
+            }
+            return true;
+        });
+        
+        return parent::validate($data, $rules);
+    }
+}
+
+</pre>
+
+
+<h3>Server-Side vs Client-Side Validation</h3>
+
+<pre>
+
+<small>html</small>
+
+&lt;!-- Always implement both client-side (UX) and server-side (security) validation --&gt;
+
+&lt;!-- Client-side HTML5 validation --&gt;
+&lt;form method="POST" action="/register"&gt;
+    &lt;input type="email" name="email" required&gt;
+    &lt;input type="password" name="password" minlength="6" required&gt;
+    &lt;button type="submit">Register&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;!-- With JavaScript validation --&gt;
+&lt;script&gt;
+document.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    
+    const response = await fetch('/register', {
+        method: 'POST',
+        body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (!result.success) {
+        // Display validation errors
+        displayErrors(result.errors);
+    }
+});
+&lt;/script&gt;
+
+</pre>
+
+</div>
+
+
+<div id="authentication-methods">
+<h2>Authentication Methods</h2>
+<p>
+{{ site.title }} supports multiple authentication methods to suit different 
+application needs.
+</p>
+
+<h3>Authentication with Redirect/Reload (Traditional)</h3>
+<p>
+This is the classic session-based authentication where the server maintains 
+user state.
+</p>
+
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/controllers/AuthController.php (Traditional)
+namespace App\Controllers;
+
+use Core\Controller;
+use App\Models\User;
+
+class AuthController extends Controller
+{
+    // Show login form
+    public function showLoginForm()
+    {
+        return $this->view->display('auth/login.tpl');
+    }
+    
+    // Process login
+    public function login()
+    {
+        $email = $this->request->post('email');
+        $password = $this->request->post('password');
+        $remember = $this->request->post('remember') === 'on';
+        
+        // Find user by email
+        $user = User::where('email', $email)->first();
+        
+        if ($user && password_verify($password, $user->password)) {
+            // Set session variables
+            $_SESSION['user_id'] = $user->id;
+            $_SESSION['user_name'] = $user->name;
+            $_SESSION['user_role'] = $user->role;
+            $_SESSION['logged_in'] = true;
+            
+            // Regenerate session ID to prevent fixation
+            session_regenerate_id(true);
+            
+            // Set remember me cookie
+            if ($remember) {
+                $token = bin2hex(random_bytes(32));
+                $user->remember_token = $token;
+                $user->save();
+                
+                setcookie('remember_token', $token, time() + 86400 * 30, '/', '', true, true);
+            }
+            
+            // Update last login
+            $user->last_login_at = date('Y-m-d H:i:s');
+            $user->last_login_ip = $_SERVER['REMOTE_ADDR'];
+            $user->save();
+            
+            // Redirect to intended page or dashboard
+            $redirectTo = $_SESSION['intended_url'] ?? '/dashboard';
+            unset($_SESSION['intended_url']);
+            
+            $this->redirect($redirectTo);
+        }
+        
+        // Authentication failed
+        $_SESSION['error'] = 'Invalid email or password';
+        $this->redirect('/login');
+    }
+    
+    // Logout
+    public function logout()
+    {
+        // Clear session
+        $_SESSION = [];
+        
+        // Delete session cookie
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        
+        // Destroy session
+        session_destroy();
+        
+        // Delete remember me cookie
+        setcookie('remember_token', '', time() - 3600, '/', '', true, true);
+        
+        $this->redirect('/login');
+    }
+    
+    // Middleware protected dashboard
+    public function dashboard()
+    {
+        // This will only be accessible if logged in
+        $user = User::find($_SESSION['user_id']);
+        
+        $this->view->assign('user', $user);
+        return $this->view->display('dashboard.tpl');
+    }
+}
+
+// Routes
+$router->get('/login', 'AuthController@showLoginForm');
+$router->post('/login', 'AuthController@login');
+$router->get('/logout', 'AuthController@logout');
+$router->get('/dashboard', 'DashboardController@index')->middleware('AuthMiddleware');
+
+</pre>
+
+<h3>Authentication Middleware (Redirect/Reload)</h3>
+
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/middleware/AuthMiddleware.php
+namespace App\Middleware;
+
+use Core\Middleware;
+
+class AuthMiddleware extends Middleware
+{
+    public function handle($request, $next)
+    {
+        // Check if user is logged in via session
+        if (!isset($_SESSION['user_id'])) {
+            // Check remember me cookie
+            if (isset($_COOKIE['remember_token'])) {
+                $user = User::where('remember_token', $_COOKIE['remember_token'])->first();
+                if ($user) {
+                    $_SESSION['user_id'] = $user->id;
+                    $_SESSION['user_name'] = $user->name;
+                    return $next($request);
+                }
+            }
+            
+            // Store intended URL for redirect after login
+            $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
+            
+            // Redirect to login page
+            $this->redirect('/login');
+        }
+        
+        return $next($request);
+    }
+}
+
+</pre>
+
+<h3>Authentication with AJAX Calls</h3>
+<p>
+Modern SPAs and applications that need seamless user experience 
+without page reloads.
+</p>
+
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/controllers/Api/AuthController.php
+namespace App\Controllers\Api;
+
+use Core\Controller;
+use App\Models\User;
+
+class AuthController extends Controller
+{
+    // AJAX Login
+    public function login()
+    {
+        // Get JSON input
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        $email = $input['email'] ?? '';
+        $password = $input['password'] ?? '';
+        
+        // Validate input
+        if (empty($email) || empty($password)) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Email and password are required'
+            ], 400);
+        }
+        
+        // Find user
+        $user = User::where('email', $email)->first();
+        
+        if (!$user || !password_verify($password, $user->password)) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+        
+        // Set session
+        $_SESSION['user_id'] = $user->id;
+        $_SESSION['user_name'] = $user->name;
+        session_regenerate_id(true);
+        
+        // Return user data (excluding sensitive info)
+        return $this->json([
+            'success' => true,
+            'message' => 'Login successful',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role
+            ],
+            'redirect' => '/dashboard'
+        ]);
+    }
+    
+    // AJAX Registration
+    public function register()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        $validator = new Validation();
+        $rules = [
+            'name' => 'required|min:2|max:100',
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ];
+        
+        if (!$validator->validate($input, $rules)) {
+            return $this->json([
+                'success' => false,
+                'errors' => $validator->getErrors()
+            ], 422);
+        }
+        
+        // Check if email exists
+        if (User::where('email', $input['email'])->exists()) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Email already registered'
+            ], 409);
+        }
+        
+        // Create user
+        $user = User::create([
+            'name' => $input['name'],
+            'email' => $input['email'],
+            'password' => password_hash($input['password'], PASSWORD_DEFAULT)
+        ]);
+        
+        // Auto-login after registration
+        $_SESSION['user_id'] = $user->id;
+        
+        return $this->json([
+            'success' => true,
+            'message' => 'Registration successful',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email
+            ]
+        ], 201);
+    }
+    
+    // Check authentication status
+    public function check()
+    {
+        if (isset($_SESSION['user_id'])) {
+            $user = User::find($_SESSION['user_id']);
+            
+            return $this->json([
+                'authenticated' => true,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email
+                ]
+            ]);
+        }
+        
+        return $this->json([
+            'authenticated' => false
+        ]);
+    }
+    
+    // AJAX Logout
+    public function logout()
+    {
+        $_SESSION = [];
+        session_destroy();
+        
+        return $this->json([
+            'success' => true,
+            'message' => 'Logged out successfully'
+        ]);
+    }
+}
+
+</pre>
+
+<h3>Frontend JavaScript for AJAX Authentication</h3>
+
+<pre>
+
+<small>javascript</small>
+
+// public/assets/js/auth.js
+class Auth {
+    constructor() {
+        this.setupEventListeners();
+        this.checkAuthStatus();
+    }
+    
+    setupEventListeners() {
+        // Login form handler
+        document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.login();
+        });
+        
+        // Register form handler
+        document.getElementById('registerForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.register();
+        });
+        
+        // Logout button handler
+        document.getElementById('logoutBtn')?.addEventListener('click', () => {
+            this.logout();
+        });
+    }
+    
+    async login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // Show loading state
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Store user data in localStorage (optional)
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                // Show success message
+                this.showMessage('Login successful!', 'success');
+                
+                // Redirect or update UI
+                window.location.href = data.redirect || '/dashboard';
+            } else {
+                this.showMessage(data.message, 'error');
+            }
+        } catch (error) {
+            this.showMessage('An error occurred. Please try again.', 'error');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+    
+    async register() {
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            password_confirmation: document.getElementById('password_confirmation').value
+        };
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.showMessage('Registration successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
+            } else {
+                if (data.errors) {
+                    this.displayValidationErrors(data.errors);
+                } else {
+                    this.showMessage(data.message, 'error');
+                }
+            }
+        } catch (error) {
+            this.showMessage('Registration failed. Please try again.', 'error');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+    
+    async checkAuthStatus() {
+        try {
+            const response = await fetch('/api/auth/check', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.authenticated) {
+                // Update UI for authenticated user
+                this.updateUIForAuthenticatedUser(data.user);
+            } else {
+                // Update UI for guest
+                this.updateUIForGuest();
+            }
+        } catch (error) {
+            console.error('Auth check failed:', error);
+        }
+    }
+    
+    async logout() {
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    }
+    
+    displayValidationErrors(errors) {
+        // Clear existing errors
+        document.querySelectorAll('.error-message').forEach(el => el.remove());
+        
+        // Display new errors
+        for (const [field, messages] of Object.entries(errors)) {
+            const input = document.getElementById(field);
+            if (input) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message text-red-500 text-sm mt-1';
+                errorDiv.textContent = messages[0];
+                input.parentNode.appendChild(errorDiv);
+                input.classList.add('border-red-500');
+            }
+        }
+    }
+    
+    showMessage(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `alert alert-${type} fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg`;
+        messageDiv.textContent = message;
+        document.body.appendChild(messageDiv);
+        
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 3000);
+    }
+    
+    showLoading(show) {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.style.display = show ? 'flex' : 'none';
+        }
+    }
+    
+    updateUIForAuthenticatedUser(user) {
+        // Update navigation
+        const authLinks = document.querySelectorAll('.auth-only');
+        authLinks.forEach(el => el.style.display = 'block');
+        
+        const guestLinks = document.querySelectorAll('.guest-only');
+        guestLinks.forEach(el => el.style.display = 'none');
+        
+        // Update user profile section
+        const userNameSpan = document.getElementById('user-name');
+        if (userNameSpan) userNameSpan.textContent = user.name;
+    }
+    
+    updateUIForGuest() {
+        const authLinks = document.querySelectorAll('.auth-only');
+        authLinks.forEach(el => el.style.display = 'none');
+        
+        const guestLinks = document.querySelectorAll('.guest-only');
+        guestLinks.forEach(el => el.style.display = 'block');
+    }
+}
+
+// Initialize auth when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.auth = new Auth();
+});
+
+</pre>
+
+
+<h3>CSRF Protection for AJAX Requests</h3>
+<pre>
+
+<small>php</small>
+
+// Generate CSRF token
+public function generateCsrfToken()
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+// CSRF Middleware for AJAX
+class CsrfMiddleware extends Middleware
+{
+    public function handle($request, $next)
+    {
+        $excludedRoutes = ['/api/webhook', '/api/payment/callback'];
+        
+        if (in_array($_SERVER['REQUEST_URI'], $excludedRoutes)) {
+            return $next($request);
+        }
+        
+        $token = $request->header('X-CSRF-TOKEN') ?? $request->post('csrf_token');
+        
+        if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
+            return $this->json([
+                'success' => false,
+                'message' => 'CSRF token validation failed'
+            ], 403);
+        }
+        
+        return $next($request);
+    }
+}
+
+</pre>
+
+<pre>
+
+<small>javascript</small>
+
+// Include CSRF token in AJAX requests
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+}
+
+// Global fetch wrapper with CSRF
+async function apiRequest(url, options = {}) {
+    const defaultOptions = {
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': getCsrfToken(),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+    };
+    
+    const mergedOptions = {
+        ...defaultOptions,
+        ...options,
+        headers: {
+            ...defaultOptions.headers,
+            ...options.headers
+        }
+    };
+    
+    const response = await fetch(url, mergedOptions);
+    return response.json();
+}
+
+</pre>
+
+
+
+</div>
+
+<div id="json-web-token">
+<h3>JSON Web Token (JWT) Authentication</h3>
+<p>
+JWT is a stateless authentication method ideal for APIs and 
+mobile applications.
+</p>
+
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/core/JWT.php
+namespace Core;
+
+class JWT
+{
+    private $secret;
+    private $algorithm;
+    private $ttl;
+    
+    public function __construct()
+    {
+        $config = Config::getInstance();
+        $this->secret = $config->get('jwt.secret', 'your-secret-key-change-this');
+        $this->algorithm = $config->get('jwt.algorithm', 'HS256');
+        $this->ttl = $config->get('jwt.ttl', 3600); // 1 hour default
+    }
+    
+    public function encode($payload)
+    {
+        // Header
+        $header = json_encode([
+            'typ' => 'JWT',
+            'alg' => $this->algorithm
+        ]);
+        
+        // Payload
+        $payload['iat'] = time(); // Issued at
+        $payload['exp'] = time() + $this->ttl; // Expiration
+        
+        $encodedHeader = $this->base64UrlEncode($header);
+        $encodedPayload = $this->base64UrlEncode(json_encode($payload));
+        
+        // Signature
+        $signature = hash_hmac('sha256', "{$encodedHeader}.{$encodedPayload}", $this->secret, true);
+        $encodedSignature = $this->base64UrlEncode($signature);
+        
+        return "{$encodedHeader}.{$encodedPayload}.{$encodedSignature}";
+    }
+    
+    public function decode($token)
+    {
+        $parts = explode('.', $token);
+        
+        if (count($parts) !== 3) {
+            throw new \Exception('Invalid token format');
+        }
+        
+        list($encodedHeader, $encodedPayload, $encodedSignature) = $parts;
+        
+        // Verify signature
+        $signature = $this->base64UrlDecode($encodedSignature);
+        $expectedSignature = hash_hmac('sha256', "{$encodedHeader}.{$encodedPayload}", $this->secret, true);
+        
+        if (!hash_equals($signature, $expectedSignature)) {
+            throw new \Exception('Invalid signature');
+        }
+        
+        // Decode payload
+        $payload = json_decode($this->base64UrlDecode($encodedPayload), true);
+        
+        // Check expiration
+        if (isset($payload['exp']) && $payload['exp'] < time()) {
+            throw new \Exception('Token has expired');
+        }
+        
+        return $payload;
+    }
+    
+    public function refresh($token)
+    {
+        $payload = $this->decode($token);
+        unset($payload['iat'], $payload['exp']);
+        return $this->encode($payload);
+    }
+    
+    public function validate($token)
+    {
+        try {
+            $this->decode($token);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+    
+    private function base64UrlEncode($data)
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+    
+    private function base64UrlDecode($data)
+    {
+        return base64_decode(strtr($data, '-_', '+/'));
+    }
+}
+
+
+</pre>
+
+<h3>JWT Authentication Controller</h3>
+<pre>
+
+<small>php</small>
+// jephy-mvc/app/controllers/Api/JwtAuthController.php
+namespace App\Controllers\Api;
+
+use Core\Controller;
+use Core\JWT;
+use Core\Validation;
+use App\Models\User;
+
+class JwtAuthController extends Controller
+{
+    private $jwt;
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->jwt = new JWT();
+    }
+    
+    // Login and get JWT token
+    public function login()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        
+        $validator = new Validation();
+        $rules = [
+            'email' => 'required|email',
+            'password' => 'required'
+        ];
+        
+        if (!$validator->validate($input, $rules)) {
+            return $this->json([
+                'success' => false,
+                'errors' => $validator->getErrors()
+            ], 422);
+        }
+        
+        // Find user
+        $user = User::where('email', $input['email'])->first();
+        
+        if (!$user || !password_verify($input['password'], $user->password)) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+        
+        // Create JWT payload
+        $payload = [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'role' => $user->role
+        ];
+        
+        // Generate token
+        $token = $this->jwt->encode($payload);
+        $refreshToken = $this->generateRefreshToken($user->id);
+        
+        return $this->json([
+            'success' => true,
+            'data' => [
+                'access_token' => $token,
+                'refresh_token' => $refreshToken,
+                'token_type' => 'Bearer',
+                'expires_in' => $this->jwt->ttl,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role
+                ]
+            ]
+        ]);
+    }
+    
+    // Refresh token
+    public function refresh()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $refreshToken = $input['refresh_token'] ?? '';
+        
+        // Validate refresh token from database
+        $tokenRecord = RefreshToken::where('token', $refreshToken)
+            ->where('expires_at', '>', date('Y-m-d H:i:s'))
+            ->first();
+        
+        if (!$tokenRecord) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Invalid or expired refresh token'
+            ], 401);
+        }
+        
+        // Get user
+        $user = User::find($tokenRecord->user_id);
+        
+        // Generate new tokens
+        $payload = [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'role' => $user->role
+        ];
+        
+        $newToken = $this->jwt->encode($payload);
+        $newRefreshToken = $this->generateRefreshToken($user->id);
+        
+        // Invalidate old refresh token
+        $tokenRecord->delete();
+        
+        return $this->json([
+            'success' => true,
+            'data' => [
+                'access_token' => $newToken,
+                'refresh_token' => $newRefreshToken,
+                'token_type' => 'Bearer',
+                'expires_in' => $this->jwt->ttl
+            ]
+        ]);
+    }
+    
+    // Get authenticated user info
+    public function me()
+    {
+        $auth = $this->getAuthenticatedUser();
+        
+        if (!$auth) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+        
+        return $this->json([
+            'success' => true,
+            'data' => [
+                'id' => $auth->id,
+                'name' => $auth->name,
+                'email' => $auth->email,
+                'role' => $auth->role,
+                'created_at' => $auth->created_at
+            ]
+        ]);
+    }
+    
+    // Logout (revoke token)
+    public function logout()
+    {
+        $auth = $this->getAuthenticatedUser();
+        
+        if ($auth) {
+            // Blacklist token or delete refresh token
+            $token = $this->getBearerToken();
+            TokenBlacklist::create([
+                'token' => $token,
+                'expires_at' => date('Y-m-d H:i:s', time() + $this->jwt->ttl)
+            ]);
+        }
+        
+        return $this->json([
+            'success' => true,
+            'message' => 'Logged out successfully'
+        ]);
+    }
+    
+    // Generate refresh token
+    private function generateRefreshToken($userId)
+    {
+        $token = bin2hex(random_bytes(64));
+        
+        RefreshToken::create([
+            'user_id' => $userId,
+            'token' => $token,
+            'expires_at' => date('Y-m-d H:i:s', time() + 604800) // 7 days
+        ]);
+        
+        return $token;
+    }
+    
+    // Extract bearer token from Authorization header
+    private function getBearerToken()
+    {
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? '';
+        
+        if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            return $matches[1];
+        }
+        
+        return null;
+    }
+    
+    // Get authenticated user from JWT
+    private function getAuthenticatedUser()
+    {
+        $token = $this->getBearerToken();
+        
+        if (!$token) {
+            return null;
+        }
+        
+        try {
+            $payload = $this->jwt->decode($token);
+            
+            // Check if token is blacklisted
+            if (TokenBlacklist::where('token', $token)->exists()) {
+                return null;
+            }
+            
+            return User::find($payload['user_id']);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
+
+</pre>
+
+<h3>JWT Authentication Middleware</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/middleware/JwtAuthMiddleware.php
+namespace App\Middleware;
+
+use Core\Middleware;
+use Core\JWT;
+
+class JwtAuthMiddleware extends Middleware
+{
+    private $jwt;
+    
+    public function __construct()
+    {
+        $this->jwt = new JWT();
+    }
+    
+    public function handle($request, $next)
+    {
+        // Get Authorization header
+        $headers = getallheaders();
+        $authHeader = $headers['Authorization'] ?? '';
+        
+        if (!$authHeader || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            return $this->json([
+                'success' => false,
+                'message' => 'No token provided'
+            ], 401);
+        }
+        
+        $token = $matches[1];
+        
+        try {
+            // Decode and validate token
+            $payload = $this->jwt->decode($token);
+            
+            // Attach user info to request
+            $request->user = $payload;
+            $request->userId = $payload['user_id'];
+            
+            return $next($request);
+            
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Invalid or expired token: ' . $e->getMessage()
+            ], 401);
+        }
+    }
+    
+    private function json($data, $status = 200)
+    {
+        http_response_code($status);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
+}
+
+</pre>
+
+<h3>JWT Refresh Token Model</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/models/RefreshToken.php
+namespace App\Models;
+
+use Core\Model;
+
+class RefreshToken extends Model
+{
+    protected $table = 'refresh_tokens';
+    protected $fillable = ['user_id', 'token', 'expires_at'];
+    protected $dates = ['expires_at'];
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function isValid()
+    {
+        return $this->expires_at > date('Y-m-d H:i:s');
+    }
+}
+
+// Migration for refresh_tokens table
+// CREATE TABLE refresh_tokens (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     user_id INT NOT NULL,
+//     token VARCHAR(255) NOT NULL UNIQUE,
+//     expires_at DATETIME NOT NULL,
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+// );
+
+// Token blacklist table
+// CREATE TABLE token_blacklist (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     token VARCHAR(500) NOT NULL,
+//     expires_at DATETIME NOT NULL,
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+// );
+
+</pre>
+
+<h3>Frontend JWT Authentication</h3>
+
+<pre>
+
+<small>javascript</small>
+
+// public/assets/js/jwt-auth.js
+class JWTAuth {
+    constructor() {
+        this.tokenKey = 'access_token';
+        this.refreshTokenKey = 'refresh_token';
+        this.tokenExpiryKey = 'token_expiry';
+        
+        this.setupInterceptors();
+        this.checkToken();
+    }
+    
+    async login(email, password) {
+        try {
+            const response = await fetch('/api/jwt/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Store tokens
+                this.setToken(data.data.access_token);
+                this.setRefreshToken(data.data.refresh_token);
+                this.setTokenExpiry(data.data.expires_in);
+                
+                // Store user info
+                localStorage.setItem('user', JSON.stringify(data.data.user));
+                
+                return { success: true, user: data.data.user };
+            } else {
+                return { success: false, message: data.message };
+            }
+        } catch (error) {
+            return { success: false, message: 'Login failed' };
+        }
+    }
+    
+    async refreshToken() {
+        const refreshToken = this.getRefreshToken();
+        
+        if (!refreshToken) {
+            return false;
+        }
+        
+        try {
+            const response = await fetch('/api/jwt/refresh', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ refresh_token: refreshToken })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.setToken(data.data.access_token);
+                this.setRefreshToken(data.data.refresh_token);
+                this.setTokenExpiry(data.data.expires_in);
+                return true;
+            }
+        } catch (error) {
+            console.error('Token refresh failed:', error);
+        }
+        
+        this.logout();
+        return false;
+    }
+    
+    async authenticatedRequest(url, options = {}) {
+        // Check if token is expired
+        if (this.isTokenExpired()) {
+            const refreshed = await this.refreshToken();
+            if (!refreshed) {
+                throw new Error('Session expired');
+            }
+        }
+        
+        const token = this.getToken();
+        
+        const defaultOptions = {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        };
+        
+        const mergedOptions = {
+            ...defaultOptions,
+            ...options,
+            headers: {
+                ...defaultOptions.headers,
+                ...options.headers
+            }
+        };
+        
+        const response = await fetch(url, mergedOptions);
+        
+        // If unauthorized, try to refresh token once
+        if (response.status === 401) {
+            const refreshed = await this.refreshToken();
+            if (refreshed) {
+                // Retry request with new token
+                mergedOptions.headers.Authorization = `Bearer ${this.getToken()}`;
+                return fetch(url, mergedOptions);
+            }
+        }
+        
+        return response;
+    }
+    
+    async getCurrentUser() {
+        try {
+            const response = await this.authenticatedRequest('/api/jwt/me');
+            const data = await response.json();
+            
+            if (data.success) {
+                return data.data;
+            }
+        } catch (error) {
+            console.error('Failed to get user:', error);
+        }
+        
+        return null;
+    }
+    
+    async logout() {
+        try {
+            await fetch('/api/jwt/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.getToken()}`
+                }
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+        
+        this.clearTokens();
+        window.location.href = '/login';
+    }
+    
+    setToken(token) {
+        localStorage.setItem(this.tokenKey, token);
+    }
+    
+    getToken() {
+        return localStorage.getItem(this.tokenKey);
+    }
+    
+    setRefreshToken(token) {
+        localStorage.setItem(this.refreshTokenKey, token);
+    }
+    
+    getRefreshToken() {
+        return localStorage.getItem(this.refreshTokenKey);
+    }
+    
+    setTokenExpiry(expiresIn) {
+        const expiry = Date.now() + (expiresIn * 1000);
+        localStorage.setItem(this.tokenExpiryKey, expiry);
+    }
+    
+    isTokenExpired() {
+        const expiry = localStorage.getItem(this.tokenExpiryKey);
+        return !expiry || Date.now() >= parseInt(expiry);
+    }
+    
+    clearTokens() {
+        localStorage.removeItem(this.tokenKey);
+        localStorage.removeItem(this.refreshTokenKey);
+        localStorage.removeItem(this.tokenExpiryKey);
+        localStorage.removeItem('user');
+    }
+    
+    checkToken() {
+        // Auto refresh token before it expires
+        if (this.getToken() && !this.isTokenExpired()) {
+            const timeUntilExpiry = parseInt(localStorage.getItem(this.tokenExpiryKey)) - Date.now();
+            
+            // Refresh 5 minutes before expiry
+            if (timeUntilExpiry < 300000) { // 5 minutes
+                this.refreshToken();
+            }
+        }
+    }
+    
+    setupInterceptors() {
+        // Refresh token periodically
+        setInterval(() => {
+            if (this.getToken()) {
+                this.checkToken();
+            }
+        }, 60000); // Check every minute
+    }
+}
+
+// Usage example
+const auth = new JWTAuth();
+
+// Login
+document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    const result = await auth.login(email, password);
+    
+    if (result.success) {
+        window.location.href = '/dashboard';
+    } else {
+        alert(result.message);
+    }
+});
+
+// Protected API call
+async function getDashboardData() {
+    try {
+        const response = await auth.authenticatedRequest('/api/dashboard');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch dashboard:', error);
+    }
+}
+
+</pre>
+
+
+</div>
+
+<div id="data-encryption">
+<h2>Data Encryption</h2>
+<p>Protect sensitive data using encryption algorithms.</p>
+
+<h3>Using Encryption in Models</h3>
+
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/models/User.php
+namespace App\Models;
+
+use App\Core\Model;
+use App\Core\Encryption;
+
+class User extends Model
+{
+    protected $table = 'users';
+    protected $fillable = ['name', 'email', 'password', 'ssn', 'credit_card'];
+    
+    private $encryption;
+    
+    public function __construct()
+    {
+        parent::__construct();
+        $this->encryption = new Encryption();
+    }
+    
+    // Automatically encrypt sensitive data before saving
+    public function setSsnAttribute($value)
+    {
+        $this->attributes['ssn'] = $this->encryption->encrypt($value);
+    }
+    
+    // Automatically decrypt when retrieving
+    public function getSsnAttribute($value)
+    {
+        return $value ? $this->encryption->decrypt($value) : null;
+    }
+    
+    public function setCreditCardAttribute($value)
+    {
+        $this->attributes['credit_card'] = $this->encryption->encrypt($value);
+    }
+    
+    public function getCreditCardAttribute($value)
+    {
+        return $value ? $this->encryption->decrypt($value) : null;
+    }
+}
+
+</pre>
+
+<h3>Model Encryption Traits</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/core/Traits/Encryptable.php
+namespace Core\Traits;
+
+trait Encryptable
+{
+    protected $encryption;
+    protected $encryptable = [];
+    
+    protected function getEncryption()
+    {
+        if (!$this->encryption) {
+            $this->encryption = new \Core\Encryption();
+        }
+        return $this->encryption;
+    }
+    
+    public function setAttribute($key, $value)
+    {
+        if (in_array($key, $this->encryptable)) {
+            $value = $this->getEncryption()->encrypt($value);
+        }
+        
+        return parent::setAttribute($key, $value);
+    }
+    
+    public function getAttribute($key)
+    {
+        $value = parent::getAttribute($key);
+        
+        if (in_array($key, $this->encryptable) && $value) {
+            $value = $this->getEncryption()->decrypt($value);
+        }
+        
+        return $value;
+    }
+}
+
+// Usage
+class MedicalRecord extends Model
+{
+    use Encryptable;
+    
+    protected $encryptable = ['diagnosis', 'prescription', 'patient_notes'];
+}
+
+
+</pre>
+
+</div>
+
+<div id="security-tips-recommendations">
+<h2>Security Tips & Recommendations</h2>
+<h3 class="exclude-in-right-col">1. Password Security</h3>
+<pre>
+
+<small>php</small>
+
+// Always hash passwords, never store plain text
+$hashed = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+
+// Verify password
+if (password_verify($input, $storedHash)) {
+    // Valid password
+}
+
+// Rehash if needed (when algorithm or cost changes)
+if (password_needs_rehash($storedHash, PASSWORD_BCRYPT, ['cost' => 12])) {
+    $newHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+    // Update database
+}
+
+</pre>
+
+<h3 class="exclude-in-right-col">2. SQL Injection Prevention</h3>
+
+<pre>
+
+<small>php</small>
+
+// ALWAYS use prepared statements
+$stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
+$stmt->execute([':email' => $email]);
+
+// Never concatenate user input into SQL
+// WRONG: $sql = "SELECT * FROM users WHERE id = " . $_GET['id'];
+
+</pre>
+
+
+<h3 class="exclude-in-right-col">3. XSS Prevention</h3>
+<pre>
+
+<small>php</small>
+
+// Escape output (Smarty does this automatically)
+{$userInput|escape}
+
+// For HTML context
+htmlspecialchars($userInput, ENT_QUOTES, 'UTF-8');
+
+// For JavaScript context
+json_encode($userInput);
+
+// Content Security Policy header
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://trusted-cdn.com");
+
+</pre>
+
+<h3>4. CSRF Protection</h3>
+<pre>
+<small>php</small>
+
+// Generate token
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+// Add to forms
+<input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
+// Verify
+if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    throw new Exception('CSRF attack detected');
+}
+
+
+</pre>
+
+<h3>5. Session Security</h3>
+<pre>
+<small>php</small>
+
+// Session configuration
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_strict_mode', 1);
+ini_set('session.cookie_secure', 1); // Only send over HTTPS
+ini_set('session.cookie_samesite', 'Strict');
+
+// Regenerate session ID after login
+session_regenerate_id(true);
+
+// Set timeout
+ini_set('session.gc_maxlifetime', 3600); // 1 hour
+
+// Set custom timeout
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
+    session_unset();
+    session_destroy();
+}
+$_SESSION['LAST_ACTIVITY'] = time();
+
+</pre>
+
+<h3>6. HTTPS Enforcement</h3>
+<pre>
+
+<small>php</small>
+
+
+
+// Force HTTPS in .htaccess
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+// Or in PHP
+if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') {
+    header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+    exit();
+}
+
+// HSTS header
+header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+
+</pre>
+
+<h3>7. Rate Limiting</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/middleware/RateLimitMiddleware.php
+class RateLimitMiddleware extends Middleware
+{
+    public function handle($request, $next)
+    {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $key = "rate_limit:{$ip}";
+        $maxRequests = 60; // 60 requests
+        $timeWindow = 60; // per minute
+        
+        if (!isset($_SESSION[$key])) {
+            $_SESSION[$key] = ['count' => 1, 'first_request' => time()];
+        } else {
+            $data = $_SESSION[$key];
+            
+            if (time() - $data['first_request'] > $timeWindow) {
+                // Reset window
+                $_SESSION[$key] = ['count' => 1, 'first_request' => time()];
+            } elseif ($data['count'] >= $maxRequests) {
+                return $this->json([
+                    'message' => 'Too many requests. Please try again later.'
+                ], 429);
+            } else {
+                $_SESSION[$key]['count']++;
+            }
+        }
+        
+        return $next($request);
+    }
+}
+
+</pre>
+
+<h3>8. Input Validation & Sanitization</h3>
+
+<!--
+<p>
+Although, when you work with <code>\App\Core\Validation</code> or 
+<code>\App\Core\Contoller->validate()</code>, posted data retrieved 
+using $_POST are adequately sanitized. There are time you may need 
+to work without these options,make sure you adequately sanitize $_POST
+data as follows:
+</p>
+-->
+
+<pre>
+
+<small>php</small>
+
+// Validate
+filter_var($email, FILTER_VALIDATE_EMAIL);
+filter_var($url, FILTER_VALIDATE_URL);
+filter_var($int, FILTER_VALIDATE_INT);
+
+// Sanitize
+$email = filter_var($email, FILTER_SANITIZE_EMAIL);
+$url = filter_var($url, FILTER_SANITIZE_URL);
+$string = filter_var($string, FILTER_SANITIZE_STRING);
+
+// Custom sanitization
+function sanitizeInput($input) {
+    $input = trim($input);
+    $input = stripslashes($input);
+    $input = htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+    return $input;
+}
+
+</pre>
+
+
+<h3>9. File Upload Security</h3>
+
+<pre>
+
+<small>php</small>
+
+// Validate file uploads
+function validateUpload($file) {
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    $maxSize = 5 * 1024 * 1024; // 5MB
+    
+    if (!in_array($file['type'], $allowedTypes)) {
+        throw new Exception('Invalid file type');
+    }
+    
+    if ($file['size'] > $maxSize) {
+        throw new Exception('File too large');
+    }
+    
+    // Scan for malware (use ClamAV or similar)
+    // ...
+    
+    // Generate safe filename
+    $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $safeName = bin2hex(random_bytes(16)) . '.' . $extension;
+    
+    // Store outside web root or use .htaccess to prevent execution
+    return $safeName;
+}
+</pre>
+
+<h3>10. Database Security</h3>
+<pre>
+
+<small>php</small>
+// Use least privilege database user
+// CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'strong_password';
+// GRANT SELECT, INSERT, UPDATE, DELETE ON app_db.* TO 'app_user'@'localhost';
+
+// Backup regularly
+// mysqldump -u user -p database > backup.sql
+
+// Encrypt sensitive columns
+// ALTER TABLE users ADD COLUMN ssn_encrypted VARBINARY(255);
+
+// Enable MySQL query log for auditing
+// SET GLOBAL general_log = 'ON';
+
+</pre>
+
+<h3>11. Error Handling & Logging</h3>
+<pre>
+<small>php</small>
+// Never show detailed errors in production
+if (Config::get('app.debug')) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
+
+// Log errors
+error_log($message, 3, '/var/log/jephy-mvc/error.log');
+
+// Custom error handler
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    error_log("Error: $errstr in $errfile on line $errline");
+    return true;
+});
+
+// Custom exception handler
+set_exception_handler(function($exception) {
+    error_log("Exception: " . $exception->getMessage());
+    
+    if (Config::get('app.debug')) {
+        echo $exception->getMessage();
+    } else {
+        http_response_code(500);
+        echo "An error occurred";
+    }
+});
+
+</pre>
+
+<h3>12. API Security</h3>
+<pre>
+<small>php</small>
+// API Keys
+$apiKey = bin2hex(random_bytes(32));
+// Store in database with user_id
+
+// Verify API key
+$key = $_SERVER['HTTP_X_API_KEY'] ?? '';
+if (!ApiKey::where('key', $key)->where('active', true)->exists()) {
+    return $this->json(['error' => 'Invalid API key'], 401);
+}
+
+// API Versioning
+// /api/v1/users
+// /api/v2/users
+
+// CORS configuration
+header('Access-Control-Allow-Origin: https://trusted-domain.com');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Max-Age: 3600');
+
+// Request throttling
+// Limit by API key or IP
+</pre>
+
+<h3>13. Security Headers</h3>
+<pre>
+<small>php</small>
+// Add to your bootstrap or middleware
+header('X-Frame-Options: DENY'); // Prevent clickjacking
+header('X-Content-Type-Options: nosniff'); // Prevent MIME sniffing
+header('X-XSS-Protection: 1; mode=block'); // Enable XSS filter
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header("Content-Security-Policy: default-src 'self'");
+header("Feature-Policy: geolocation 'none'; microphone 'none'; camera 'none'");
+
+// Remove PHP version header
+header_remove('X-Powered-By');
+</pre>
+
+<h3>14. Security Checklist</h3>
+<pre>
+<small>php</small>
+
+// Pre-deployment checklist
+$securityChecks = [
+    'debug_mode_disabled' => !Config::get('app.debug'),
+    'https_enabled' => !empty($_SERVER['HTTPS']),
+    'session_secure' => ini_get('session.cookie_secure'),
+    'session_httponly' => ini_get('session.cookie_httponly'),
+    'encryption_key_set' => Config::get('encryption.key') !== null,
+    'database_password_strong' => true,
+    'file_permissions_correct' => true,
+    'error_reporting_off' => !ini_get('display_errors'),
+    'csrf_protection_enabled' => true,
+    'password_hashing_algorithm' => defined('PASSWORD_BCRYPT')
+];
+
+foreach ($securityChecks as $check => $passed) {
+    if (!$passed) {
+        error_log("Security warning: $check is not properly configured");
+    }
+}
+
+</pre>
+
+<h3>15. Regular Security Maintenance</h3>
+<pre>
+<small>php</small>
+
+// Update dependencies regularly
+// composer update
+
+// Security audit script
+class SecurityAudit
+{
+    public function run()
+    {
+        // Check for known vulnerabilities in dependencies
+        // Check file permissions (should be 644 for files, 755 for directories)
+        // Check for exposed .env or config files
+        // Check for SQL injection vulnerabilities in raw queries
+        // Check for XSS vulnerabilities in unescaped output
+        // Check for outdated PHP version
+        // Check for weak passwords in database
+        // Review recent logs for suspicious activity
+    }
+}
+</pre>
+
+</div>
+
+<div id="summary-table">
+<h2>Summary Table</h2>
+
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Security Feature</th>	
+			<th>Purpose</th>	
+			<th>Implementation</th>
+		</tr>
+	</thead>
+	<tbody>
+	
+		<tr>
+			<td>Form Validation</td>	
+			<td>Prevent invalid/malicious data</td>	
+			<td>Validation class with rules</td>
+		</tr>
+		<tr>
+			<td>Session Auth</td>	
+			<td>Traditional web apps</td>	
+			<td>Session-based, redirect/reload</td>
+		</tr>
+		<tr>
+			<td>AJAX Auth</td>	
+			<td>SPAs, seamless UX</td>	
+			<td>AJAX calls, JSON responses</td>
+		</tr>
+		<tr>
+			<td>JWT Auth</td>	
+			<td>APIs, mobile apps</td>	
+			<td>Stateless tokens, refresh tokens</td>
+		</tr>
+		<tr>
+			<td>Data Encryption</td>	
+			<td>Protect sensitive data</td>	
+			<td>AES-256 encryption</td>
+		</tr>
+		<tr>
+			<td>Password Hashing</td>	
+			<td>Secure password storage	</td>
+			<td>bcrypt with cost factor</td>
+		</tr>
+		<tr>
+			<td>CSRF Protection</td>	
+			<td>Prevent cross-site requests</td>	
+			<td>Tokens in forms/AJAX</td>
+		</tr>
+		<tr>
+			<td>XSS Prevention</td>	
+			<td>Prevent script injection</td>	
+			<td>Output escaping, CSP</td>
+		</tr>
+		<tr>
+			<td>SQL Injection</td>	
+			<td>Protect database</td>	
+			<td>Prepared statements</td>
+		</tr>
+		<tr>
+			<td>Rate Limiting</td>	
+			<td>Prevent abuse</td>	
+			<td>Request throttling</td>
+		</tr>
+		<tr>
+			<td>HTTPS</td>	
+			<td>Encrypt communication</td>	
+			<td>SSL/TLS certificates</td>
+		</tr>
+		<tr>
+			<td>Security Headers</td>	
+			<td>Browser security features</td>	
+			<td>HSTS, CSP, X-Frame-Options</td>
+		</tr>
+	</tbody>
+
+</table>
+</div>
+

@@ -1,0 +1,968 @@
+---
+layout: docs
+title: Getting Started
+---
+
+<div id="deployment-guide" class="center-breadcrumbs mt-1 mb-4">
+	<div>
+		<a href="{{ site.repo_url }}docs/overview">Docs</a>
+	</div>
+	<span class="breadcrumb-divider">
+		<img src="{{ site.repo_url }}assets/images/icons/arrow-right.svg" />
+	</span>
+
+	<div>Deployment Guide</div>															
+</div>
+
+<div id="deployment-guide-overview">
+<h1>Deployment Guide</h1>
+<h2><span class="sub-heading">#</span>  Overview</h2>
+
+	<p>
+		{{ site.title }} can be deployed across various environments, from budget 
+		shared hosting to enterprise cloud platforms. This guide covers configuration, 
+		server setup, and optimization for each platform.
+	</p>
+	
+	<div class="block">
+		<p>
+			<strong>Important</strong>: Before deployment, ensure config.conf has 
+			<code>debug = false</code> and appropriate caching is enabled.
+		</p>
+	</div>
+	
+</div>
+
+
+<div id="pre-deployment-checklist" class="my-4">
+<h2>Pre-Deployment Checklist</h2>
+<p>Before deploying to any environment:</p>
+<pre>
+# 1. Set debug mode to false
+# Edit jephy-mvc/config.conf
+[app]
+site.debug = false                    # Important for production
+
+# 2. Enable Smarty caching
+[smarty]
+smarty.caching = true
+smarty.cache_lifetime = 3600           # 1 hour default
+
+# 3. Set proper file permissions
+chmod -R 755 jephy-mvc/app/cache/
+chmod -R 755 public/assets/
+chmod 644 jephy-mvc/config.conf
+
+# 4. Remove development tools and test files
+rm -rf tests/ (if not needed)
+
+# 5. Secure your .htaccess (if using Apache)
+
+</pre>
+
+</div>
+
+
+
+<div id="shared-hosting-deployment" class="my-4">
+<h2>1. Shared Hosting Deployment</h2>
+<p>
+	Shared hosting is the most restrictive environment but Jephy-MVC works well 
+	with proper configuration.
+</p>	
+	
+<h2>Requirements for Shared Hosting</h2>
+<ul>
+	<li>PHP 8.0+ (check with your host)</li>
+	<li>Apache with mod_rewrite (most common)</li>
+	<li>MySQL/MariaDB database</li>
+	<li>FTP/SFTP or cPanel File Manager access</li>
+</ul>
+
+<h2>Step-by-Step Deployment</h2>
+<h6>Step 1: Prepare your project locally</h6>
+
+<pre>
+
+# Create a deployment package (excluding development files)
+cd your-project
+zip -r jephy-mvc-deploy.zip . -x "*.git*" "*.github*" "tests/*" "docs/*"
+
+</pre>
+
+<h6>Step 2: Upload to shared hosting</h6>
+
+<pre>
+
+Using FTP/cPanel:
+1. Upload the ZIP file to your hosting root (usually public_html or www)
+2. Extract the ZIP file
+3. Your structure should look like:
+   public_html/
+   ├── composer.json
+   ├── composer.lock
+   ├── jephy-mvc/
+   ├── public/
+   └── vendor/
+
+</pre>
+
+<h6>Step 3: Configure document root</h6>
+<p>
+Most shared hosts point to <code>public_html/</code> as root. 
+You need to point it to <code>public/</code>:
+</p>
+
+<h6>Option A: Using .htaccess (in public_html)</h6>
+
+<pre>
+
+# Place this in your root public_html/.htaccess
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ /public/$1 [L]
+
+</pre>
+
+<h6>Option B: If host allows custom document root</h6>
+
+<ul>
+	<li>Set document root to <code>public_html/public/</code></li>
+	<li>Contact support if needed</li>
+</ul>
+
+<h6>Step 4: Configure database</h6>
+
+<pre>
+
+# 1. Create database via cPanel/phpMyAdmin
+# 2. Update jephy-mvc/config.conf
+
+[database]
+host = "localhost"          # Or your host's MySQL hostname
+name = "your_cpanel_dbname"
+user = "your_cpanel_user"
+password = "your_password"
+driver = "mysql"
+
+</pre>
+
+<h6>Step 6: Test deployment</h6>
+
+<pre>
+Visit: https://yourdomain.com
+</pre>
+		
+</div>
+
+
+<div id="shared-hosting-troubleshooting">
+	<h3>Shared Hosting Troubleshooting</h3>
+	
+	<table class="table table-config-info">
+		<thead>
+			<tr>
+				<th>Issue</th>
+				<th>Solution</th>
+			</tr>
+		</thead>
+		<tbody>
+		
+			<tr>
+				<td>404 errors on routes</td>
+				<td>Check mod_rewrite is enabled. Ensure .htaccess is in public/ folder</td>
+			</tr>
+		
+			<tr>
+				<td>White screen</td>
+				<td>Check jephy-mvc/app/cache/ is writable (chmod 755)</td>
+			</tr>
+			
+			<tr>
+				<td>Smarty compile errors</td>
+				<td>Verify template_dir and compile_dir paths in config.conf</td>
+			</tr>
+			
+			<tr>
+				<td>Database connection failed</td>
+				<td>Host may require non-standard port or socket. Check with hosting provider</td>
+			</tr>
+			
+		</tbody>
+	</table>
+	
+</div>
+
+
+<div id="vps-dedicated-server-deployment">
+	
+<h3>VPS / Dedicated Server Deployment</h3>
+<p>VPS gives you full control. Recommended for production applications.</p>
+<h6>Recommended Stack</h6>
+
+<ul>
+	<li>Web Server: Nginx (preferred) or Apache</li>
+	<li>PHP: 8.0+ with FPM</li>
+	<li>Database: MySQL 8.0 / PostgreSQL 14+</li>
+	<li>OS: Ubuntu 22.04 LTS / Debian 12</li>
+</ul>
+
+<h3>Nginx + PHP-FPM Setup (Recommended)</h3>
+<h6>Step 1: Install required packages</h6>
+
+<pre>
+
+# Ubuntu/Debian
+sudo apt update
+sudo apt install nginx php8.1-fpm php8.1-mysql php8.1-pgsql php8.1-curl php8.1-mbstring
+
+# Install Composer if needed for vendor packages
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+
+</pre>
+
+<h6>Step 2: Upload your project</h6>
+
+<pre>
+
+# Clone from GitHub
+cd /var/www
+git clone https://github.com/yourusername/jephy-mvc.git myapp
+cd myapp
+
+# Or upload via SCP
+scp -r ./jephy-mvc root@your-server:/var/www/myapp/
+scp -r ./public root@your-server:/var/www/myapp/
+scp -r ./vendor root@your-server:/var/www/myapp/
+
+</pre>
+
+<h6>Step 3: Set permissions</h6>
+
+<pre>
+
+cd /var/www/myapp
+sudo chown -R www-data:www-data jephy-mvc/app/cache/
+sudo chmod -R 755 jephy-mvc/app/cache/
+sudo chmod -R 755 public/assets/
+
+</pre>
+
+<h6>Step 4: Configure Nginx site</h6>
+<p>Create <code>/etc/nginx/sites-available/jephy-mvc</code>:</p>
+<pre>
+
+server {
+    listen 80;
+    server_name yourdomain.com;
+    root /var/www/myapp/public;
+    index index.php;
+
+    # Logs
+    access_log /var/log/nginx/jephy-mvc-access.log;
+    error_log /var/log/nginx/jephy-mvc-error.log;
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+    # Assets caching
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+
+</pre>
+
+<h6>Step 5: Enable site and restart</h6>
+
+<pre>
+
+sudo ln -s /etc/nginx/sites-available/jephy-mvc /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx php8.1-fpm
+
+</pre>
+	
+<h6>Step 6: Configure SSL with Let's Encrypt</h6>
+
+<pre>
+
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com
+
+</pre>	
+
+<h3>Apache Setup (Alternative)</h3>
+
+<h6>Step 1: Enable mod_rewrite</h6>
+
+<pre>
+
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+
+</pre>
+
+<h6>Step 2: Configure VirtualHost</h6>
+<pre>
+
+&lt;VirtualHost *:80&gt;
+    ServerName yourdomain.com
+    DocumentRoot /var/www/myapp/public
+    
+    &lt;Directory /var/www/myapp/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+    
+    ErrorLog ${APACHE_LOG_DIR}/jephy-mvc-error.log
+    CustomLog ${APACHE_LOG_DIR}/jephy-mvc-access.log combined
+&lt;/VirtualHost&gt;
+
+</pre>
+	
+</div>
+
+<div id="cloud-platform-deployment">
+
+<h2>3. Cloud Platform Deployment</h2>
+<h2>Amazon Web Services (AWS)</h2>
+<h6>Option A: AWS Elastic Beanstalk (Easiest)</h6>
+
+
+<h6 class="mt-4">Step 1: Install EB CLI</h6>
+<pre>
+pip install awsebcli --upgrade
+</pre>
+
+<h6>Step 2: Prepare your application</h6>
+<pre>
+# Create .ebignore file (similar to .gitignore)
+echo "vendor/" > .ebignore
+
+# Create .ebextensions/php.ini for custom settings
+mkdir .ebextensions
+</pre>
+
+<h6><code>.ebextensions/php.ini</code>:</h6>
+<pre>
+
+files:
+  "/etc/php.d/99-jephy-mvc.ini":
+    mode: "644"
+    owner: root
+    group: root
+    content: |
+      upload_max_filesize = 64M
+      post_max_size = 64M
+      memory_limit = 256M
+
+</pre>
+
+<h6>Step 3: Deploy to Elastic Beanstalk</h6>
+<pre>
+
+eb init -p "PHP 8.1" jephy-mvc-app
+eb create jephy-mvc-prod --envvars APP_ENV=production
+eb deploy
+
+</pre>
+
+<h6>Option B: AWS EC2 (Full control)</h6>
+<h6>Step 1: Launch EC2 instance</h6>
+
+<ul>
+<li>Amazon Linux 2023 or Ubuntu 22.04</li>
+<li>t3.micro (free tier) or larger</li>
+<li>Security group: Allow HTTP (80), HTTPS (443), SSH (22)</li>
+</ul>
+
+<h6>Step 2: Connect and setup</h6>
+
+<pre>
+
+ssh -i your-key.pem ec2-user@your-ec2-public-dns
+
+# Install dependencies (Amazon Linux)
+sudo yum update -y
+sudo yum install -y httpd php8.1 php8.1-mysqlnd git
+
+# Clone your project
+sudo git clone https://github.com/yourusername/jephy-mvc.git /var/www/html/
+cd /var/www/html
+
+# Set permissions
+sudo chown -R apache:apache jephy-mvc/app/cache/
+
+</pre>
+
+<h6>Step 3: Configure RDS database</h6>
+
+<pre>
+
+# Create RDS MySQL instance via AWS Console
+# Update jephy-mvc/config.conf with RDS endpoint
+
+# jephy-mvc/config.conf
+# [database]
+
+driver = "mysql" # or pgsql for Postgres SQL
+host = "your-db.xxxxxx.us-east-1.rds.amazonaws.com"
+name = "jephy_db"
+user = "admin"
+password = "your_password"
+
+</pre>
+
+<h6>Step 4: Set up S3 for file storage (optional)</h6>
+
+<pre>
+
+// Use AWS SDK for PHP to store user uploads in S3
+composer require aws/aws-sdk-php
+
+</pre>
+
+<h6>Option C: AWS Lightsail (Simpler VPS)</h6>
+<ul>
+<li>Choose LAMP stack (PHP 8.x)</li>
+<li>Deploy via SSH or Lightsail deployment tool</li>
+<li>Built-in firewall and snapshots</li>
+</ul>
+
+<h2>Google Cloud Platform (GCP)</h2>
+<h6>Option A: Google App Engine (Serverless)</h6>
+<h6>Step 1: Install Google Cloud SDK</h6>
+
+<pre>
+
+curl https://sdk.cloud.google.com | bash
+gcloud init
+
+</pre>
+
+<h6>Step 2: Create <code>app.yaml</code></h6>
+
+<pre>
+
+runtime: php81
+env: standard
+
+runtime_config:
+  document_root: public
+
+env_variables:
+  APP_DEBUG: false
+  APP_ENV: production
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+
+handlers:
+- url: /assets
+  static_dir: public/assets
+  expiration: "30d"
+
+- url: /.*
+  script: auto
+
+</pre>
+
+<h6>Step 3: Deploy</h6>
+
+<pre>
+
+gcloud app deploy
+gcloud app browse
+
+</pre>
+
+<h6>Option B: Google Compute Engine (VPS)</h6>
+<h6>Step 1: Create VM instance</h6>
+
+<pre>
+
+gcloud compute instances create jephy-mvc-vm \
+    --zone=us-central1-a \
+    --machine-type=e2-micro \
+    --image-family=ubuntu-2204-lts \
+    --tags=http-server,https-server
+	
+</pre>
+
+<h6>Step 2: SSH and setup</h6>
+<pre>
+
+gcloud compute ssh jephy-mvc-vm
+
+# Install LAMP stack
+sudo apt update
+sudo apt install apache2 php8.1 libapache2-mod-php8.1 php8.1-mysql git
+
+# Deploy your app
+sudo git clone https://github.com/yourusername/jephy-mvc.git /var/www/html/
+
+</pre>
+
+<h6>Step 3: Configure Cloud SQL</h6>
+<ul>
+<li>Create Cloud SQL MySQL instance</li>
+<li>Update config.conf with Cloud SQL connection details</li>
+<li>Use Cloud SQL Proxy for secure connection</li>
+</ul>
+
+<h6>Option C: Google Cloud Run (Container)</h6>
+
+<pre>
+
+dockerfile
+
+# Dockerfile
+FROM php:8.1-apache
+COPY . /var/www/html/
+RUN chown -R www-data:www-data /var/www/html/jephy-mvc/app/cache/
+EXPOSE 80
+
+</pre>
+
+<pre>
+
+bash
+
+# Build and deploy
+gcloud builds submit --tag gcr.io/your-project/jephy-mvc
+gcloud run deploy jephy-mvc --image gcr.io/your-project/jephy-mvc 
+--platform managed
+
+</pre>
+
+<h2>Microsoft Azure</h2>
+<h6>Option A: Azure App Service (Recommended)</h6>
+<h6>Step 1: Install Azure CLI</h6>
+
+<pre>
+
+bash
+
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+az login
+
+</pre>
+
+<h6>Step 2: Create App Service</h6>
+<pre>
+# Create resource group
+az group create --name jephy-mvc-rg --location eastus
+
+# Create App Service plan
+az appservice plan create --name jephy-mvc-plan --resource-group 
+jephy-mvc-rg --sku B1 --is-linux
+
+# Create web app with PHP 8.1
+az webapp create --resource-group jephy-mvc-rg --plan jephy-mvc-plan 
+--name jephy-mvc-app --runtime "PHP|8.1"
+</pre>
+
+<h6>Step 3: Deploy from GitHub</h6>
+
+<pre>
+
+bash
+
+az webapp deployment source config --name jephy-mvc-app --resource-group 
+jephy-mvc-rg --repo-url https://github.com/yourusername/jephy-mvc 
+--branch main --manual-integration
+</pre>
+
+<h6>Step 4: Configure environment variables</h6>
+
+<pre>
+
+bash
+
+az webapp config appsettings set --name jephy-mvc-app --resource-group 
+jephy-mvc-rg --settings APP_DEBUG=false DB_HOST=...
+
+</pre>
+
+
+
+<h6>Step 5: Configure Azure Database for MySQL</h6>
+
+<pre>
+
+bash
+
+# Create MySQL server
+az mysql server create --name jephy-mysql --resource-group jephy-mvc-rg 
+--location eastus --admin-user jephyadmin --admin-password YourPassword 
+--sku-name B_Gen5_1
+
+# Update config.conf with Azure MySQL endpoint
+
+</pre>
+
+<h6>Option B: Azure Virtual Machines</h6>
+
+<pre>
+
+bash
+
+# Create VM
+az vm create \
+    --resource-group jephy-mvc-rg \
+    --name jephy-vm \
+    --image UbuntuLTS \
+    --admin-username azureuser \
+    --generate-ssh-keys
+
+# SSH and setup LAMP (similar to VPS section)
+az vm open-port --port 80 --resource-group jephy-mvc-rg --name jephy-vm
+
+</pre>
+
+<h6>Option C: Azure Container Instances</h6>
+
+<pre>
+
+bash
+
+# Quick container deployment
+az container create \
+    --resource-group jephy-mvc-rg \
+    --name jephy-mvc-container \
+    --image yourdockerhub/jephy-mvc:latest \
+    --dns-name-label jephy-mvc-app \
+    --ports 80
+
+</pre>
+
+
+<h2>Environment-Specific Configuration</h2>
+<h6>Production config.conf Template</h6>
+<pre>
+
+#	config.conf
+
+
+[app]
+name = "My Jephy-MVC App"
+debug = false
+timezone = "UTC"
+
+[paths]
+site.home  = "https://yourdomain.com"
+site.url.home  = "https://yourdomain.com/assets/"
+
+[database]
+host = "localhost"              # Update for cloud DB
+name = "jephy_prod"
+user = "prod_user"
+password = "strong_password"
+driver = "mysql"
+
+[smarty]
+smarty.caching = true
+smarty.cache_lifetime = 3600
+smarty.auto_escape = true
+site.app_path = /src/jephy-mvc/app
+site.home_root_path = src/public
+
+
+[security]
+smarty.csrf_protection = true
+smarty.session_secure = true          # Force HTTPS sessions
+smarty.session_httponly = true
+
+[cache]
+site.enabled = true
+site.driver = "file"                # file, redis, memcached
+</pre>
+
+<h2>Performance Optimization</h2>
+<h2>1. Enable OpCache (PHP)</h2>
+
+<pre>
+
+; In php.ini
+opcache.enable=1
+opcache.memory_consumption=128
+opcache.max_accelerated_files=10000
+opcache.revalidate_freq=0
+
+</pre>
+
+<h2>2. Enable Smarty Caching</h2>
+
+<pre>
+
+// In your controllers
+$this->view->caching = true;
+$this->view->cache_lifetime = 86400; // 24 hours
+
+</pre>
+
+<h2>3. Enable Gzip Compression</h2>
+
+<h6>Apache (.htaccess):</h6>
+<pre>
+
+apache
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript
+</IfModule>
+
+</pre>
+
+<h6>Nginx:</h6>
+<pre>
+
+nginx
+
+gzip on;
+gzip_types text/html text/css application/javascript;
+</pre>
+
+
+<h6>4. Database Optimization:</h6>
+<pre>
+
+sql
+
+-- Add indexes to frequently queried columns
+CREATE INDEX idx_users_email ON users(email);
+
+-- Use query caching (MySQL)
+SET GLOBAL query_cache_size = 67108864;
+
+</pre>
+
+
+<h6>5. CDN for Static Assets</h6>
+<pre>
+
+; config.conf
+[paths]
+assets_url = "https://cdn.yourdomain.com/assets/";
+
+</pre>
+
+
+</div>
+
+
+<div class="mt-5" id="security-hardening">
+
+<h2>Security Hardening</h2>
+<h6>For All Environments</h6>
+
+<pre>
+
+# 1. Restrict config.conf access
+chmod 600 jephy-mvc/config.conf
+
+# 2. Disable directory listing
+# Add to public/.htaccess
+Options -Indexes
+
+# 3. Protect sensitive directories
+# Add to jephy-mvc/.htaccess
+Deny from all
+
+</pre>
+
+<h2>Cloud-Specific Security</h2>
+
+<h2>AWS:</h2>
+<ul>
+<li>Use Security Groups (only allow 80, 443)</li>
+<li>Enable AWS WAF</li>
+<li>Store secrets in AWS Secrets Manager</li>
+</ul>
+
+<h2>GCP:</h2>
+<ul>
+<li>Use Cloud IAM roles</li>
+<li>Enable VPC firewall rules</li>
+<li>Use Cloud KMS for encryption</li>
+</ul>
+
+
+<h2>Azure:</h2>
+<ul>
+<li>Use Network Security Groups</li>
+<li>Enable Azure WAF</li>
+<li>Use Key Vault for secrets</li>
+</ul>
+
+
+</div>
+
+<div id="monitoring-and-maintenance">
+<h2>Monitoring & Maintenance</h2>
+<h2>Logging</h2>
+<pre>
+php
+
+// Jephy-MVC logging
+\Core\Logger::info('User logged in', ['user_id' => $userId]);
+\Core\Logger::error('Database connection failed');
+</pre>
+
+<h2>Health Check Endpoint</h2>
+<h6>Create <code>public/health.php</code>:</h6>
+
+<pre>
+
+&lt;?php
+// Simple health check for load balancers
+$status = ['status' => 'healthy', 'timestamp' => time()];
+header('Content-Type: application/json');
+echo json_encode($status);
+
+</pre>
+
+<h2>Automated Backups</h2>
+<pre>
+
+# Cron job for database backup (VPS)
+0 2 * * * mysqldump -u user -p'password' dbname > /backups/db-$(date +\%Y\%m\%d).sql
+
+# AWS RDS automated backups (enable in console)
+# GCP Cloud SQL automated backups
+# Azure Database automated backups
+
+</pre>
+
+</div>
+
+<div id="troubleshooting-deployment">
+<h2>Troubleshooting Deployment</h2>
+
+<table class="table table-config-info">
+	<thead>
+		<tr>				
+			<th>Platform</th>	
+			<th>Common Issue</th>	
+			<th>Solution</th>
+		</tr>
+	</thead>
+	<tbody>
+	
+		<tr>
+			<td>Shared Hosting</td>	
+			<td>Path errors</td>	
+			<td>Use absolute paths in config.conf</td>	
+		</tr>
+	
+		<tr>
+			<td>VPS</td>		
+			<td>Permission denied</td>		
+			<td><code>chown -R www-data:www-data jephy-mvc/app/cache/</code></td>	
+		</tr>
+		
+		<tr>
+			<td>AWS</td>		
+			<td>403 errors</td>		
+			<td>Check security group inbound rules</td>	
+		</tr>
+		
+		<tr>
+			<td>GCP</td>	
+			<td>Session issues</td>		
+			<td>Configure Cloud Datastore for sessions</td>	
+		</tr>
+		
+		<tr>
+			<td>Azure</td>	
+			<td>Slow performance</td>		
+			<td>Scale up App Service plan tier</td>	
+		</tr>
+		
+		
+	</tbody>
+</table>
+
+<h2>Deployment Checklist</h2>
+
+<ul>
+	<li><code>debug = false</code> in config.conf</li>
+	<li>Smarty caching enabled</li>
+	<li>Database credentials updated</li>
+	<li>File permissions set (cache directory writable)</li>
+	<li>SSL certificate installed</li>
+	<li>.htaccess or Nginx config verified</li>
+	<li>Base URL configured correctly</li>
+	<li>Error logging enabled</li>
+	<li>Backup strategy in place</li>
+	<li>Monitoring setup complete</li>
+</ul>
+	
+</div>
+
+<div id="quick-reference-platform-commands">
+<h2>Quick Reference: Platform Commands</h2>
+
+<table class="table table-config-info">
+	<thead>
+		<tr>				
+			<th>Platform</th>	
+			<th>Deploy Command</th>	
+			<th>Restart Command</th>
+		</tr>
+	</thead>
+	<tbody>
+		
+		<tr>
+			<td>Shared Hosting</td>	
+			<td>FTP Upload</td>	
+			<td>Contact host</td>
+		</tr>
+	
+		<tr>
+			<td>VPS (Nginx)</td>	
+			<td>git pull</td>	
+			<td><code>sudo systemctl restart nginx php8.1-fpm</code></td>
+		</tr>
+	
+		<tr>
+			<td>AWS EB</td>	
+			<td>eb deploy</td>	
+			<td>eb restart</td>
+		</tr>
+	
+		<tr>
+			<td>GCP App Engine</td>	
+			<td>gcloud app deploy</td>	
+			<td>Auto-managed</td>
+		</tr>
+	
+		<tr>
+			<td>Azure App Service</td>	
+			<td>git push azure main</td>	
+			<td>az webapp restart</td>
+		</tr>
+	
+	</tbody>
+</table>
+</div>
+
+
+

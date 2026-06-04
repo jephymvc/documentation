@@ -1,0 +1,69 @@
+php-framework-docs/
+├── .gitignore
+├── .nojekyll                 # Ensures files starting with _ are served
+├── _config.yml               # Main configuration
+├── Gemfile                   # Dependencies
+├── index.md                  # Landing page
+├── search.md                 # Search page (with Lunr.js)
+├── 404.html
+│
+├── docs/                     # Main documentation content
+│   ├── getting-started/
+│   │   ├── installation.md
+│   │   ├── configuration.md
+│   │   └── first-app.md
+│   ├── core-concepts/
+│   │   ├── routing.md
+│   │   ├── controllers.md
+│   │   ├── models.md
+│   │   └── views.md
+│   ├── database/
+│   │   ├── query-builder.md
+│   │   ├── migrations.md
+│   │   └── relationships.md
+│   ├── security/
+│   │   ├── authentication.md
+│   │   ├── authorization.md
+│   │   └── validation.md
+│   └── advanced/
+│       ├── events.md
+│       ├── middleware.md
+│       └── testing.md
+│
+├── _data/
+│   ├── navigation.yml        # Sidebar navigation structure
+│   ├── versions.yml          # Version management
+│   └── search_index.json     # Generated search index (during build)
+│
+├── _includes/
+│   ├── head.html
+│   ├── header.html
+│   ├── sidebar.html          # Documentation sidebar navigation
+│   ├── footer.html
+│   ├── breadcrumbs.html
+│   ├── code-block.html       # Enhanced code highlighting
+│   └── search.html           # Search input and results
+│
+├── _layouts/
+│   ├── default.html
+│   ├── docs.html             # Documentation page layout with sidebar
+│   ├── landing.html          # Homepage layout
+│   └── search.html
+│
+├── assets/
+│   ├── css/
+│   │   ├── main.scss
+│   │   ├── syntax.scss       # Code syntax highlighting theme
+│   │   └── docs.scss         # Documentation-specific styles
+│   ├── js/
+│   │   ├── main.js
+│   │   ├── search.js         # Lunr.js search implementation
+│   │   └── clipboard.js      # Copy code button functionality
+│   └── images/
+│       ├── logo.svg
+│       └── favicon.ico
+│
+├── _plugins/                  # Custom Jekyll plugins (for local dev)
+│   └── versioned_urls.rb     # Handle versioned documentation URLs
+│
+└── _site/                    # Generated (gitignored)

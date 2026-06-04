@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">	
+<title>Documentation</title>
+<link rel="shortcut icon" type="image/png" href="{{ site.repo_url }}assets/images/favicon.png">
+<meta name="theme-color" content="#ffffff">
+<link rel="stylesheet" type="text/css" href="{{ site.repo_url }}assets/css/bootstrap.min.css">
+<link href="{{ site.repo_url }}assets/css/documentation.css" rel="stylesheet" />
+
+<style>
+</style>
+</head>
+<body>
+<header>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<nav class="doc-nav-bar">
+					
+					<div class="logo-menu-wrapper flex-1">
+						<ul>
+							<li class="header-logo">
+								<a href="{{ site.repo_url }}">
+									<img src="{{ site.repo_url }}assets/images/logo.svg" />
+								</a>
+							</li>
+							
+							
+							<li class="header-menu">
+								<a href="{{ site.repo_url }}docs/getting-started">
+									<img src="{{ site.repo_url }}assets/images/icons/book-open.svg" />
+									Docs
+								</a>
+							</li>
+							
+							<!---->
+							<li class="header-menu">
+								<a href="{{ site.repo_url }}">
+									<img src="{{ site.repo_url }}assets/images/icons/code.svg" />
+									API
+								</a>
+							</li>
+							
+							<li class="header-menu">
+								<a href="/community">
+									<img src="{{ site.repo_url }}assets/images/icons/users-1.svg" />
+									Community
+								</a>
+							</li>
+							<li class="header-menu"><a href="">Github</a></li>
+							
+						</ul>				
+					</div>
+					
+					
+					<div style="border: 0px solid #f00;" class="search-cta-wrapper flex-1">
+						<ul>
+							<li>
+								<form class="header-search-form">
+									<input type="text" id="search" placeholder="Search docs..." />
+								</form>
+							</li>
+							<!--
+							<li>
+								<a class="header-cta" target="_blank" href="">
+									Get Started
+								</a>
+							</li>
+							-->
+						</ul>
+					</div>
+					
+				</nav>
+			</div>
+		</div>
+		
+	</div>
+</header>
+
+<main>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="grid-layout">
+				
+					<aside id="left-column" class="left">
+						<div>
+							{% include aside.html %}
+						</div>
+					</aside>
+					
+					<div id="center-column" class="center px-3">					
+						<div>
+							{{ content }}
+						</div>					
+					</div>				
+					
+					<div class="track-column right">
+						<div>
+							<h3>ON THIS PAGE</h3>
+							<ul id="right-column-ul">
+								<!--
+									<li>
+										<a class="active">Meet Jephy MVC</a>
+									</li>
+									<li>
+										<a>Installing Jephy MVC</a>
+									</li>
+									<li>
+										<a>System Requirements</a>
+									</li>
+								-->								
+							</ul>
+						</div>
+						
+						
+					</div>
+						
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+
+<span id="page-data" data-url="{{ site.repo_url }}"></span>
+
+<script>
+const pageData = document.querySelector( "#page-data" );
+const header = document.querySelectorAll( "header" )[0];
+header.classList.remove( "fixed-header" );
+window.addEventListener( "scroll", () => {
+	if( window.scrollY > 210 ){
+		header.classList.add( "fixed-header" );
+	}else{
+		header.classList.remove( "fixed-header" );
+	}
+} );
+</script>
+
+<script>
+const rightColumnUl = document.querySelector( "#right-column-ul" );
+const centerColumn = document.querySelector( "#center-column" );
+
+[...centerColumn.querySelectorAll( "h2, h3" )].forEach( ( it ) => {
+	const a = document.createElement( 'a' );
+	const li = document.createElement( 'li' );
+	a.textContent = it.textContent.replace( "<span class=\"sub-heading\">#</span>", "" ); 
+	li.appendChild( a );
+	rightColumnUl.appendChild( li );
+} );
+rightColumnUl.querySelectorAll( "li > a" )[0].classList.add( "active" );
+
+
+const asideHeading =  document.querySelectorAll( ".aside-heading > span" );
+[...asideHeading].forEach( ( it ) => {
+	it.style.cursor = "pointer";
+	it.addEventListener( "click", ( evt ) => {
+		location.href = pageData.getAttribute( "data-url" ) + "docs/" + it.getAttribute( "data-target" );
+	} );
+} );
+
+const getColumnOffsets = ( el, column ) => {
+	var rect 		= el.getBoundingClientRect(),
+	scrollLeft 		= window.pageXOffset || document.documentElement.scrollLeft,
+	scrollTop 		= window.pageYOffset || document.documentElement.scrollTop;
+	return { 
+		top: rect.top + scrollTop, 
+		left: rect.left + scrollLeft, 
+		width: rect.width, 
+		height: rect.height, 
+	};	
+}
+
+const scrollColumnSection = ( columnId ) => {
+	const column 	= document.querySelector( columnId );
+	const pathData 	= location.pathname.split( "/" ).filter( ( it ) => it !== "" );
+	if( pathData.length > 0 ){
+		let targetSection 	= column.querySelector( "#" + pathData[ pathData.length - 1 ] );
+		let sectionOffsets 	= getColumnOffsets( targetSection, column );
+		column.scroll( {
+			top: sectionOffsets.top - 210,
+			left: 0,
+			behavior: 'smooth'
+		} );
+	}	
+}
+
+//	scrollColumnSection( "#center-column" );
+
+const locationPathData 	= location.href.split( "#" ).filter( ( it ) => it !== "" );
+if( locationPathData.length > 1 || locationPathData.length == 2 ){
+	
+	const leftColumnMenu 	= document.querySelectorAll( "#left-column > div > ul > li > a" );
+	console.log( 'Got here!' );
+	console.log( leftColumnMenu );
+	[ ...leftColumnMenu ].forEach( ( it ) => {		
+		if( it.getAttribute( "data-target" ) == locationPathData[1] ){
+			it.classList.add( "active" );
+		}else{
+			it.classList.remove( "active" );
+		}		
+	} );
+
+}
+
+console.log( locationPathData );
+
+</script>
+
+<script>
+
+
+const asideMenu = document.querySelectorAll('#left-column > div > ul > li:not(.aside-heading):not(.aside-sub-heading)');
+window.onload 	= function () {
+	const locationData = location.href.split( "#" );
+	if( locationData.length == 2){
+		[ ...asideMenu ].forEach( ( btn ) => {
+			console.log( `${btn.getAttribute( "data-target" )} == ${locationData[1]}` );			
+				
+			if( btn.querySelectorAll( "a" )[0].getAttribute( "data-target" ) == locationData[1]?.toString()?.trim() ){
+				btn.scrollIntoView( {
+					behavior: 'smooth',
+					block: 'center'
+				} );
+				//	break;
+			}
+		} );
+	}			
+};
+
+
+
+
+</script>
+
+</body>
+</html>

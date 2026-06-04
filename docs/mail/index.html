@@ -1,0 +1,1087 @@
+---
+layout: docs
+title: Mails
+---
+
+<div class="center-breadcrumbs mt-1 mb-4">
+	<div>
+		<a href="{{ site.repo_url }}docs/overview">Docs</a>
+	</div>
+	<span class="breadcrumb-divider">
+		<img src="{{ site.repo_url }}assets/images/icons/arrow-right.svg" />
+	</span>
+
+	<div>Mail</div>															
+</div>
+
+<div id="mail-overview">
+<h1>Mail</h1>
+<h2>Overview</h2>
+<p>
+{{site.title}} provides a powerful Mailer class built on top of PHPMailer, 
+offering a clean, intuitive interface for sending emails with support for SMTP, 
+templates, attachments, and hooks. The Mailer integrates seamlessly with Smarty 
+templates and the framework's hook system.
+</p>
+
+</div>
+
+<div id="mail-configuration">
+<h1>Configuration</h1>
+<h2>Mail Configuration</h2>
+<pre>
+#	[mail]
+#	Enable SMTP debugging
+#	0 = off (for production use)
+#	1 = client messages
+#	2 = client and server messages
+mail.smtp_debug 	= 1
+# 	Could be one of tls, ssl and none
+mail.encryption = none
+mail.port.tls = 25
+mail.port.ssl = 25
+mail.address.from = support@jephy-mvc.loc
+mail.address.name = Jephy MVC
+mail.address.password = wef2ef32f342@#!
+mail.is_html = true
+mail.charset = UTF-8
+</pre>
+
+</div>
+
+<div id="sending-mail">
+<h2>Sending Mail</h2>
+<h3>Basic Email Sending</h3>
+<pre>
+<small>php</small>
+// In your controller or service
+use App\Core\Mailer;
+
+class ContactController extends Controller
+{
+    public function sendContactForm()
+    {
+        $mailer = new Mailer();
+        
+        $to = 'admin@example.com';
+        $subject = 'New Contact Form Submission';
+        $body = 'Name: John Doe&lt;br&gt;Email: john@example.com&lt;br&gt;Message: Hello!';
+        
+        $result = $mailer->send($to, $subject, $body);
+        
+        if ($result) {
+            echo "Email sent successfully!";
+        } else {
+            echo "Failed to send email.";
+        }
+    }
+}
+</pre>
+
+<h3>Sending to Multiple Recipients</h3>
+<pre>
+<small>php</small>
+// Array of email addresses
+$to = [
+    'admin@example.com',
+    'manager@example.com',
+    'support@example.com'
+];
+
+$mailer->send($to, 'System Update', 'The system will be updated at 2 AM.');
+
+// Associative array with names
+$to = [
+    'john@example.com' => 'John Doe',
+    'jane@example.com' => 'Jane Smith'
+];
+
+$mailer->send($to, 'Welcome!', 'Thank you for joining our platform.');
+</pre>
+
+<h3>HTML vs Plain Text Emails</h3>
+<pre>
+<small>php</small>
+// HTML email (default based on config)
+$mailer->send('user@example.com', 'Newsletter', '&lt;h1&gt;Welcome!&lt;/h1&gt;&lt;p&gt;Check out our new features.&lt;/p&gt;');
+
+// Override HTML setting for specific email
+$mailer->isHTML(false);  // Switch to plain text
+$mailer->send('user@example.com', 'Newsletter', 'Welcome! Check out our new features.');
+$mailer->isHTML(true);   // Switch back to HTML
+
+// Alternative body (plain text version for HTML emails)
+$mailer->AltBody = 'Welcome! Check out our new features.';
+$mailer->send('user@example.com', 'Newsletter', '&lt;h1&gt;Welcome!&lt;/h1&gt;&lt;p&gt;Check out our new features.&lt;/p&gt;');
+</pre>
+
+&lt;h3&gt;Setting Custom From Address&lt;/h3&gt;
+
+<pre>
+<small>php</small>
+$mailer = new Mailer();
+
+// Override default From address for this email
+$mailer->setFrom('support@example.com', 'Customer Support');
+$mailer->send('user@example.com', 'Support Ticket', 'Your ticket has been received.');
+
+// Chain methods
+$mailer->setFrom('no-reply@example.com', 'No Reply')
+       ->addReplyTo('support@example.com', 'Support')
+       ->send('user@example.com', 'Account Update', 'Your account has been updated.');
+</pre>
+
+
+<h3>Adding CC and BCC</h3>
+<pre>
+<small>php</small>
+$mailer = new Mailer();
+
+// Add CC recipients
+$mailer->addCC('manager@example.com', 'Manager');
+$mailer->addCC(['team@example.com', 'lead@example.com']);
+
+// Add BCC recipients (hidden)
+$mailer->addBCC('audit@example.com', 'Audit Department');
+$mailer->addBCC(['backup@example.com', 'archive@example.com']);
+
+// Send with CC and BCC
+$mailer->send('user@example.com', 'Confidential Report', 'Here is the report.');
+</pre>
+
+<h3>Adding Reply-To Address</h3>
+<pre>
+<small>php</small>
+$mailer = new Mailer();
+
+// Set Reply-To so replies go to a different address
+$mailer->addReplyTo('support@example.com', 'Customer Support');
+$mailer->send('user@example.com', 'Your Order #1234', 'Your order has been shipped.');
+</pre>
+
+</div>
+
+<div id="email-templates-with-smarty">
+<h2>Email Templates with Smarty</h2>
+<h3>Creating Email Templates</h3>
+<pre>
+<small>php</small>
+{* jephy-mvc/app/views/emails/welcome.tpl *}
+{extends file="emails/layouts/base.tpl"}
+
+{block name="content"}
+    &lt;h1&gt;Welcome, {$name}!&lt;/h1&gt;
+    &lt;p&gt;Thank you for joining &lt;strong&gt;{$siteName}&lt;/strong&gt;!&lt;/p&gt;
+    
+    {if $needsVerification}
+        &lt;p&gt;Please verify your email address by clicking the link below:</p&gt;
+        &lt;a href="{$verificationUrl}" class="button"&gt;Verify Email&lt;/a&gt;
+    {/if}
+    
+    &lt;p&gt;Your account details:&lt;/p&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Email: {$email}&lt;/li&gt;
+        &lt;li&gt;Member since: {$memberSince}&lt;/li&gt;
+    &lt;/ul&gt;
+    
+    &lt;p&gt;If you have any questions, please don't hesitate to contact our support team.&lt;/p&gt;
+    
+    &lt;p&gt;Best regards,&lt;br&gt;
+    The {$siteName} Team&lt;/p&gt;
+{/block}
+
+{* jephy-mvc/app/views/emails/layouts/base.tpl *}
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8">
+    &lt;title&gt;{$subject|default:"Email from {$siteName}"}&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #4a5568; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f7fafc; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #718096; }
+        .button { display: inline-block; padding: 10px 20px; background: #4299e1; color: white; text-decoration: none; border-radius: 5px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container"&gt;
+        &lt;div class="header"&gt;
+            &lt;h2&gt;{$siteName}&lt;/h2&gt;
+        &lt;/div&gt;
+        &lt;div class="content">
+            {block name="content"}{/block}
+        &lt;/div&gt;
+        &lt;div class="footer"&gt;
+            &copy; {$currentYear} {$siteName}. All rights reserved.&lt;br&gt;
+            &lt;small&gt;This email was sent to {$recipientEmail}&lt;/small&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<h3>Using Templates in Mailer</h3>
+<pre>
+<small>php</small>
+$mailer = new Mailer();
+
+// Prepare template data
+$templateData = [
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'needsVerification' => true,
+    'verificationUrl' => 'https://example.com/verify?token=abc123',
+    'memberSince' => date('F j, Y'),
+    'siteName' => 'Jephy-MVC App',
+    'subject' => 'Welcome to Jephy-MVC!',
+    'recipientEmail' => 'john@example.com',
+    'currentYear' => date('Y')
+];
+
+// Render template
+$body = $mailer->template('welcome', $templateData);
+
+// Send using template
+$mailer->send('john@example.com', 'Welcome to Jephy-MVC!', $body);
+</pre>
+
+<h3>Reusable Email Service</h3>
+<pre>
+<small>php</small>
+// jephy-mvc/app/services/EmailService.php
+namespace App\Services;
+
+use App\Core\Mailer;
+use App\Core\Config;
+
+class EmailService
+{
+    private $mailer;
+    private $config;
+    
+    public function __construct()
+    {
+        $this->mailer = new Mailer();
+        $this->config = Config::getInstance();
+    }
+    
+    public function sendWelcomeEmail($user)
+    {
+        $body = $this->mailer->template('emails.welcome', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'verificationUrl' => $this->generateVerificationUrl($user),
+            'siteName' => $this->config->get('app.name')
+        ]);
+        
+        return $this->mailer->send($user->email, 'Welcome to ' . $this->config->get('app.name'), $body);
+    }
+    
+    public function sendPasswordResetEmail($user, $token)
+    {
+        $body = $this->mailer->template('emails.password-reset', [
+            'name' => $user->name,
+            'resetUrl' => $this->config->get('app.url') . '/reset-password?token=' . $token,
+            'expiresIn' => '60 minutes'
+        ]);
+        
+        return $this->mailer->send($user->email, 'Reset Your Password', $body);
+    }
+    
+    public function sendOrderConfirmation($order, $user)
+    {
+        $items = [];
+        foreach ($order->items as $item) {
+            $items[] = [
+                'name' => $item->product->name,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+                'subtotal' => $item->quantity * $item->price
+            ];
+        }
+        
+        $body = $this->mailer->template('emails.order-confirmation', [
+            'orderId' => $order->id,
+            'customerName' => $user->name,
+            'items' => $items,
+            'total' => $order->total,
+            'shippingAddress' => $order->shipping_address,
+            'estimatedDelivery' => date('F j, Y', strtotime('+5 days'))
+        ]);
+        
+        return $this->mailer->send($user->email, "Order Confirmation #{$order->id}", $body);
+    }
+    
+    public function sendNewsletter($subscriber, $content)
+    {
+        $body = $this->mailer->template('emails.newsletter', [
+            'subscriberName' => $subscriber->name,
+            'content' => $content,
+            'unsubscribeUrl' => $this->config->get('app.url') . '/unsubscribe?token=' . $subscriber->token
+        ]);
+        
+        return $this->mailer->send($subscriber->email, 'Your Weekly Newsletter', $body);
+    }
+    
+    private function generateVerificationUrl($user)
+    {
+        $token = bin2hex(random_bytes(32));
+        // Store token in database
+        return $this->config->get('app.url') . '/verify-email?token=' . $token . '&email=' . urlencode($user->email);
+    }
+}
+</pre>
+</div>
+
+<div id="attachments">
+<h2>Attachments</h2>
+<h3>Adding File Attachments</h3>
+<pre>
+<small>php</small>
+$mailer = new Mailer();
+
+// Single attachment
+$attachments = ['/path/to/invoice.pdf'];
+$mailer->send('user@example.com', 'Your Invoice', 'Please find your invoice attached.', $attachments);
+
+// Multiple attachments
+$attachments = [
+    '/path/to/invoice.pdf',
+    '/path/to/terms.pdf',
+    '/path/to/receipt.jpg'
+];
+$mailer->send('user@example.com', 'Order Documents', 'Here are your order documents.', $attachments);
+
+// Attachment with custom name
+$attachments = [
+    ['path' => '/path/to/file.pdf', 'name' => 'Custom-Name.pdf'],
+    ['path' => '/path/to/image.jpg', 'name' => 'product-image.jpg']
+];
+$mailer->send('user@example.com', 'Files', 'Your requested files are attached.', $attachments);
+</pre>
+
+<h3>Dynamic Attachment from String</h3>
+<pre>
+<small>php</small>
+// Create attachment from string (e.g., generated PDF)
+$pdfContent = $this->generatePDF(); // Returns PDF string
+$tempFile = tempnam(sys_get_temp_dir(), 'pdf');
+file_put_contents($tempFile, $pdfContent);
+
+$mailer->send('user@example.com', 'Generated Report', 'Here is your report.', [$tempFile]);
+
+// Clean up
+unlink($tempFile);
+</pre>
+
+<h3>Inline Attachments (Embedded Images)</h3>
+<pre>
+<small>php</small>
+$mailer = new Mailer();
+
+// Add inline image
+$mailer->addEmbeddedImage('/path/to/logo.png', 'logo_cid', 'logo.png');
+$mailer->addEmbeddedImage('/path/to/banner.jpg', 'banner_cid', 'banner.jpg');
+
+// Use in HTML body
+$html = '
+    &lt;img src="cid:logo_cid" alt="Logo"&gt;
+    &lt;h1>Welcome!&lt;/h1&gt;
+    &lt;img src="cid:banner_cid" alt="Banner"&gt;
+';
+
+$mailer->send('user@example.com', 'Welcome Email', $html);
+</pre>
+
+</div>
+
+<div id="bulk-email-sending">
+<h2>Bulk Email Sending</h2>
+<h3>Sending to Multiple Recipients Efficiently</h3>
+<pre>
+<small>php</small>
+class BulkMailService
+{
+    private $mailer;
+    private $batchSize = 100;
+    
+    public function __construct()
+    {
+        $this->mailer = new Mailer();
+    }
+    
+    public function sendNewsletterToSubscribers($subscribers, $subject, $template, $templateData)
+    {
+        $successCount = 0;
+        $failCount = 0;
+        $chunks = array_chunk($subscribers, $this->batchSize);
+        
+        foreach ($chunks as $chunk) {
+            foreach ($chunk as $subscriber) {
+                try {
+                    // Personalize template for each subscriber
+                    $personalizedData = array_merge($templateData, [
+                        'name' => $subscriber->name,
+                        'email' => $subscriber->email
+                    ]);
+                    
+                    $body = $this->mailer->template($template, $personalizedData);
+                    
+                    if ($this->mailer->send($subscriber->email, $subject, $body)) {
+                        $successCount++;
+                    } else {
+                        $failCount++;
+                    }
+                    
+                    // Small delay to avoid rate limiting
+                    usleep(50000); // 50ms
+                    
+                } catch (\Exception $e) {
+                    $failCount++;
+                    error_log("Failed to send to {$subscriber->email}: " . $e->getMessage());
+                }
+            }
+            
+            // Delay between batches
+            sleep(1);
+        }
+        
+        return [
+            'success' => $successCount,
+            'failed' => $failCount,
+            'total' => count($subscribers)
+        ];
+    }
+}
+</pre>
+</div>
+
+<div id="queue-based-email-sending">
+<h2>Queue-Based Email Sending</h2>
+<h3>Email Job Class</h3>
+<pre>
+<small>php</small>
+// jephy-mvc/app/jobs/SendEmailJob.php
+namespace App\Jobs;
+
+use Core\Queue\Job;
+use App\Core\Mailer;
+
+class SendEmailJob extends Job
+{
+    protected $to;
+    protected $subject;
+    protected $body;
+    protected $attachments;
+    protected $options;
+    
+    public function __construct($to, $subject, $body, $attachments = [], $options = [])
+    {
+        $this->to = $to;
+        $this->subject = $subject;
+        $this->body = $body;
+        $this->attachments = $attachments;
+        $this->options = $options;
+    }
+    
+    public function handle(Mailer $mailer)
+    {
+        // Set custom from if provided
+        if (isset($this->options['from'])) {
+            $mailer->setFrom($this->options['from']['email'], $this->options['from']['name'] ?? '');
+        }
+        
+        // Add CC if provided
+        if (isset($this->options['cc'])) {
+            foreach ($this->options['cc'] as $cc) {
+                $mailer->addCC($cc);
+            }
+        }
+        
+        // Add BCC if provided
+        if (isset($this->options['bcc'])) {
+            foreach ($this->options['bcc'] as $bcc) {
+                $mailer->addBCC($bcc);
+            }
+        }
+        
+        // Set HTML format
+        if (isset($this->options['is_html'])) {
+            $mailer->isHTML($this->options['is_html']);
+        }
+        
+        return $mailer->send($this->to, $this->subject, $this->body, $this->attachments);
+    }
+    
+    public function failed(\Exception $e)
+    {
+        error_log("Failed to send email to {$this->to}: " . $e->getMessage());
+        
+        // Store failed email for retry
+        FailedEmail::create([
+            'to' => is_array($this->to) ? json_encode($this->to) : $this->to,
+            'subject' => $this->subject,
+            'error' => $e->getMessage(),
+            'attempts' => $this->attempts
+        ]);
+    }
+}
+
+// Usage - Queue email for background sending
+dispatch(new SendEmailJob($user->email, 'Welcome!', $body))->delay(0);
+
+// Queue with delay (send after 5 minutes)
+dispatch(new SendEmailJob($user->email, 'Reminder', $reminderBody))->delay(300);
+</pre>
+</div>
+
+<div id="email-hooks-and-events">
+<h2>Email Hooks and Events</h2>
+<h3>Registering Email Hooks</h3>
+
+<pre>
+<small>php</small>
+// jephy-mvc/bootstrap.php or service provider
+
+$hookManager = Framework::getHooks();
+
+// Before sending email
+$hookManager->registerHook('beforeSendMail', function($mailData) {
+    // Log email attempt
+    error_log("Preparing to send email to: " . json_encode($mailData['to']));
+    
+    // Add tracking pixel
+    $mailData['body'] .= '<img src="https://example.com/track?email=' . urlencode($mailData['to']) . '">';
+    
+    // Prevent sending in development
+    if (APP_ENV === 'development') {
+        error_log("Email would be sent in production: " . $mailData['subject']);
+        return false; // Prevents sending
+    }
+    
+    return $mailData;
+});
+
+// After successful send
+$hookManager->registerHook('afterSendMail', function($data) {
+    // Log successful send
+    error_log("Email sent successfully to: " . json_encode($data['to']));
+    
+    // Update database
+    EmailLog::create([
+        'to' => is_array($data['to']) ? json_encode($data['to']) : $data['to'],
+        'subject' => $data['subject'],
+        'status' => 'sent',
+        'sent_at' => date('Y-m-d H:i:s')
+    ]);
+});
+
+// On mail error
+$hookManager->registerHook('onMailError', function($errorData) {
+    // Log error
+    error_log("Mail error: " . $errorData['error']);
+    error_log("Failed to send to: " . json_encode($errorData['to']));
+    
+    // Send alert to admin
+    if (APP_ENV === 'production') {
+        // Send critical alert
+        $alertMailer = new Mailer();
+        $alertMailer->send('admin@example.com', 'Mail System Error', $errorData['error']);
+    }
+});
+
+// On mail send (before final send)
+$hookManager->registerHook('onMailSend', function($data) {
+    // Add custom headers
+    $data['mailer']->addCustomHeader('X-Mailer', 'Jephy-MVC Mailer');
+    $data['mailer']->addCustomHeader('X-Priority', '3');
+    
+    // Add DKIM signature if needed
+    // $data['mailer']->sign($domain, $selector, $privateKey);
+});
+</pre>
+
+<h3>Email Logger</h3>
+<pre>
+<small>php</small>
+// jephy-mvc/app/models/EmailLog.php
+namespace App\Models;
+
+use Core\Model;
+
+class EmailLog extends Model
+{
+    protected $table = 'email_logs';
+    protected $fillable = ['to', 'subject', 'body', 'status', 'error', 'sent_at'];
+    
+    public static function log($to, $subject, $status, $error = null)
+    {
+        return self::create([
+            'to' => is_array($to) ? json_encode($to) : $to,
+            'subject' => $subject,
+            'status' => $status,
+            'error' => $error,
+            'sent_at' => $status === 'sent' ? date('Y-m-d H:i:s') : null
+        ]);
+    }
+}
+
+// Migration for email_logs table
+Schema::create('email_logs', function(Blueprint $table) {
+    $table->id();
+    $table->text('to');
+    $table->string('subject');
+    $table->longText('body')->nullable();
+    $table->enum('status', ['pending', 'sent', 'failed', 'queued'])->default('pending');
+    $table->text('error')->nullable();
+    $table->timestamp('sent_at')->nullable();
+    $table->timestamps();
+    
+    $table->index('status');
+    $table->index('created_at');
+});
+</pre>
+</div>
+
+<div id="advanced-mailer-features">
+<h2>Advanced Mailer Features</h2>
+<h3>Send Grid Integration</h3>
+<pre>
+<small>php</small>
+// Extended Mailer for SendGrid
+class SendGridMailer extends Mailer
+{
+    public function sendWithTemplate($to, $templateId, $templateData)
+    {
+        $this->mailer->clearAddresses();
+        $this->mailer->addAddress($to);
+        
+        // SendGrid dynamic template
+        $this->mailer->Subject = 'Subject'; // Required by PHPMailer
+        $this->mailer->Body = 'HTML body';
+        
+        // Add SendGrid template ID
+        $this->mailer->addCustomHeader('X-SMTPAPI', json_encode([
+            'template_id' => $templateId,
+            'dynamic_template_data' => $templateData
+        ]));
+        
+        return $this->mailer->send();
+    }
+}
+</pre>
+
+<h3>DKIM Signing</h3>
+<pre>
+<small>php</small>
+// Configure DKIM signing
+$mailer = new Mailer();
+$mailer->DKIM_domain = 'example.com';
+$mailer->DKIM_private = '/path/to/private.key';
+$mailer->DKIM_selector = 'default';
+$mailer->DKIM_passphrase = '';
+$mailer->DKIM_identity = $mailer->From;
+
+// Sign the email
+$mailer->send('user@example.com', 'Signed Email', 'This email is DKIM signed.');
+</pre>
+
+<h3>Rate Limiting for Bulk Sends</h3>
+<pre>
+<small>php</small>
+class RateLimitedMailer extends Mailer
+{
+    private $rateLimit = 10; // emails per minute
+    private $lastSendTimes = [];
+    
+    public function send($to, $subject, $body, $attachments = [])
+    {
+        $this->enforceRateLimit();
+        return parent::send($to, $subject, $body, $attachments);
+    }
+    
+    private function enforceRateLimit()
+    {
+        $now = microtime(true);
+        $this->lastSendTimes = array_filter($this->lastSendTimes, function($time) use ($now) {
+            return ($now - $time) < 60; // Keep only last minute
+        });
+        
+        if (count($this->lastSendTimes) >= $this->rateLimit) {
+            $sleep = 60 - ($now - min($this->lastSendTimes));
+            if ($sleep > 0) {
+                sleep((int)ceil($sleep));
+            }
+        }
+        
+        $this->lastSendTimes[] = microtime(true);
+    }
+}
+</pre>
+</div>
+
+<div id="common-email-templates">
+<h2>Common Email Templates</h2>
+<h3>Password Reset Email Template</h3>
+<pre>
+<small>Smarty</small>
+{* jephy-mvc/app/views/emails/password-reset.tpl *}
+{extends file="emails/layouts/base.tpl"}
+
+{block name="content"}
+    &lt;h2&gt;Password Reset Request&lt;/h2&gt;
+    
+    &lt;p>Hello {$name},&lt;/p&gt;
+    
+    &lt;p>We received a request to reset your password. Click the button below to create a new password:&lt;/p&gt;
+    
+    &lt;p style="text-align: center;"&gt;
+        &lt;a href="{$resetUrl}" class="button"&gt;Reset Password&lt;/a&gt;
+    &lt;/p>
+    
+    &lt;p&gt;This link will expire in &lt;strong>{$expiresIn}&lt;/strong&gt;.&lt;/p&gt;
+    
+    &lt;p&gt;If you didn't request this, please ignore this email or contact support.&lt;/p&gt;
+    
+    &lt;hr&gt;
+    
+    &lt;p style="font-size: 12px; color: #666;"&gt;
+        For security, this request was made from IP: {$requestIp}
+    &lt;/p>
+{/block}
+</pre>
+
+<h3>Order Confirmation Email Template</h3>
+<pre>
+<small>smarty</small>
+{* jephy-mvc/app/views/emails/order-confirmation.tpl *}
+{extends file="emails/layouts/base.tpl"}
+
+{block name="content"}
+    &lt;h2&gt;Order Confirmation #{orderId}&lt;/h2&gt;
+    
+    &lt;p&gt;Dear {$customerName},&lt;/p&gt;
+    
+    &lt;p&gt;Thank you for your order! We're pleased to confirm your purchase.&lt;/p&gt;
+    
+    &lt;h3&gt;Order Summary&lt;/h3&gt;
+    &lt;table style="width: 100%; border-collapse: collapse;"&gt;
+        &lt;thead&gt;
+            &lt;tr style="background: #f7fafc;"&gt;
+                &lt;th style="padding: 10px; text-align: left;"&gt;Product&lt;/th&gt;
+                &lt;th style="padding: 10px; text-align: center;"&gt;Quantity&lt;/th&gt;
+                &lt;th style="padding: 10px; text-align: right;"&gt;Price&lt;/th&gt;
+                &lt;th style="padding: 10px; text-align: right;"&gt;Subtotal&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            {foreach $items as $item}
+            &lt;tr&gt;
+                &lt;td style="padding: 10px;"&gt;{$item.name}&lt;/td&gt;
+                &lt;td style="padding: 10px; text-align: center;"&gt;{$item.quantity}&lt;/td&gt;
+                &lt;td style="padding: 10px; text-align: right;"&gt;${$item.price|number_format:2}&lt;/td&gt;
+                &lt;td style="padding: 10px; text-align: right;"&gt;${$item.subtotal|number_format:2}&lt;/td&gt;
+            &lt;/tr&gt;
+            {/foreach}
+        &lt;/tbody&gt;
+        &lt;tfoot&gt;
+            &lt;tr&gt;
+                &lt;td colspan="3" style="padding: 10px; text-align: right;"&gt;&lt;strong&gt;Total:&lt;/strong&gt;&lt;/td&gt;
+                &lt;td style="padding: 10px; text-align: right;"&gt;&lt;strong&gt;${$total|number_format:2}&lt;/strong&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/tfoot&gt;
+    &lt;/table&gt;
+    
+    &lt;h3&gt;Shipping Information&lt;/h3&gt;
+    &lt;p&gt;{$shippingAddress|nl2br}&lt;/p&gt;
+    
+    &lt;p&gt;Estimated Delivery: &lt;strong>{$estimatedDelivery}&lt;/strong&gt;&lt;/p&gt;
+    
+    &lt;p&gt;You can track your order status in your account dashboard.&lt;/p&gt;
+    
+    &lt;p&gt;Thank you for shopping with us!&lt;/p&gt;
+{/block}
+
+</pre>
+
+<h3>Newsletter Template</h3>
+<pre>
+<small>Smarty</small>
+
+{* jephy-mvc/app/views/emails/newsletter.tpl *}
+{extends file="emails/layouts/base.tpl"}
+
+{block name="content"}
+    &lt;h2&gt;Weekly Newsletter&lt;/h2&gt;
+    
+    &lt;p&gt;Hello {$subscriberName},&lt;/p&gt;
+    
+    &lt;div class="newsletter-content"&gt;
+        {$content}
+    &lt;/div&gt;
+    
+    &lt;hr&gt;
+    
+    &lt;p style="font-size: 12px; text-align: center;"&gt;
+        &lt;a href="{$unsubscribeUrl}" style="color: #666;"&gt;Unsubscribe&lt;/a&gt; from future newsletters.
+    &lt;/p&gt;
+{/block}
+</pre>
+
+
+</div>
+
+<div id="testing-and-debugging">
+<h2>Testing and Debugging</h2>
+<h3>Logging All Emails in Development</h3>
+<pre>
+<small>php</small>
+// jephy-mvc/app/hooks/MailDebugHook.php
+namespace App\Hooks;
+
+use App\Core\Mailer;
+
+class MailDebugHook
+{
+    public function beforeSendMail($mailData)
+    {
+        // Log email to file instead of sending
+        if (APP_ENV === 'development') {
+            $logFile = STORAGE_PATH . '/logs/emails.log';
+            $logEntry = sprintf(
+                "[%s] To: %s | Subject: %s\nBody: %s\n---\n",
+                date('Y-m-d H:i:s'),
+                json_encode($mailData['to']),
+                $mailData['subject'],
+                $mailData['body']
+            );
+            file_put_contents($logFile, $logEntry, FILE_APPEND);
+            
+            // Prevent actual sending
+            return false;
+        }
+        
+        return $mailData;
+    }
+}
+
+// Register hook
+$hookManager->registerHook('beforeSendMail', [new MailDebugHook(), 'beforeSendMail']);
+</pre>
+
+<h3>Email Testing Helper</h3>
+<pre>
+<small>php</small>
+// Helper class for testing emails
+class MailTester
+{
+    public static function testConnection()
+    {
+        $mailer = new Mailer();
+        
+        try {
+            $mailer->send('test@example.com', 'Test Connection', 'This is a test email.');
+            return ['success' => true, 'message' => 'SMTP connection successful'];
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+    
+    public static function testTemplate($template, $data = [])
+    {
+        $mailer = new Mailer();
+        
+        try {
+            $rendered = $mailer->template($template, $data);
+            return ['success' => true, 'html' => $rendered];
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+}
+</pre>
+</div>
+
+<div id="best-practices">
+<h2>Best Practices</h2>
+<h3>1. Always Use Email Templates</h3>
+<pre>
+<small>Smarty</small>
+// BAD - Hardcoded HTML in controller
+$body = '&lt;html&gt;&lt;body&gt;&lt;h1&gt;Welcome&lt;/h1&gt;&lt;p&gt;Hello ' . $user->name . '&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;';
+
+// GOOD - Use templates
+$body = $mailer->template('emails.welcome', ['name' => $user->name]);
+</pre>
+
+<h3>2. Queue Emails for Better Performance</h3>
+<pre>
+<small>php</small>
+// BAD - Send immediately (blocks response)
+$mailer->send($user->email, 'Welcome', $body);
+
+// GOOD - Queue for background processing
+dispatch(new SendEmailJob($user->email, 'Welcome', $body));
+</pre>
+
+<h3>3. Validate Email Addresses</h3>
+<pre>
+<small>php</small>
+// BAD - Send without validation
+$mailer->send($userInput, 'Subject', 'Body');
+
+// GOOD - Validate first
+if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $mailer->send($email, 'Subject', 'Body');
+}
+</pre>
+
+<h3>4. Handle Errors Gracefully</h3>
+<pre>
+<small>php</small>
+// BAD - Ignore errors
+$mailer->send($email, 'Subject', 'Body');
+
+// GOOD - Handle and log errors
+try {
+    $result = $mailer->send($email, 'Subject', 'Body');
+    if (!$result) {
+        error_log("Failed to send email to: $email");
+    }
+} catch (\Exception $e) {
+    error_log("Email error: " . $e->getMessage());
+    // Fallback to alternative method
+}
+</pre>
+
+<h3>5. Rate Limit Bulk Sends</h3>
+<pre>
+<small>php</small>
+// BAD - Send all at once
+foreach ($subscribers as $subscriber) {
+    $mailer->send($subscriber->email, 'Newsletter', $body);
+}
+
+// GOOD - Rate limit
+$delay = 0;
+foreach ($subscribers as $subscriber) {
+    dispatch(new SendEmailJob($subscriber->email, 'Newsletter', $body))->delay($delay);
+    $delay += 1; // 1 second between sends
+}
+</pre>
+
+
+</div>
+
+<div id="error-handling">
+
+<h2>Error Handling</h2>
+<pre>
+<small>php</small>
+class SecureMailer extends Mailer
+{
+    public function sendSecure($to, $subject, $body, $attachments = [])
+    {
+        try {
+            // Validate email addresses
+            $validTo = is_array($to) ? array_filter($to, 'filter_var', FILTER_VALIDATE_EMAIL) : $to;
+            
+            if (empty($validTo)) {
+                throw new \Exception("No valid recipient addresses");
+            }
+            
+            // Sanitize subject
+            $subject = strip_tags($subject);
+            
+            // Send email
+            $result = $this->send($validTo, $subject, $body, $attachments);
+            
+            if (!$result) {
+                throw new \Exception("Mailer returned false");
+            }
+            
+            return ['success' => true, 'message' => 'Email sent'];
+            
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log("PHPMailer Error: " . $e->getMessage());
+            return ['success' => false, 'error' => 'Mailer error occurred'];
+            
+        } catch (\Exception $e) {
+            error_log("General Error: " . $e->getMessage());
+            return ['success' => false, 'error' => 'Failed to send email'];
+        }
+    }
+}
+</pre>
+
+
+</div>
+
+<div id="complete-usage-example">
+<h2>Complete Usage Example</h2>
+<pre>
+<small>php</small>
+
+// jephy-mvc/app/controllers/ContactController.php
+namespace App\Controllers;
+
+use App\Core\Controller;
+use App\Services\EmailService;
+
+class ContactController extends Controller
+{
+    private $emailService;
+    
+    public function __construct(EmailService $emailService)
+    {
+        $this->emailService = $emailService;
+    }
+    
+    public function submit()
+    {
+        $data = $this->request->post();
+        
+        // Validate form
+        $validator = new Validation();
+        $rules = [
+            'name' => 'required|min:2',
+            'email' => 'required|email',
+            'message' => 'required|min:10'
+        ];
+        
+        if (!$validator->validate($data, $rules)) {
+            return $this->json(['errors' => $validator->getErrors()], 422);
+        }
+        
+        // Prepare email content
+        $body = $this->view->render('emails.contact', [
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'message' => $data['message'],
+            'ip' => $_SERVER['REMOTE_ADDR']
+        ]);
+        
+        // Send to admin
+        $mailer = new Mailer();
+        $mailer->setFrom($data['email'], $data['name']);
+        $mailer->addReplyTo($data['email'], $data['name']);
+        
+        $result = $mailer->send('admin@example.com', 'Contact Form: ' . $data['subject'] ?? 'No Subject', $body);
+        
+        if ($result) {
+            // Send auto-reply to user
+            $autoReplyBody = $this->view->render('emails.contact-auto-reply', [
+                'name' => $data['name']
+            ]);
+            $mailer->send($data['email'], 'Thank you for contacting us', $autoReplyBody);
+            
+            return $this->json(['success' => true, 'message' => 'Message sent successfully']);
+        }
+        
+        return $this->json(['success' => false, 'message' => 'Failed to send message'], 500);
+    }
+}
+</pre>
+</div>

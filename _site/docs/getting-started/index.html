@@ -1,0 +1,3023 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">	
+<title>Documentation</title>
+<link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+<meta name="theme-color" content="#ffffff">
+<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+<link href="/assets/css/documentation.css" rel="stylesheet" />
+
+<style>
+</style>
+</head>
+<body>
+<header>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<nav class="doc-nav-bar">
+					
+					<div class="logo-menu-wrapper flex-1">
+						<ul>
+							<li class="header-logo">
+								<a href="/">
+									<img src="/assets/images/logo.svg" />
+								</a>
+							</li>
+							
+							
+							<li class="header-menu">
+								<a href="/docs/getting-started">
+									<img src="/assets/images/icons/book-open.svg" />
+									Docs
+								</a>
+							</li>
+							
+							<!---->
+							<li class="header-menu">
+								<a href="/">
+									<img src="/assets/images/icons/code.svg" />
+									API
+								</a>
+							</li>
+							
+							<li class="header-menu">
+								<a href="/community">
+									<img src="/assets/images/icons/users-1.svg" />
+									Community
+								</a>
+							</li>
+							<li class="header-menu"><a href="">Github</a></li>
+							
+						</ul>				
+					</div>
+					
+					
+					<div style="border: 0px solid #f00;" class="search-cta-wrapper flex-1">
+						<ul>
+							<li>
+								<form class="header-search-form">
+									<input type="text" id="search" placeholder="Search docs..." />
+								</form>
+							</li>
+							<!--
+							<li>
+								<a class="header-cta" target="_blank" href="">
+									Get Started
+								</a>
+							</li>
+							-->
+						</ul>
+					</div>
+					
+				</nav>
+			</div>
+		</div>
+		
+	</div>
+</header>
+
+<main>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="grid-layout">
+				
+					<aside id="left-column" class="left">
+						<div>
+							<ul>
+
+<!--
+<li class="aside-heading">
+	<span>PROLOGUE</span>
+</li>
+<li>
+	<a>
+		Release Notes
+	</a>
+</li>
+<li>
+	<a>
+		Upgrade Guide
+	</a>
+</li>
+<li>
+	<a>
+		Contribution Guide
+	</a>
+</li>
+-->
+
+
+<li class="aside-heading">
+	<span data-target="getting-started">GETTING STARTED</span>
+</li>
+
+<li>
+	<a data-target="overview" href="/docs/getting-started#getting-started-overview" class="active">
+		Overview
+	</a>
+</li>
+
+<li>
+	<a data-target="key-features" href="/docs/getting-started#key-features" class="">
+		Key Features
+	</a>
+</li>
+
+
+
+<li>
+	<a data-target="requirements" href="/docs/getting-started#requirements">
+		Requirements
+	</a>
+</li>
+
+<li>
+	<a data-target="directory-structure" href="/docs/getting-started#directory-structure">
+		Directory Structure
+	</a>
+</li>
+
+<li>
+	<a data-target="installation" href="/docs/getting-started#installation">
+		Installation
+	</a>
+</li>
+
+<li>
+	<a data-target="system-configuration" href="/docs/getting-started#system-configuration">
+		System Configuration 
+	</a>
+</li>
+
+
+<li>
+	<a data-target="basic-usage-example" href="/docs/getting-started#basic-usage-example">
+		Basic Usage Example
+	</a>
+</li>
+
+
+
+<li>
+	<a data-target="why-smarty" href="/docs/getting-started#why-smarty">
+		Why Smarty?
+	</a>
+</li>
+
+
+<li>
+	<a data-target="common-tasks" href="/docs/getting-started#common-tasks">
+		Common Tasks
+	</a>
+</li>
+
+<li>
+	<a data-target="updating-the-framework" href="/docs/getting-started#updating-the-framework">
+		Updating the Framework
+	</a>
+</li>
+
+
+<li>
+	<a data-target="support-and-community" href="/docs/getting-started#support-and-community">
+		Support & Community
+	</a>
+</li>
+
+
+<li class="aside-heading">
+	<span data-target="deployment-guide">
+		DEPLOYMENT GUIDE
+	</span>
+</li>
+<li>
+	<a data-target="deployment-guide-overview" href="/docs/deployment-guide#deployment-guide-overview">
+		Overview
+	</a>
+</li>
+<li>
+	<a data-target="pre-deployment-checklist" href="/docs/deployment-guide#pre-deployment-checklist">
+		Pre-Deployment Checklist
+	</a>
+</li>
+<li>
+	<a data-target="shared-hosting-deployment" href="/docs/deployment-guide#shared-hosting-deployment">
+		Shared Hosting Deployment
+	</a>
+</li>
+
+<li>
+	<a data-target="vps-dedicated-server-deployment" href="/docs/deployment-guide#vps-dedicated-server-deployment">
+		VPS / Dedicated Server Deployment
+	</a>
+</li>
+
+
+<li>
+	<a data-target="cloud-platform-deployment" href="/docs/deployment-guide#cloud-platform-deployment">
+		Cloud Platform Deployment
+	</a>
+</li>
+
+
+<li>
+	<a data-target="security-hardening" href="/docs/deployment-guide#security-hardening">
+		Security Hardening
+	</a>
+</li>
+
+
+<li>
+	<a data-target="monitoring-and-maintenance" href="/docs/deployment-guide#monitoring-and-maintenance">
+		Monitoring & Maintenance
+	</a>
+</li>
+
+<li>
+	<a data-target="troubleshooting-deployment" href="/docs/deployment-guide#troubleshooting-deployment">
+		Troubleshooting Deployment
+	</a>
+</li>
+
+<li>
+	<a data-target="quick-reference-platform-commands" href="/docs/deployment-guide#quick-reference-platform-commands">
+		Quick Reference: Platform Commands
+	</a>
+</li>
+
+
+
+
+<li class="aside-heading">
+	<span data-target="architecture">ARCHITECTURE</span>
+</li>
+
+<li>
+	<a data-target="mvc-model-view-controller" href="/docs/architecture#mvc-model-view-controller">
+		MVC (Model-View-Controller)
+	</a>
+</li>
+<li>
+	<a data-target="service-container" href="/docs/architecture#service-container">
+		Service Container
+	</a>
+</li>
+<li>
+	<a data-target="middleware-pipeline" href="/docs/architecture#middleware-pipeline">
+		Middleware pipeline
+	</a>
+</li>
+<li>
+	<a data-target="request-life-cycle" href="/docs/architecture#request-life-cycle">
+		Request Life Cycle
+	</a>
+</li>
+
+
+<li class="aside-heading">
+	<span data-target="core-concepts">CORE CONCEPTS</span>
+</li>
+
+<li>
+	<a data-target="routing" href="/docs/core-concepts#routing">
+		Routing
+	</a>
+</li>
+
+<li>
+	<a data-target="orm-active-record-styled" href="/docs/core-concepts#orm-active-record-styled">
+		ORM - Active Record Styled
+	</a>
+</li>								
+
+<li>
+	<a data-target="dependency-injection" href="/docs/core-concepts#dependency-injection">
+		Dependency Injection
+	</a>
+</li>
+
+<li>
+	<a data-target="smarty-engine-templating" href="/docs/core-concepts#smarty-engine-templating">
+		Smarty Engine templating
+	</a>
+</li>
+
+<li>
+	<a data-target="queues" href="/docs/core-concepts#queues">
+		Queues
+	</a>
+</li>
+<li>
+	<a data-target="events" href="/docs/core-concepts#events">
+		Events
+	</a>
+</li>
+
+<li>
+	<a data-target="service-container" href="/docs/core-concepts#service-container">
+		Service Container
+	</a>
+</li>
+
+<li>
+	<a data-target="view-template-engine" href="/docs/core-concepts#view-template-engine">
+		View/Template Engine
+	</a>
+</li>	
+
+<li>
+	<a data-target="models" href="/docs/core-concepts#models">
+		Models
+	</a>
+</li>
+
+
+<li>
+	<a data-target="classes" href="/docs/core-concepts#classes">
+		Classes
+	</a>
+</li>
+
+<li>
+	<a data-target="entities" href="/docs/core-concepts#entities">
+		Entities
+	</a>
+</li>								
+
+
+<li class="aside-heading">
+	<span data-target="apis">APIs Development</span>
+</li>
+
+
+<li>
+	<a data-target="restful-api" href="/docs/apis#restful-api">
+		RESTful API
+	</a>
+</li>
+
+<li>
+	<a data-target="graphql-api" href="/docs/apis#graphql-api">
+		GraphQL API
+	</a>
+</li>
+
+
+
+<li class="aside-heading">
+	<span data-target="database">DATABASE</span>
+</li>
+
+<li class="aside-sub-heading">
+	<span>
+		QueryBuilder
+	</span>
+</li>
+
+<li><a data-target="database-overview" href="/docs/database#database-overview">Database Overview</a></li>
+<li><a data-target="getting-started-with-querybuilder" href="/docs/database#getting-started-with-querybuilder">Getting Started with QueryBuilder</a></li>
+<li><a data-target="querybuilder-select-queries" href="/docs/database#querybuilder-select-queries">QueryBuilder Select Queries</a></li>
+<li><a data-target="querybuilder-insert-queries" href="/docs/database#querybuilder-insert-queries">QueryBuilder Insert Queries</a></li>
+<li><a data-target="querybuilder-update-queries" href="/docs/database#querybuilder-update-queries">QueryBuilder Update Queries</a></li>
+<li><a data-target="querybuilder-with-entities" href="/docs/database#querybuilder-with-entities">QueryBuilder with Entities (ORM Style)</a></li>
+<li><a data-target="advanced-querybuilder-query-building" href="/docs/database#advanced-querybuilder-query-building">Advanced QueryBuilder Query Building</a></li>
+<li><a data-target="querybuilder-debugging" href="/docs/database#querybuilder-debugging">QueryBuilder Debugging</a></li>
+<li><a data-target="querybuilder-practical-examples" href="/docs/database#querybuilder-practical-examples">QueryBuilder Practical Examples</a></li>
+<li><a data-target="querybuilder-best-practices" href="/docs/database#querybuilder-best-practices">QueryBuilder Best Practices</a></li>
+<li><a data-target="getting-started-with-orm" href="/docs/database#getting-started-with-orm">Getting Started with ORM</a></li>
+<li class="aside-sub-heading">
+	<span>
+		ORM
+	</span>
+</li>
+
+<li><a data-target="orm-crud-operations" href="/docs/database#orm-crud-operations">ORM CRUD Operations</a></li>
+<li><a data-target="orm-query-methods" href="/docs/database#orm-query-methods">ORM Query Methods</a></li>
+<li><a data-target="orm-model-relationships" href="/docs/database#orm-model-relationships">ORM Model Relationships</a></li>
+<li><a data-target="orm-advanced-query-features" href="/docs/database#orm-advanced-query-features">ORM Advanced Query Features</a></li>
+<li><a data-target="working-with-model-instances-in-orm" href="/docs/database#working-with-model-instances-in-orm">Working with Model Instances in ORM</a></li>
+<li><a data-target="orm-practical-examples" href="/docs/database#orm-practical-examples">ORM Practical Examples</a></li>
+<li><a data-target="orm-method-reference" href="/docs/database#orm-method-reference">ORM Method Reference</a></li>
+<li><a data-target="orm-relationship-methods" href="/docs/database#orm-relationship-methods">ORM Relationship Methods</a></li>
+<li><a data-target="orm-best-practices" href="/docs/database#orm-best-practices">ORM Best Practices</a></li>						
+
+
+
+
+<li class="aside-heading">
+	<span data-target="mail">MAIL</span>
+</li>
+
+<li>
+	<a data-target="mail-configuration" href="/docs/mail#mail-configuration">
+		Configuration
+	</a>
+</li>
+
+<li>
+	<a data-target="sending-mail" href="/docs/mail#sending-mail">
+		Sending Mail
+	</a>
+</li>
+
+<li>
+	<a data-target="email-templates-with-smarty" href="/docs/mail#email-templates-with-smarty">
+		Email Templates with Smarty
+	</a>
+</li>
+
+<li>
+	<a data-target="attachments" href="/docs/mail#attachments">
+		Attachments
+	</a>
+</li>
+
+<li>
+	<a data-target="bulk-email-sending" href="/docs/mail#bulk-email-sending">
+		Bulk Email Sending
+	</a>
+</li>
+
+<li>
+	<a data-target="queue-based-email-sending" href="/docs/mail#queue-based-email-sending">
+		Queue-Based Email Sending
+	</a>
+</li>
+
+<li>
+	<a data-target="email-hooks-and-events" href="/docs/mail#email-hooks-and-events">
+		Email Hooks and Events
+	</a>
+</li>
+
+<li>
+	<a data-target="advanced-mailer-features" href="/docs/mail#advanced-mailer-features">
+		Advanced Mailer Features
+	</a>
+</li>
+
+
+<li>
+	<a data-target="common-email-templates" href="/docs/mail#common-email-templates">
+		Common Email Templates
+	</a>
+</li>
+
+
+<li>
+	<a data-target="testing-and-debugging" href="/docs/mail#testing-and-debugging">
+		Testing and Debugging
+	</a>
+</li>
+
+<li>
+	<a data-target="best-practices" href="/docs/mail#best-practices">
+		Best Practices
+	</a>
+</li>
+
+<li>
+	<a data-target="error-handling" href="/docs/mail#error-handling">
+		Error Handling
+	</a>
+</li>
+
+<li>
+	<a data-target="complete-usage-example" href="/docs/mail#complete-usage-example">
+		Complete Usage Example
+	</a>
+</li>
+
+
+
+<li class="aside-heading">
+	<span data-target="security-authentication">SECURITY/AUTHENTICATION</span>
+</li>
+
+
+<li>
+	<a data-target="form-validation" href="/docs/security-authentication#form-validation">
+		Form Validation
+	</a>
+</li>
+
+
+<li>
+	<a data-target="authentication-methods" href="/docs/security-authentication#authentication-methods">
+		Authentication Methods
+	</a>
+</li>
+
+
+
+<li>
+	<a data-target="json-web-token" href="/docs/security-authentication#json-web-token">
+		JSON Web Token
+	</a>
+</li>
+
+
+<li>
+	<a data-target="data-encryption" href="/docs/security-authentication#data-encryption">
+		Data Encryption
+	</a>
+</li>
+
+<li>
+	<a data-target="security-tips-recommendations" href="/docs/security-authentication#security-tips-recommendations">
+		Security Tips/Recommendations
+	</a>
+</li>
+
+
+
+<li class="aside-heading">
+	<span data-target="sample-projects">SAMPLE PROJECTS</span>
+</li>								
+
+<li>
+	<a data-target="login-system-with-redirect" href="/docs/sample-projects#login-system-with-redirect">
+		Login System with Redirect
+	</a>
+</li>
+
+<li>
+	<a data-target="login-system-with-ajax" href="/docs/sample-projects#login-system-with-ajax">
+		Login System with Ajax
+	</a>
+</li>								
+
+<li>
+	<a data-target="login-system-with-2fa-otp" href="/docs/sample-projects#login-system-with-2fa-otp">
+		Login System with 2FA OTP
+	</a>
+</li>
+
+
+<li>
+	<a data-target="signup-with-account-activation-link" href="/docs/sample-projects#signup-with-account-activation-link">
+		Signup with Account Activation Link
+	</a>
+</li>
+								
+
+<li>
+	<a data-target="signup-with-account-activation-otp" href="/docs/sample-projects#signup-with-account-activation-otp">
+		Signup with Account Activation OTP
+	</a>
+</li>
+
+<li>
+	<a data-target="newsletter-subscription" href="/docs/sample-projects#newsletter-subscription">
+		Newsletter Subscription
+	</a>
+</li>
+
+<li>
+	<a data-target="guest-message-contact-form" href="/docs/sample-projects#guest-message-contact-form">
+		Guest Message/Contact Form
+	</a>
+</li>
+
+
+
+
+
+</ul>
+						</div>
+					</aside>
+					
+					<div id="center-column" class="center px-3">					
+						<div>
+							<div class="center-breadcrumbs mt-1 mb-4">
+	<div>
+		<a href="">Docs</a>
+	</div>
+	<span class="breadcrumb-divider">
+		<img src="/assets/images/icons/arrow-right.svg" />
+	</span>
+	
+	<div>
+		<a href="">Getting Started</a>
+	</div>
+	<span class="breadcrumb-divider">
+		<img src="/assets/images/icons/arrow-right.svg" />
+	</span>
+
+	<div>Installation</div>															
+</div>
+
+<h2><span class="sub-heading">#</span>  Overview</h2>
+<div>
+	<p>
+		JephyMVC is a lightweight, modular PHP MVC framework built for developers 
+		who want clean architecture, high performance, and full control over their web 
+		applications. It follows the Model-View-Controller pattern to separate business 
+		logic, presentation, and data handling—making your code more maintainable, scalable, 
+		and testable.
+	</p>
+	
+	<div class="block">
+		<p>
+			<strong>Template Engine</strong>: Unlike many lightweight frameworks that rely on raw PHP in views, 
+			JephyMVC natively integrates the <strong>Smarty Engine</strong>—a powerful, feature-rich 
+			template system that keeps your presentation layer clean, secure, and easy to manage.
+		</p>
+	</div>
+	
+</div>
+
+
+<div class="my-4">
+	<h2>Key Features</h2>
+
+	<ul>
+		<li><strong>Modular MVC Structure</strong> – Clear separation of concerns with Models, Views, and Controllers.</li>
+		<li><strong>Smarty Template Engine</strong> – Write clean, logic-free templates with caching, layouts, custom functions, and built-in security against XSS.</li>
+		<li><strong>Simple Routing</strong> – Define clean, RESTful routes with support for dynamic parameters and middleware.</li>
+		<li><strong>Lightweight & Fast</strong> – Minimal overhead with no unnecessary dependencies.</li>
+		<li><strong>Database Abstraction</strong> – Built-in query builder and active record pattern (or ORM).</li>
+		<li><strong>Middleware Support</strong> – Filter HTTP requests before they reach your controllers.</li>
+		<li><strong>Request & Response Handling</strong> – Object-oriented wrappers for input, session, cookies, and output.</li>
+		<li><strong>CSRF & XSS Protection</strong> – Built-in security helpers (Smarty auto-escaping adds an extra layer).</li>
+		<li><strong>Error Handling & Debugging</strong> – Custom error pages and debug mode with detailed logs.</li>
+	</ul>
+</div>
+
+<div id="requirements">
+
+<h2><span class="sub-heading">#</span>  System Requirements </h2>
+<h3>Option 1</h3>
+<ul>
+	<li>PHP 8.2+</li>
+	<li>XAMPP</li>	
+</ul>
+
+
+<h3>Option 2</h3>
+<ul>
+	<li>PHP 8.2+</li>
+	<li>Apache/Nginx</li>
+	<li>MySQL/MariaDB, Postgres or SQLite</li>
+</ul>
+</div>
+
+
+
+<h2><span class="sub-heading">#</span>  Directory Structure</h2>
+<div id="directory-structure">
+<pre>
+
+src/
+├── jephy-mvc/              	# The PHP Code Base
+│   ├── bootstrap.php		# Just a bootstrap file
+│   ├── config.conf		# Application configuration files
+│   ├── example.config.conf
+│   ├── index.php
+│   ├── routes.php		# Application routes are declared on this file
+│   ├── app/
+│   │   ├── cache/
+│   │   ├── classes/		# App\Classes - Your custom classes lives here
+│   │   ├── controllers/	# App\Controllers - The controllers written by you lives here
+│   │   ├── entities/		# App\Entities - Custom database entities should live here
+│   │   ├── hooks/		# App\Hooks - Application hooks lives here
+│   │   ├── model/		# App\Model - Database Models should live here
+│   │   ├── traits/		# App\Traits - Custom application traits should live here
+│   │   └── views/
+│   │		├── emails/
+│   │		├── home/    
+│   │		│   └── 404.tp    
+│   │		└── layout.tpl    
+│   │		    
+│   ├── config/
+│   │   ├── config.php
+│   │   ├── database.php
+│   │   ├── index.php
+│   │   └── mail.php
+│   ├── core/			# You are not meant to work here except you know what you are doing.
+│   │   ├── ...
+│   │   ├── Controller.php
+│   │   ├── Framework.php
+│   │   ├── Router.php
+│   │   └── ...
+│   └── views/
+│       ├── emails/
+│       ├── home/
+│       │   └── 404.tpl
+│       └── layout.tpl
+│
+├── public/		# This is the root document that's publicly accessible
+│   ├── assets/        	# Folder for CSS, JavaScript and other web resource files
+│   ├── static-files/   # Alternative static files
+│   ├── .htaccess       # URL Rewrite statements
+│   ├── favicon.ico     # Website's favicon
+│   ├── index.php       # Boostrap file or app's entry point
+│   ├── open-graph.jpg	# Social media open-graph image
+│   ├── access.log	# Optional - mostly useful for local development
+│   └── error.log	# Optional - mostly useful for local development
+│
+├── vendor/
+│   └── ...
+│                    
+├── composer.json
+└── composer.lock
+</pre>
+</div>
+
+
+<div id="installation">
+<h2><span class="sub-heading">#</span>  Installation</h2>
+<p>
+	To install JephyPHP, visit <code>https://github.com/jephymvc/jephy-mvc-01.git</code> and
+	clone the repository or download the zip file.	
+</p>
+
+<h3>Working with XAMPP or any LAMP/WAMP system</h3>
+<p>
+	If you are working with option 1 of the requirements, extract the zip file into the 
+	<code>C:/xampp/htdocs</code> or <code>/xampp/htdocs</code>(depending on your device's 
+	operating system) path. That is the contents of /version-x.x directory. You will get 
+	directories <code>cli/</code>, 	<code>jephy-mvc/</code>, <code>public/</code> and 
+	<code>vendor/</code>.
+</p>	
+
+<p>
+	You do not really have to retain the directory structure as it is. You can decide to have 
+	every other directories outside of the <code>C:/xampp/htdocs</code> of <code>/xampp/htdocs</code> 
+	path. But you must have your static files somewhere within the path of 
+	<code>C:/xampp/htdocs</code> of <code>/xampp/htdocs</code>.
+</p>
+
+<p>
+	However, you must ensure your <code>jephy-mvc/config.conf</code> is properly configured to your
+	chosen path for the following fields: 
+</p>
+
+<ul>
+	<li>-> <code>site.app_path</code>: defaults to <code>{your_absolute_path}/jephy-mvc/app</code>.</li>
+	<li>-> <code>site.home_root_path</code>: defaults to this is usually your <code>{your_absolute_path}/htdocs/</code> or <code>{your_absolute_path}/public_html/</code> folder</li>
+	<li>-> <code>smarty.template_dir</code>: defaults to <code>{your_absolute_path}/jephy-mvc/app/views/</code>.</li>
+	<li>-> <code>smarty.compile_dir</code>: defaults to <code>{your_absolute_path}/jephy-mvc/app/cache/views_c/</code>.</li>
+	<li>-> <code>smarty.cache_dir</code>: defaults to <code>{your_absolute_path}/jephy-mvc/app/cache/</code>.</li>
+</ul>
+
+<p>
+	The beautiful part, is that you actually have control over what absolute directory path should 
+	serve what purpose. This makes it possible to keep your sensitive data out of the public path
+	without breaking anything.	
+</p>
+
+</div>
+
+<div id="system-configuration">
+<h2><span class="sub-heading">#</span>  Configuration</h2>
+
+<p>
+	Open the config.conf file located in <code>src/jephy-mvc/</code> folder and configure based on your system setup.
+	You can see the table below for the explanation of each configurable fields:	
+</p>
+
+<table class="table table-striped table-config-info">
+	<thead>
+		<tr>
+			<th style="min-width: 140px;">Field</th>
+			<th>Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		
+		<tr>
+			<td><code>site.app_debug</code></td>
+			<td>
+				Allows to enable the display of debug data. 
+				It is set to true by default. You will need 
+				to set to false on the production server.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.version</code></td>
+			<td>This states the current version of your application.</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.name</code></td>
+			<td>This specifies the name of your website or project.</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.email</code></td>
+			<td>Optional - this specifies the contact email that is available for the public to reach when on your website.</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.phone</code></td>
+			<td>Optional - this specifies the contact phone that is available for the public to reach when on your website.</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.home</code></td>
+			<td>The URL of your website.</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.app_path</code></td>
+			<td>
+				This specifies the absolute path to your App\ namespace. It is usually
+				<code>{your_absolute_path}/jephy-mvc/app</code>. You only need to update according to
+				your setup.
+			</td>
+		</tr>
+		
+		
+		<tr>
+			<td><code>site.encryption_key</code></td>
+			<td>
+				Login session data are encrypted using AES algorithm for security purpose. 
+				So, you only need to come up a difficult to guess set of characters and It
+				is advised to change regularly.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.jwt_secret_key</code></td>
+			<td>
+				Tokenized session data are encrypted using JWT algorithm for security purpose. 
+				So, you only need to come up a difficult to guess set of characters and It
+				is advised to change regularly.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.jwt_algo</code></td>
+			<td>
+				This is the JSON Web Token algorithm used in encryption. It usually defaults
+				to HS256.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.jwt_ttl</code></td>
+			<td>
+				This is the time it takes JSON Web Tokens to get expire.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.address</code></td>
+			<td>
+				Company location address.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.title</code></td>
+			<td>
+				Default title to your home page. It is for SEO needs.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.keywords</code></td>
+			<td>
+				Suitable keywords for your business in case it is being 
+				searched on Search engines. Good for SEO.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.description</code></td>
+			<td>
+				Suitable description for your business in case it is being 
+				searched on Search engines. Good for SEO.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.url.home</code></td>
+			<td>
+				It is alternative to <code>site.home</code>.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.url.third_party_platform.github </code></td>
+			<td>
+				Optional.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.author.fullname </code></td>
+			<td>
+				Optional - usually for the lead or developer in charge.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>site.author.email</code></td>
+			<td>
+				Optional - usually for the lead or developer in charge.
+			</td>
+		</tr>
+		
+		
+		<tr>
+			<td><code>database.driver</code></td>
+			<td>
+				This specifies the database driver the application is working.
+				You have option between mysql, pgsql and sqlite for 
+				MySQL/MariaDB, PostgresDB and SQLite respectively.
+			</td>
+		</tr>
+		
+		<tr>
+			<td><code>database.driver</code></td>
+			<td>
+				This specifies the database driver the application is working.
+				You have option between mysql, pgsql and sqlite for 
+				MySQL/MariaDB, PostgresDB and SQLite respectively.
+			</td>
+		</tr>
+		
+			
+		<tr>
+			<td><code>smarty.template_dir</code></td>
+			<td>
+				This specifies the for your smarty engine templates.
+			</td>
+		</tr>
+		
+			
+		<tr>
+			<td><code>smarty.compile_dir</code></td>
+			<td>
+				This specifies the path for compiled templates.
+			</td>
+		</tr>
+		
+			
+		<tr>
+			<td><code>smarty.cache_dir</code></td>
+			<td>
+				This specifies the path for cached files and data.
+			</td>
+		</tr>
+		
+		
+	</tbody>
+</table>
+	
+</div>
+
+
+<div id="basic-usage-example">
+<h2><span class="sub-heading">#</span>  Basic Usage Example</h2>
+<p>
+	This section walks you through creating a complete working example from scratch - 
+	a simple blog system with user authentication and article management.
+</p>
+<h3>Step 1: Database Setup</h3>
+<p>First, create your database tables:</p>
+
+<pre>
+<small>sql</small>
+
+-- users table
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'user') DEFAULT 'user',
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- posts table
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    content TEXT NOT NULL,
+    excerpt VARCHAR(500),
+    featured_image VARCHAR(255),
+    status ENUM('draft', 'published') DEFAULT 'draft',
+    views INT DEFAULT 0,
+    published_at DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- categories table
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- post_categories table (many-to-many)
+CREATE TABLE post_categories (
+    post_id INT NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (post_id, category_id),
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+-- comments table
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT NOT NULL,
+    user_id INT,
+    author_name VARCHAR(100),
+    author_email VARCHAR(255),
+    content TEXT NOT NULL,
+    status ENUM('pending', 'approved', 'spam') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+</pre>
+
+<h3>Step 2: Configure Database</h3>
+<h3><code>Update your jephy-mvc/config.conf:</code></h3>
+
+<pre>
+
+#	[ App Configuration ]
+site.name = Jephy MVC
+site.email = info@jephy-mvc.loc
+site.phone = +23489345678
+site.home = http://localhost:80
+site.app_path = C:/xampp/htdocs/src/jephy-mvc/app
+site.home_root_path = C:/xampp/htdocs/src/public
+
+site.encryption_key = gwb8y237872!!@!vegcsi_375126
+site.encryption_cipher = AES-256-CBC
+site.jwt_secret_key = t5dfwefewfw!!@!vegcsi_375126
+site.jwt_algo 		= HS256
+site.jwt_ttl 		= 3600
+site.address 		= 123, Acme Way, Big City, Country
+
+site.title 			= Jephy MVC - The light weight and portable PHP MVC framework that runs anywhere
+site.keywords 		= jephy, mvc, php
+site.description 	= Jephy MVC is a light weight and portable PHP MVC framework that runs locally,  on shared-hosts, vpc, dedicated server and cloud in general.
+
+
+#	[ Database Configuration ]
+# 	Driver can be either mysql, pgsql, sqlsrv and sqlite
+database.driver 	= mysql
+database.host 		= localhost
+database.name 		= jephymvc
+database.user 		= root
+database.password 	= 
+
+
+#	[ Mail Configuration ]
+#	Enable SMTP debugging
+#	0 = off (for production use)
+#	1 = client messages
+#	2 = client and server messages
+mail.smtp_debug 	= 1
+# 	Could be one of tls, ssl and none
+mail.encryption = none
+mail.port.tls = 25
+mail.port.ssl = 25
+mail.address.from = support@jephy-mvc.loc
+mail.address.name = Jephy MVC
+mail.address.password = ewf34r242@#!
+mail.is_html = true
+mail.charset = UTF-8
+
+#	[ Smarty Configuration ]
+smarty.caching = false
+smarty.cache_lifetime  = 3600
+smarty.template_dir  = C:/xampp/htdocs/src/jephy-mvc/app/views/
+smarty.compile_dir  = C:/xampp/htdocs/src/jephy-mvc/app/cache/views_c/
+smarty.cache_dir  = C:/xampp/htdocs/src/jephy-mvc/app/cache/
+
+</pre>
+
+<h3>Step 3: Create Models</h3>
+<h3><code>jephy-mvc/app/models/User.php</code></h3>
+<pre>
+<small>php</small>
+
+// jephy-mvc/app/models/User.php
+namespace App\Models;
+
+use Core\Model;
+
+class User extends Model
+{
+    protected $table = 'users';
+    protected $fillable = ['name', 'email', 'password', 'role', 'status'];
+    protected $hidden = ['password'];
+    
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'user_id');
+    }
+    
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'user_id');
+    }
+    
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+    
+    public function isActive()
+    {
+        return $this->status === 'active';
+    }
+}
+
+</pre>
+
+<h3><code>jephy-mvc/app/models/Post.php</code></h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/models/Post.php
+namespace App\Models;
+
+use Core\Model;
+
+class Post extends Model
+{
+    protected $table = 'posts';
+    protected $fillable = ['user_id', 'title', 'slug', 'content', 'excerpt', 'featured_image', 'status', 'published_at'];
+    
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'post_categories', 'post_id', 'category_id');
+    }
+    
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'post_id')->where('status', 'approved');
+    }
+    
+    public function publish()
+    {
+        $this->status = 'published';
+        $this->published_at = date('Y-m-d H:i:s');
+        $this->save();
+    }
+    
+    public function incrementViews()
+    {
+        $this->views++;
+        $this->save();
+    }
+}
+
+</pre>
+
+<h3><code>jephy-mvc/app/models/Category.php</code></h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/models/Category.php
+namespace App\Models;
+
+use Core\Model;
+
+class Category extends Model
+{
+    protected $table = 'categories';
+    protected $fillable = ['name', 'slug', 'description'];
+    
+    public function posts()
+    {
+        return $this->belongsToMany(Post::class, 'post_categories', 'category_id', 'post_id');
+    }
+    
+    public function postCount()
+    {
+        return $this->posts()->where('status', 'published')->count();
+    }
+}
+
+</pre>
+
+
+<h3><code>jephy-mvc/app/models/Comment.php</code></h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/models/Comment.php
+namespace App\Models;
+
+use Core\Model;
+
+class Comment extends Model
+{
+    protected $table = 'comments';
+    protected $fillable = ['post_id', 'user_id', 'author_name', 'author_email', 'content', 'status'];
+    
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function approve()
+    {
+        $this->status = 'approved';
+        $this->save();
+    }
+}
+
+</pre>
+
+<h3>Step 4: Create Controllers</h3>
+<h3><code>jephy-mvc/app/controllers/HomeController.php</code></h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/controllers/HomeController.php
+namespace App\Controllers;
+
+use Core\Controller;
+use App\Models\Post;
+use App\Models\Category;
+
+class HomeController extends Controller
+{
+    public function index()
+    {
+        // Get recent published posts
+        $recentPosts = Post::where('status', 'published')
+            ->orderBy('published_at', 'DESC')
+            ->limit(6)
+            ->get();
+        
+        // Get featured posts (most viewed)
+        $featuredPosts = Post::where('status', 'published')
+            ->orderBy('views', 'DESC')
+            ->limit(3)
+            ->get();
+        
+        // Get all categories with post count
+        $categories = Category::withCount('posts')->get();
+        
+        // Assign data to view
+        $this->view->set('recentPosts', $recentPosts);
+        $this->view->set('featuredPosts', $featuredPosts);
+        $this->view->set('categories', $categories);
+        $this->view->set('pageTitle', 'Welcome to Jephy Blog');
+        
+        return $this->view->display('home.index');
+    }
+    
+    public function about()
+    {
+        $this->view->set('pageTitle', 'About Us');
+        return $this->view->display('home.about');
+    }
+    
+    public function contact()
+    {
+        $this->view->set('pageTitle', 'Contact Us');
+        return $this->view->display('home.contact');
+    }
+}
+
+</pre>
+
+<h3><code>jephy-mvc/app/controllers/PostController.php</code></h3>
+
+<pre>
+<small>php</small>
+// jephy-mvc/app/controllers/PostController.php
+namespace App\Controllers;
+
+use Core\Controller;
+use App\Models\Post;
+use App\Models\Category;
+use App\Models\Comment;
+
+class PostController extends Controller
+{
+    public function index()
+    {
+        $page = (int) ($_GET['page'] ?? 1);
+        $perPage = 10;
+        $category = $_GET['category'] ?? null;
+        
+        $query = Post::where('status', 'published');
+        
+        if ($category) {
+            $query->whereHas('categories', function($q) use ($category) {
+                $q->where('slug', $category);
+            });
+        }
+        
+        $posts = $query->orderBy('published_at', 'DESC')
+            ->paginate($perPage, $page);
+        
+        $this->view->set('posts', $posts);
+        $this->view->set('currentCategory', $category);
+        $this->view->set('pageTitle', $category ? "Category: {$category}" : 'All Posts');
+        
+        return $this->view->display('posts.index');
+    }
+    
+    public function show($slug)
+    {
+        // Find post by slug
+        $post = Post::where('slug', $slug)->where('status', 'published')->first();
+        
+        if (!$post) {
+            return $this->notFound();
+        }
+        
+        // Increment view count
+        $post->incrementViews();
+        
+        // Get comments for this post
+        $comments = $post->comments()->where('status', 'approved')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        
+        // Get related posts (same categories)
+        $categoryIds = $post->categories()->pluck('id')->toArray();
+        $relatedPosts = Post::whereHas('categories', function($q) use ($categoryIds) {
+                $q->whereIn('id', $categoryIds);
+            })
+            ->where('id', '!=', $post->id)
+            ->where('status', 'published')
+            ->limit(3)
+            ->get();
+        
+        $this->view->set('post', $post);
+        $this->view->set('comments', $comments);
+        $this->view->set('relatedPosts', $relatedPosts);
+        $this->view->set('pageTitle', $post->title);
+        
+        return $this->view->display('posts.show');
+    }
+    
+    public function comment($postId)
+    {
+        $post = Post::find($postId);
+        
+        if (!$post) {
+            return $this->json(['error' => 'Post not found'], 404);
+        }
+        
+        $data = $this->request->post();
+        
+        // Simple validation
+        if (empty($data['content'])) {
+            return $this->json(['error' => 'Comment content is required'], 422);
+        }
+        
+        $commentData = [
+            'post_id' => $postId,
+            'content' => $data['content'],
+            'status' => 'pending' // Requires moderation
+        ];
+        
+        if (isset($_SESSION['user_id'])) {
+            $commentData['user_id'] = $_SESSION['user_id'];
+        } else {
+            if (empty($data['author_name']) || empty($data['author_email'])) {
+                return $this->json(['error' => 'Name and email are required for guests'], 422);
+            }
+            $commentData['author_name'] = $data['author_name'];
+            $commentData['author_email'] = $data['author_email'];
+        }
+        
+        $comment = Comment::create($commentData);
+        
+        // Trigger notification hook
+        $this->hookManager->fire('comment_created', $comment);
+        
+        return $this->json([
+            'success' => true,
+            'message' => 'Comment submitted for moderation',
+            'comment' => $comment
+        ], 201);
+    }
+}
+
+</pre>
+
+<h3><code>jephy-mvc/app/controllers/AuthController.php</code></h3>
+
+<pre>
+<small>php</small>
+// jephy-mvc/app/controllers/AuthController.php
+namespace App\Controllers;
+
+use Core\Controller;
+use App\Models\User;
+
+class AuthController extends Controller
+{
+    public function showLogin()
+    {
+        if (isset($_SESSION['user_id'])) {
+            $this->redirect('/dashboard');
+        }
+        
+        $this->view->set('pageTitle', 'Login');
+        return $this->view->display('auth.login');
+    }
+    
+    public function login()
+    {
+        $email = $this->request->post('email');
+        $password = $this->request->post('password');
+        $remember = $this->request->post('remember') === 'on';
+        
+        // Validate input
+        if (empty($email) || empty($password)) {
+            $_SESSION['flash_message'] = 'Email and password are required';
+            $_SESSION['flash_type'] = 'error';
+            $this->redirect('/login');
+        }
+        
+        // Find user
+        $user = User::where('email', $email)->first();
+        
+        if ($user && password_verify($password, $user->password)) {
+            // Check if user is active
+            if (!$user->isActive()) {
+                $_SESSION['flash_message'] = 'Your account is inactive. Please contact admin.';
+                $_SESSION['flash_type'] = 'error';
+                $this->redirect('/login');
+            }
+            
+            // Set session
+            $_SESSION['user_id'] = $user->id;
+            $_SESSION['user_name'] = $user->name;
+            $_SESSION['user_role'] = $user->role;
+            
+            // Regenerate session ID for security
+            session_regenerate_id(true);
+            
+            // Set remember me cookie
+            if ($remember) {
+                $token = bin2hex(random_bytes(32));
+                $user->remember_token = $token;
+                $user->save();
+                setcookie('remember_token', $token, time() + 86400 * 30, '/', '', true, true);
+            }
+            
+            // Update last login
+            $user->last_login_at = date('Y-m-d H:i:s');
+            $user->last_login_ip = $_SERVER['REMOTE_ADDR'];
+            $user->save();
+            
+            // Redirect to intended page or dashboard
+            $redirectTo = $_SESSION['intended_url'] ?? '/dashboard';
+            unset($_SESSION['intended_url']);
+            
+            $this->redirect($redirectTo);
+        }
+        
+        $_SESSION['flash_message'] = 'Invalid email or password';
+        $_SESSION['flash_type'] = 'error';
+        $this->redirect('/login');
+    }
+    
+    public function showRegister()
+    {
+        if (isset($_SESSION['user_id'])) {
+            $this->redirect('/dashboard');
+        }
+        
+        $this->view->set('pageTitle', 'Register');
+        return $this->view->display('auth.register');
+    }
+    
+    public function register()
+    {
+        $data = $this->request->post();
+        
+        // Validate data
+        $errors = [];
+        
+        if (strlen($data["name"]) < 2) {
+            $errors["name"] = "Name must be at least 2 characters";
+        }
+        
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Invalid email address';
+        }
+        
+        if (strlen($data['password']) < 6) {
+            $errors['password'] = 'Password must be at least 6 characters';
+        }
+        
+        if ($data['password'] !== $data['password_confirmation']) {
+            $errors['password_confirmation'] = 'Passwords do not match';
+        }
+        
+        // Check if email exists
+        if (User::where('email', $data['email'])->exists()) {
+            $errors['email'] = 'Email already registered';
+        }
+        
+        if (!empty($errors)) {
+            $_SESSION['flash_message'] = 'Please fix the errors below';
+            $_SESSION['flash_type'] = 'error';
+            $_SESSION['validation_errors'] = $errors;
+            $this->redirect('/register');
+        }
+        
+        // Create user
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+            'role' => 'user',
+            'status' => 'active'
+        ]);
+        
+        // Auto-login after registration
+        $_SESSION['user_id'] = $user->id;
+        $_SESSION['user_name'] = $user->name;
+        $_SESSION['user_role'] = $user->role;
+        
+        $_SESSION['flash_message'] = 'Registration successful! Welcome!';
+        $_SESSION['flash_type'] = 'success';
+        
+        $this->redirect('/dashboard');
+    }
+    
+    public function logout()
+    {
+        // Clear session
+        $_SESSION = [];
+        
+        // Delete session cookie
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        
+        // Destroy session
+        session_destroy();
+        
+        // Delete remember me cookie
+        setcookie('remember_token', '', time() - 3600, '/', '', true, true);
+        
+        $this->redirect('/');
+    }
+}
+
+</pre>
+
+<h3><code>jephy-mvc/app/controllers/DashboardController.php</code></h3>
+
+<pre>
+<small>php</small>
+// jephy-mvc/app/controllers/DashboardController.php
+namespace App\Controllers;
+
+use Core\Controller;
+use App\Models\Post;
+use App\Models\User;
+use App\Models\Comment;
+
+class DashboardController extends Controller
+{
+    public function __construct()
+    {
+        // Ensure user is logged in
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'];
+            $this->redirect('/login');
+        }
+    }
+    
+    public function index()
+    {
+        $userId = $_SESSION['user_id'];
+        $isAdmin = $_SESSION['user_role'] === 'admin';
+        
+        if ($isAdmin) {
+            // Admin dashboard stats
+            $stats = [
+                'total_users' => User::count(),
+                'total_posts' => Post::count(),
+                'published_posts' => Post::where('status', 'published')->count(),
+                'draft_posts' => Post::where('status', 'draft')->count(),
+                'total_comments' => Comment::count(),
+                'pending_comments' => Comment::where('status', 'pending')->count()
+            ];
+            
+            $recentUsers = User::orderBy('created_at', 'DESC')->limit(5)->get();
+            $recentComments = Comment::with('post')->orderBy('created_at', 'DESC')->limit(5)->get();
+            
+            $this->view->set('stats', $stats);
+            $this->view->set('recentUsers', $recentUsers);
+            $this->view->set('recentComments', $recentComments);
+        } else {
+            // Regular user dashboard
+            $stats = [
+                'my_posts' => Post::where('user_id', $userId)->count(),
+                'published_posts' => Post::where('user_id', $userId)->where('status', 'published')->count(),
+                'draft_posts' => Post::where('user_id', $userId)->where('status', 'draft')->count(),
+                'my_comments' => Comment::where('user_id', $userId)->count()
+            ];
+            
+            $myPosts = Post::where('user_id', $userId)
+                ->orderBy('created_at', 'DESC')
+                ->limit(5)
+                ->get();
+            
+            $this->view->set('stats', $stats);
+            $this->view->set('myPosts', $myPosts);
+        }
+        
+        $this->view->set('isAdmin', $isAdmin);
+        $this->view->set('pageTitle', 'Dashboard');
+        
+        return $this->view->display('dashboard.index');
+    }
+}
+
+</pre>
+
+<h3>Step 5: Create Routes</h3>
+<h3><code>jephy-mvc/routes.php</code></h3>
+
+<pre>
+<small>php</small>
+
+// jephy-mvc/routes.php
+
+// Public routes
+$router->get('/', 'HomeController@index');
+$router->get('/about', 'HomeController@about');
+$router->get('/contact', 'HomeController@contact');
+
+// Blog routes
+$router->get('/blog', 'PostController@index');
+$router->get('/blog/{slug}', 'PostController@show');
+$router->post('/blog/{id}/comment', 'PostController@comment');
+
+// Auth routes
+$router->get('/login', 'AuthController@showLogin');
+$router->post('/login', 'AuthController@login');
+$router->get('/register', 'AuthController@showRegister');
+$router->post('/register', 'AuthController@register');
+$router->get('/logout', 'AuthController@logout');
+
+// Dashboard routes (protected by middleware)
+$router->group(['middleware' => ['AuthMiddleware']], function($router) {
+    $router->get('/dashboard', 'DashboardController@index');
+});
+
+</pre>
+
+<h3>Step 6: Create Smarty Templates</h3>
+<h3><code>jephy-mvc/app/views/layouts/app.tpl</code></h3>
+<pre>
+<small>html|smarty</small>
+
+{* jephy-mvc/app/views/layouts/app.tpl *}
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en">
+&lt;head&gt;
+    &lt;meta charset="UTF-8">
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0">
+    &lt;title>{$pageTitle|default:$siteName} | {$siteName}</title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/tailwindcss@2/dist/tailwind.min.css" rel="stylesheet">
+&lt;/head&gt;
+&lt;body class="bg-gray-100">
+    &lt;nav class="bg-white shadow-lg">
+        &lt;div class="container mx-auto px-4">
+            &lt;div class="flex justify-between items-center py-4">
+                &lt;a href="/" class="text-xl font-bold text-gray-800">{$siteName}</a&gt;
+                
+                &lt;div class="space-x-4">
+                    &lt;a href="/blog" class="text-gray-600 hover:text-gray-800">Blog&lt;/a&gt;
+                    &lt;a href="/about" class="text-gray-600 hover:text-gray-800">About&lt;/a&gt;
+                    &lt;a href="/contact" class="text-gray-600 hover:text-gray-800">Contact&lt;/a&gt;
+                    
+                    {if $isLoggedIn}
+                        &lt;a href="/dashboard" class="text-gray-600 hover:text-gray-800">Dashboard&lt;/a&gt;
+                        &lt;a href="/logout" class="text-red-600 hover:text-red-800">Logout&lt;/a&gt;
+                        &lt;span class="text-gray-600">Welcome, {$currentUser.name}!</span&gt;
+                    {else}
+                        &lt;a href="/login" class="text-blue-600 hover:text-blue-800">Login&lt;/a&gt;
+                        &lt;a href="/register" class="text-green-600 hover:text-green-800">Register&lt;/a&gt;
+                    {/if}
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+    
+    {if $flashMessage}
+        &lt;div class="container mx-auto px-4 mt-4">
+            &lt;div class="alert alert-{$flashType} p-4 rounded-lg 
+                {if $flashType == 'success'}bg-green-100 text-green-800
+                {elseif $flashType == 'error'}bg-red-100 text-red-800
+                {else}bg-blue-100 text-blue-800{/if}">
+                {$flashMessage}
+            &lt;/div&gt;
+        &lt;/div&gt;
+    {/if}
+    
+    &lt;main class="container mx-auto px-4 py-8">
+        {block name="content"}{/block}
+    &lt;/main&gt;
+    
+    &lt;footer class="bg-white shadow-lg mt-8 py-6">
+        &lt;div class="container mx-auto px-4 text-center text-gray-600">
+            &copy; {$currentYear} {$siteName}. All rights reserved.
+        &lt;/div&gt;
+    &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+<h3><code>jephy-mvc/app/views/home/index.tpl</code></h3>
+<pre>
+<small>html|smarty</small>
+
+{* jephy-mvc/app/views/home/index.tpl *}
+{extends file="layouts/app.tpl"}
+
+{block name="content"}
+    &lt;div class="text-center mb-12">
+        &lt;h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to {$siteName}</h1&gt;
+        &lt;p class="text-xl text-gray-600">Share your thoughts with the world&lt;/p&gt;
+    &lt;/div&gt;
+    
+    {if $featuredPosts|count &gt; 0}
+        &lt;div class="mb-12">
+            &lt;h2 class="text-2xl font-bold mb-6">Featured Posts&lt;/h2&gt;
+            &lt;div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {foreach $featuredPosts as $post}
+                    &lt;div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        {if $post.featured_image}
+                            &lt;img src="{$post.featured_image}" alt="{$post.title}" class="w-full h-48 object-cover">
+                        {/if}
+                        &lt;div class="p-6">
+                            &lt;h3 class="text-xl font-semibold mb-2">
+                                &lt;a href="/blog/{$post.slug}" class="text-gray-800 hover:text-blue-600">{$post.title}</a&gt;
+                            &lt;/h3&gt;
+                            &lt;p class="text-gray-600 mb-4">{$post.excerpt|truncate:120}</p&gt;
+                            &lt;div class="text-sm text-gray-500">
+                                By {$post.author.name} | {$post.published_at|date_format:"%B %d, %Y"}
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                {/foreach}
+            &lt;/div&gt;
+        &lt;/div&gt;
+    {/if}
+    
+    &lt;div&gt;
+        &lt;h2 class="text-2xl font-bold mb-6">Recent Posts&lt;/h2&gt;
+        &lt;div class="space-y-6">
+            {foreach $recentPosts as $post}
+                &lt;div class="bg-white rounded-lg shadow-md p-6">
+                    &lt;h3 class="text-xl font-semibold mb-2">
+                        &lt;a href="/blog/{$post.slug}" class="text-gray-800 hover:text-blue-600">{$post.title}</a&gt;
+                    &lt;/h3&gt;
+                    &lt;p class="text-gray-600 mb-4">{$post.excerpt|truncate:160}</p&gt;
+                    &lt;div class="flex justify-between items-center text-sm text-gray-500">
+                        &lt;span&gt;By {$post.author.name}</span&gt;
+                        &lt;span>{$post.published_at|date_format:"%B %d, %Y"}</span&gt;
+                        &lt;span><i class="far fa-eye"></i&gt; {$post.views} views&lt;/span&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            {/foreach}
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="mt-12 bg-white rounded-lg shadow-md p-6">
+        &lt;h3 class="text-xl font-bold mb-4">Categories&lt;/h3&gt;
+        &lt;div class="flex flex-wrap gap-2">
+            {foreach $categories as $category}
+                &lt;a href="/blog?category={$category.slug}" 
+                   class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full text-sm">
+                    {$category.name} ({$category.posts_count})
+                &lt;/a&gt;
+            {/foreach}
+        &lt;/div&gt;
+    &lt;/div&gt;
+{/block}
+
+
+</pre>
+
+<h3><code>jephy-mvc/app/views/posts/show.tpl</code></h3>
+<pre>
+<small>html|smarty</small>
+
+{* jephy-mvc/app/views/posts/show.tpl *}
+{extends file="layouts/app.tpl"}
+
+{block name="content"}
+    &lt;article class="bg-white rounded-lg shadow-md p-8 mb-8">
+        &lt;h1 class="text-3xl font-bold mb-4">{$post.title}</h1&gt;
+        
+        &lt;div class="flex items-center text-sm text-gray-500 mb-6">
+            &lt;span&gt;By {$post.author.name}</span&gt;
+            &lt;span class="mx-2">•</span&gt;
+            &lt;span>{$post.published_at|date_format:"%B %d, %Y"}</span&gt;
+            &lt;span class="mx-2">•</span&gt;
+            &lt;span><i class="far fa-eye"></i&gt; {$post.views} views&lt;/span&gt;
+        &lt;/div&gt;
+        
+        {if $post.featured_image}
+            &lt;img src="{$post.featured_image}" alt="{$post.title}" class="w-full rounded-lg mb-6">
+        {/if}
+        
+        &lt;div class="prose max-w-none">
+            {$post.content}
+        &lt;/div&gt;
+        
+        {if $post.categories|count &gt; 0}
+            &lt;div class="mt-6 pt-6 border-t">
+                &lt;h3 class="text-lg font-semibold mb-2">Categories:</h3&gt;
+                &lt;div class="flex flex-wrap gap-2">
+                    {foreach $post.categories as $category}
+                        &lt;a href="/blog?category={$category.slug}" 
+                           class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full text-sm">
+                            {$category.name}
+                        &lt;/a&gt;
+                    {/foreach}
+                &lt;/div&gt;
+            &lt;/div&gt;
+        {/if}
+    &lt;/article&gt;
+    
+    {if $relatedPosts|count &gt; 0}
+        &lt;div class="mb-8">
+            &lt;h2 class="text-2xl font-bold mb-4">Related Posts&lt;/h2&gt;
+            &lt;div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {foreach $relatedPosts as $related}
+                    &lt;div class="bg-white rounded-lg shadow-md p-4">
+                        &lt;h3 class="font-semibold mb-2">
+                            &lt;a href="/blog/{$related.slug}" class="text-gray-800 hover:text-blue-600">{$related.title}</a&gt;
+                        &lt;/h3&gt;
+                        &lt;p class="text-sm text-gray-600">{$related.excerpt|truncate:100}</p&gt;
+                    &lt;/div&gt;
+                {/foreach}
+            &lt;/div&gt;
+        &lt;/div&gt;
+    {/if}
+    
+    &lt;div class="bg-white rounded-lg shadow-md p-8">
+        &lt;h2 class="text-2xl font-bold mb-6">Comments ({$comments|count})</h2&gt;
+        
+        {if $comments|count &gt; 0}
+            &lt;div class="space-y-4 mb-8">
+                {foreach $comments as $comment}
+                    &lt;div class="border-b pb-4">
+                        &lt;div class="font-semibold">
+                            {if $comment.user_id}
+                                {$comment.user.name}
+                            {else}
+                                {$comment.author_name}
+                            {/if}
+                            &lt;span class="text-sm text-gray-500 ml-2">
+                                {$comment.created_at|date_format:"%B %d, %Y"}
+                            &lt;/span&gt;
+                        &lt;/div&gt;
+                        &lt;p class="text-gray-700 mt-2">{$comment.content}</p&gt;
+                    &lt;/div&gt;
+                {/foreach}
+            &lt;/div&gt;
+        {/if}
+        
+        &lt;h3 class="text-xl font-semibold mb-4">Leave a Comment&lt;/h3&gt;
+        
+        &lt;form id="commentForm" method="POST" class="space-y-4">
+            &lt;input type="hidden" name="csrf_token" value="{$csrfToken}">
+            
+            {if !$isLoggedIn}
+                &lt;div&gt;
+                    &lt;label class="block text-sm font-medium mb-2">Name *</label&gt;
+                    &lt;input type="text" name="author_name" required class="w-full border rounded-lg px-3 py-2">
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;label class="block text-sm font-medium mb-2">Email *</label&gt;
+                    &lt;input type="email" name="author_email" required class="w-full border rounded-lg px-3 py-2">
+                &lt;/div&gt;
+            {/if}
+            
+            &lt;div&gt;
+                &lt;label class="block text-sm font-medium mb-2">Comment *</label&gt;
+                &lt;textarea name="content" rows="4" required class="w-full border rounded-lg px-3 py-2"></textarea&gt;
+            &lt;/div&gt;
+            
+            &lt;button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                Submit Comment
+            &lt;/button&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+    
+    &lt;script&gt;
+    document.getElementById('commentForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        
+        const response = await fetch(window.location.href + '/comment', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(result.message);
+            e.target.reset();
+            location.reload();
+        } else {
+            alert(result.error);
+        }
+    });
+    &lt;/script&gt;
+{/block}
+
+
+</pre>
+
+</div>
+
+<div id="why-smarty">
+<h2><span class="sub-heading">#</span>  Why Smarty</h2>
+<p>Jephy-MVC integrates Smarty as its default template engine for several compelling reasons:</p>
+
+<h3>1. Clean Separation of Concerns</h3>
+
+<pre>
+<small>Smarty|html</small>
+
+{* Smarty Template - Clean and readable *}
+{extends file="layouts/app.tpl"}
+
+{block name="content"}
+	&lt;h1&gt;{$pageTitle}&lt;/h1&gt;    
+    {foreach $products as $product}
+        &lt;div class="product"&gt;
+            &lt;h3>{$product.name|escape}&lt;/h3&gt;
+            &lt;p class="price"&gt;${$product.price|number_format:2}&lt;/p&gt;
+            {if $product.stock &gt; 0}
+                &lt;button&gt;Add to Cart&lt;/button&gt;
+            {else}
+                &lt;span class="sold-out"&gt;Sold Out&lt;/span&gt;
+            {/if}
+        &lt;/div&gt;
+    {/foreach}
+{/block}
+
+
+</pre>
+
+<h3>Compare with raw PHP:</h3>
+
+<pre>
+<small>php | html</small>
+<!-- Raw PHP - Messy and hard to maintain -->
+<?php include 'layouts/app.php'; ?>
+&lt;div class="content"&gt;
+    &lt;h1&gt;<?= htmlspecialchars($pageTitle) ?>&lt;/h1&gt;
+    <?php foreach ($products as $product): ?>
+        &lt;div class="product"&lt;
+            &lt;h3&gt;<?= htmlspecialchars($product['name']) ?>&lt;/h3&gt;
+            &lt;p class="price"&gt;$<?= number_format($product['price'], 2) ?>&lt;/p&gt;
+            <?php if ($product['stock'] &gt; 0): ?>
+                &lt;button&gt;Add to Cart&lt;/button&gt;
+            <?php else: ?>
+                &lt;span class="sold-out"&gt;Sold Out&lt;/span&gt;
+            <?php endif; ?>
+        &lt;/div&gt;
+    <?php endforeach; ?>
+&lt;/div&gt;
+
+</pre>
+
+<h3>2. Built-in Security (XSS Protection)</h3>
+<pre>
+<small>Smarty | html</small>
+{* Smarty automatically escapes output *}
+{$userInput}  {* Automatically escaped to prevent XSS *}
+
+{* Manual escaping for different contexts *}
+{$userInput|escape:'html'}      {* HTML escaping *}
+{$userInput|escape:'javascript'} {* JavaScript escaping *}
+{$userInput|escape:'url'}        {* URL encoding *}
+
+{* Only use nofilter for trusted content *}
+{$trustedHtml nofilter}  {* Use with caution! *}
+
+</pre>
+
+<h3>3. Template Inheritance and Layouts</h3>
+<pre>
+<small>Smarty | php</small>
+
+{* layouts/base.tpl *}
+<!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title>{block name="title"}Default Title{/block}&lt;/title&gt;
+    {block name="styles"}{/block}
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header>{block name="header"}Default Header{/block}&lt;/header&gt;
+    
+    &lt;main>{block name="content"}{/block}&lt;/main&gt;
+    
+    &lt;footer>{block name="footer"}Default Footer{/block}&lt;/footer&gt;
+    
+    {block name="scripts"}{/block}
+&lt;/body&gt;
+&lt;/html&gt;
+
+{* child.tpl - Only override what you need *}
+{extends file="layouts/base.tpl"}
+
+{block name="title"}My Custom Page{/block}
+
+{block name="content"}
+    &lt;h1&gt;Welcome to my custom page!&lt;/h1&gt;
+{/block}
+
+{block name="scripts"}
+    &lt;script src="/js/custom.js"&gt;&lt;/script&gt;
+{/block}
+
+</pre>
+
+<h3>4. Template Caching for Performance</h3>
+<pre>
+<small>php</small>
+// Enable caching in controller
+$this->view->caching = true;
+$this->view->cache_lifetime = 3600; // 1 hour
+
+// Cache by ID for dynamic pages
+$this->view->display('products/list.tpl', $categoryId);
+
+// Clear cache when data changes
+$this->smarty->clearCache('products/list.tpl');
+
+</pre>
+
+<pre>
+<small>Smarty | html</small>
+{* Selective caching within template *}
+{cache name="sidebar" ttl="3600"}
+    {* Expensive database queries here *}
+    {foreach $popularProducts as $product}
+		
+        &lt;a href="/products/{$product.id}"&gt; 
+			{$product.name} 
+		&lt;/a&gt;
+		
+    {/foreach}
+{/cache}
+</pre>
+
+<h3>5. Powerful Built-in Modifiers</h3>
+<pre>
+<small>Smarty</small>
+{$text|upper}                    {* UPPERCASE *}
+{$text|lower}                    {* lowercase *}
+{$text|capitalize}               {* Capitalize Each Word *}
+{$text|truncate:50:"..."}        {* Truncate to 50 chars... *}
+{$date|date_format:"%Y-%m-%d"}   {* Format date *}
+{$number|string_format:"%02d"}   {* Format number *}
+{$html|strip_tags}               {* Remove HTML tags *}
+{$url|escape:'url'}              {* URL encode *}
+{$array|@count}                  {* Array count *}
+{$text|nl2br}                    {* Convert newlines to <br> *}
+{$text|spacify:"-"}              {* Add spaces/characters *}
+
+</pre>
+
+<h3>6. Custom Functions and Plugins</h3>
+<pre>
+<small>php</small>
+// Register custom Smarty function
+$smarty->registerPlugin('function', 'gravatar', function($params, $smarty) {
+    $email = md5(strtolower(trim($params['email'])));
+    $size = $params['size'] ?? 80;
+    return "https://www.gravatar.com/avatar/{$email}?s={$size}";
+});
+
+</pre>
+
+
+
+<h3>7. Template Partials/Includes</h3>
+<pre>
+<small>Smarty | html</small>
+{* Include with variables *}
+{include file="partials/header.tpl" title="My Page"}
+
+{* Dynamic includes *}
+{include file="partials/{$templateName}.tpl"}
+
+{* Include with variable scope control *}
+{include file="sidebar.tpl" scope="parent"}  {* Access parent variables *}
+</pre>
+
+
+<h3>8. Debugging Support</h3>
+<pre>
+<small>Smarty | html</small>
+{* Show all assigned variables (debug mode) *}
+{debug}
+
+{* Show variable information *}
+{$variable|var_dump}
+</pre>
+
+<h3>Comparison Table</h3>
+
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Feature</th>	
+			<th>Smarty</th>	
+			<th>Raw PHP</th>	
+			<th>Twig</th>	
+			<th>Blade</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Syntax</td>	
+			<td>&#123;$var&#125;</td>		
+			<td><?= $var ?></td>		
+			<td>&#123;&#123; $var &#125;&#125;</td>		
+			<td>&#123;&#123; $var &#125;&#125;</td>	
+		</tr>
+		
+		<tr>		
+			<td>Auto-escaping</td>	
+			<td>✅ Yes</td>	
+			<td>❌ No</td>	
+			<td>✅ Yes</td>	
+			<td>✅ Yes</td>
+		</tr>
+		
+		<tr>
+			<td>Template Inheritance</td>	
+			<td>✅ Yes</td>	
+			<td>❌ No</td>	
+			<td>✅ Yes</td>	
+			<td>✅ Yes</td>
+		</tr>
+		
+		<tr>
+			<td>Built-in Caching</td>	
+			<td>✅ Yes</td>	
+			<td>❌ No</td>	
+			<td>✅ Yes</td>	
+			<td>❌ No</td>
+		</tr>
+		
+		<tr>
+			<td>Learning</td> 
+			<td>Curve</td>	
+			<td>Low	Medium</td>	
+			<td>Medium</td>	
+			<td>Low</td>
+		</tr>
+		
+		<tr>
+			<td>Performance</td>	
+			<td>High</td>	
+			<td>High</td>	
+			<td>Medium</td>	
+			<td>High</td>
+		</tr>
+		
+		<tr>
+			<td>CustomFunctions</td>	
+			<td>Easy</td>	
+			<td>Easy</td>	
+			<td>Medium</td>	
+			<td>Easy</td>
+		</tr>
+
+	</tbody>
+</table>
+
+</div>
+
+
+<div id="common-tasks">
+<h2><span class="sub-heading">#</span>  Common Tasks</h2>
+<h3>Adding a New Page</h3>
+<pre>
+// 1. Create route in routes.php
+$router->get('/about', 'PageController@about');
+
+// 2. Create controller method
+class PageController extends Controller
+{
+    public function about()
+    {
+        $this->view->set('pageTitle', 'About Us');
+        $this->view->set('team', TeamMember::all());
+        return $this->view->display('pages.about');
+    }
+}
+
+// 3. Create view template (pages/about.tpl)
+{extends file="layouts/app.tpl"}
+
+{block name="content"}
+    &lt;h1&gt;About Us&lt;/h1&gt;
+    &lt;div class="team"&gt;
+        {foreach $team as $member}
+            &lt;div class="member"&gt;{$member.name} - {$member.role}&lt;/div&gt;
+        {/foreach}
+    &lt;/div&gt;
+{/block}
+</pre>
+
+
+<h3>Connecting to Database</h3>
+<pre>
+// 1. Configure database in jephy-mvc/config.conf
+[database]
+database.driver 	= mysql
+database.host 		= localhost
+database.name 		= jephymvc
+database.user 		= db_user
+database.password 	= secret
+
+// 2. Use models
+$users = User::all();
+$activeUsers = User::where('status', 'active')->get();
+$user = User::find(1);
+$user->name = 'New Name';
+$user->save();
+
+// 3. Or use Query Builder directly
+$db = \Core\Database::getInstance();
+$results = $db->table('users')->where('age', '>', 18)->get();
+</pre>
+
+<h3>Creating Middleware</h3>
+<pre>
+<small>php</small>
+
+// 1. Create middleware class
+// jephy-mvc/app/middleware/RateLimitMiddleware.php
+namespace App\Middleware;
+
+use Core\Middleware;
+
+class RateLimitMiddleware extends Middleware
+{
+    public function handle($request, $next)
+    {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $key = "rate_limit:{$ip}";
+        
+        if (!isset($_SESSION[$key])) {
+            $_SESSION[$key] = ['count' => 1, 'first_request' => time()];
+        } else {
+            if (time() - $_SESSION[$key]['first_request'] < 60) {
+                if ($_SESSION[$key]['count'] >= 60) {
+                    return $this->json(['error' => 'Too many requests'], 429);
+                }
+                $_SESSION[$key]['count']++;
+            } else {
+                $_SESSION[$key] = ['count' => 1, 'first_request' => time()];
+            }
+        }
+        
+        return $next($request);
+    }
+}
+
+// 2. Apply to routes
+$router->post('/api/submit', 'ApiController@submit')->middleware('RateLimitMiddleware');
+
+</pre>
+
+<h3>Handling Forms</h3>
+<pre>
+<small>php</small>
+// 1. Display form
+public function showForm()
+{
+    $this->view->set('csrfToken', $_SESSION['csrf_token']);
+    return $this->view->display('forms.contact');
+}
+
+// 2. Process form submission
+public function processForm()
+{
+    // Validate CSRF token
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        throw new \Exception('CSRF attack detected');
+    }
+    
+    // Get form data
+    $name = $this->request->post('name');
+    $email = $this->request->post('email');
+    $message = $this->request->post('message');
+    
+    // Validate
+    $errors = [];
+    if (empty($name)) $errors['name'] = 'Name is required';
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors['email'] = 'Invalid email';
+    if (empty($message)) $errors['message'] = 'Message is required';
+    
+    if (!empty($errors)) {
+        $_SESSION['form_errors'] = $errors;
+        $_SESSION['old_input'] = $_POST;
+        $this->redirect('/contact');
+    }
+    
+    // Process data
+    MailService::send($email, 'Contact Form', $message);
+    
+    $_SESSION['flash_message'] = 'Message sent successfully!';
+    $this->redirect('/contact/thank-you');
+}
+
+// 3. Display errors in template
+{if isset($smarty.session.form_errors)}
+    &lt;div class="errors"&gt;
+        {foreach $smarty.session.form_errors as $error}
+            &lt;div class="error"&gt;{$error}&lt;/div&gt;
+        {/foreach}
+    &lt;/div&gt;
+{/if}
+
+
+</pre>
+
+<h3>Working with Sessions</h3>
+<pre>
+<small>php</small>
+// Setting session data within Controller
+$this->setSession( 'user_id', $user->id );
+// Or
+$_SESSION['user_id'] = $user->id;
+
+$this->setSession( 'cart', ['product_1' => 2, 'product_2' => 1] );
+// Or
+$_SESSION['cart'] = ['product_1' => 2, 'product_2' => 1];
+
+// Flash messages (one-time notification)
+$this->setSession( 'flash_message', 'Operation completed!' );
+// Or
+$_SESSION['flash_message'] = 'Operation completed!';
+
+$this->setSession( 'flash_type', 'success' );
+// Or
+$_SESSION['flash_type'] = 'success';
+
+// Check session
+if ( $this->sessionExists( "user_id", "" ) ) {
+    // User is logged in
+}
+//	Or
+if (isset($_SESSION['user_id'])) {
+    // User is logged in
+}
+
+// Destroy session
+session_destroy();
+</pre>
+
+<h3>File Uploads</h3>
+<pre>
+// 1. Form with enctype
+&lt;form method="POST" enctype="multipart/form-data"&gt;
+    &lt;input type="file" name="avatar"&gt;
+    &lt;button type="submit"&gt;Upload<&lt;/button&gt;
+&lt;/form&gt;
+
+// 2. Handle upload in controller
+public function uploadAvatar()
+{
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!in_array($_FILES['avatar']['type'], $allowedTypes)) {
+            $_SESSION['flash_message'] = 'Invalid file type';
+            $this->redirect('/profile');
+        }
+        
+        if ($_FILES['avatar']['size'] > $maxSize) {
+            $_SESSION['flash_message'] = 'File too large';
+            $this->redirect('/profile');
+        }
+        
+        // Generate unique filename
+        $extension = pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION);
+        $filename = uniqid() . '.' . $extension;
+        $uploadPath = UPLOAD_DIR . '/avatars/' . $filename;
+        
+        move_uploaded_file($_FILES['avatar']['tmp_name'], $uploadPath);
+        
+        // Save filename to database
+        $user = User::find($_SESSION['user_id']);
+        $user->avatar = $filename;
+        $user->save();
+        
+        $_SESSION['flash_message'] = 'Avatar uploaded successfully!';
+    }
+    
+    $this->redirect('/profile');
+}
+</pre>
+
+<h3>Sending Emails</h3>
+<pre>
+<small>php</small>
+
+use App\Core\Framework;
+
+try{
+
+	$postData = [
+		"firstname" => "John",
+		"lastname" => "Doe",
+		"email" => "john.doe@example.com",
+	];
+	
+	$emailHtml 			= $this->fetch( 'emails/email-template.tpl', [ ...$postData ] );
+	$mailer 			= Framework::getMailer();
+	$mailSubject 		= "Your mail subject here ";
+	$mailer->send( "john.doe@example.com", $mailSubject, $emailHtml );
+	
+}catch( Exception $e ){
+	print( $e );
+}
+
+
+</pre>
+
+<h3>Creating REST API Endpoints</h3>
+<pre>
+<small>php</small>
+
+// 1. Define API routes
+$router->group(['prefix' => 'api/v1'], function($router) {
+    $router->get('/users', 'Api\UserController@index');
+    $router->get('/users/{id}', 'Api\UserController@show');
+    $router->post('/users', 'Api\UserController@store');
+    $router->put('/users/{id}', 'Api\UserController@update');
+    $router->delete('/users/{id}', 'Api\UserController@destroy');
+});
+
+// 2. Create API controller
+namespace App\Controllers\Api;
+
+class UserController extends BaseApiController
+{
+    public function index()
+    {
+        $users = User::all();
+        return $this->json([
+            'success' => true,
+            'data' => $users
+        ]);
+    }
+    
+    public function store()
+    {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $user = User::create($data);
+        
+        return $this->json([
+            'success' => true,
+            'data' => $user
+        ], 201);
+    }
+}
+
+</pre>
+
+<h3>Using Hooks</h3>
+<pre>
+<small>php</small>
+use App\Services\MailService;
+// 1. Register a hook in bootstrap.php
+$hookManager->registerHook('user_registered', function($user) {
+    // Send welcome email
+    MailService::sendWelcomeEmail($user);
+	// You can also use the PHPMailer based App\Core\Mailer
+    
+    // Log registration
+    error_log("New user registered: {$user->email}");
+    
+    return $user;
+});
+
+// 2. Trigger the hook in your code
+$user = User::create($data);
+$hookManager->fire('user_registered', $user);
+
+</pre>
+
+</div>
+
+
+<div id="updating-the-framework">
+<h2><span class="sub-heading">#</span>  Updating The Framework</h2>
+<h3>Method 1: Git Pull (Recommended for Git Users)</h3>
+<pre>
+<small>bash</small>
+
+# Navigate to your project root
+cd /path/to/your-project
+
+# Save your current state (optional but recommended)
+git add .
+git commit -m "Backup before framework update"
+
+# Pull latest framework changes
+git pull origin main
+
+# Check for merge conflicts
+git status
+
+# Resolve conflicts if any
+# Then commit the merge
+git commit -m "Merge framework update"
+
+# Test your application
+php -S localhost:8000
+
+</pre>
+
+<h3>Method 2: Manual Update (For ZIP Installation)</h3>
+<pre>
+<small>bash</small>
+# 1. Backup your project
+cp -r your-project your-project-backup
+
+# 2. Download latest framework from GitHub
+wget https://github.com/jephymvc/jephy-mvc-01
+unzip main.zip
+
+# 3. Replace framework core files (but keep your app)
+cp -r version-1.0/src/jephy-mvc/core/* your-project/jephy-mvc/core/
+cp -r version-1.0/src/jephy-mvc/bootstrap.php your-project/jephy-mvc/
+cp -r version-1.0/src/jephy-mvc/routes.php your-project/jephy-mvc/
+
+# 4. DO NOT overwrite these directories:
+# - jephy-mvc/app/ (your application code)
+# - jephy-mvc/config.conf (your configuration)
+# - public/assets/ (your static files)
+
+# 5. Check for new configuration options
+diff jephy-mvc-main/jephy-mvc/example.config.conf your-project/jephy-mvc/config.conf
+
+# 6. Clear Smarty cache
+rm -rf jephy-mvc/app/cache/*
+
+# 7. Test your application. If you are running XAMPP use the step below:
+cd public
+php -S localhost:8000
+</pre>
+
+
+<h3>Update Checklist</h3>
+<pre>
+<small>php</small>
+
+// Pre-update checklist
+✅ Backup your entire project
+✅ Document any custom modifications
+✅ Note your current PHP version
+✅ Check framework version (check CHANGELOG.md)
+
+// During update
+✅ Compare config.conf with example.config.conf
+✅ Review breaking changes in CHANGELOG
+✅ Update custom middleware if needed
+✅ Update hooks if signatures changed
+
+// Post-update
+✅ Clear Smarty cache
+✅ Clear browser cache
+✅ Test all critical paths
+✅ Verify database connections
+✅ Check error logs
+✅ Test on staging first
+
+</pre>
+
+<h3>Version Compatibility</h3>
+<pre>
+<small>php</small>
+// Check framework version
+echo Framework::VERSION;
+
+// Check PHP version compatibility
+if (version_compare(PHP_VERSION, '8.0.0', '<')) {
+    die('PHP 8.0+ required');
+}
+
+// Migration helper (create a migration script)
+class FrameworkMigration
+{
+    public function run()
+    {
+        // Add new columns to existing tables
+        if (!Schema::hasColumn('users', 'api_token')) {
+            Schema::table('users', function($table) {
+                $table->string('api_token', 80)->nullable();
+            });
+        }
+        
+        // Update configuration
+        $config = Config::getInstance();
+        if (!$config->has('app.debug')) {
+            $config->set('app.debug', false);
+        }
+    }
+}
+
+</pre>
+
+</div>
+
+
+<div id="support-and-community">
+<h2><span class="sub-heading">#</span>  Support & Community</h2>
+<h3>Getting Help</h3>
+<h3>1. GitHub Issues</h3>
+<pre>
+<small>bash</small>
+# Report bugs or request features
+https://github.com/yourusername/jephy-mvc/issues
+
+# Template for bug reports
+---
+Title: [Bug] Brief description
+Description: 
+- Expected behavior
+- Actual behavior
+- Steps to reproduce
+- Environment (PHP version, OS, Server)
+- Code sample if applicable
+---
+</pre>
+
+<h3>2. GitHub Discussions</h3>
+<pre>
+<small>bash</small>
+# Ask questions, share ideas, show your projects
+https://github.com/yourusername/jephy-mvc/discussions
+
+# Categories:
+- Q&A - Technical questions
+- Ideas - Feature suggestions
+- Show and tell - Share what you built
+- General - Community discussions
+</pre>
+
+<h3>3. Discord Community</h3>
+<pre>
+<small>bash</small>
+# Join our Discord server
+https://westribbon.com.ng/projects/support/jephy-mvc
+
+# Channels:
+#general - General discussion
+#help - Technical support
+#showcase - Share your projects
+#announcements - Framework updates
+#contributors - Development discussions
+</pre>
+
+<h3>4. Documentation</h3>
+<pre>
+
+# Official documentation
+https://docs.jephy-mvc.com
+
+# Topics covered:
+- Getting Started
+- Core Concepts
+- Security
+- Database
+- API Development
+- Deployment
+- Contributing
+</pre>
+
+<h3>Support Policy</h3>
+
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Support Level</th>	
+			<th>Description</th>	
+			<th>Duration</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Security Updates</td>	
+			<td>Critical security patches</td>	
+			<td>2 years after last release</td>
+		</tr>
+		<tr>
+			<td>Bug Fixes</td>	
+			<td>Non-security bug fixes</td>	
+			<td>6 months after last release</td>
+		</tr>
+		<tr>
+			<td>Feature Requests</td>	
+			<td>New features</td>	
+			<td>On GitHub Discussions</td>
+		</tr>
+		<tr>
+			<td>Community Support</td>	
+			<td>Discord, GitHub</td>	
+			<td>Always</td>
+		</tr>
+		<tr>
+			<td>Priority Support</td>	
+			<td>For sponsors</td>	
+			<td>Per agreement</td>
+		</tr>
+
+	</tbody>
+</table>
+
+<h3>Getting Priority Support</h3>
+
+<pre>
+<small>php</small>
+
+// For enterprise and priority support
+https://westribbon.com.ng/projects/support/jephy-mvc
+
+// Support tiers:
+- Community: Free (GitHub Discussions)
+- Basic: $49/month (Email support, 48h response)
+- Pro: $199/month (Priority email, 24h response)
+- Enterprise: Custom (Dedicated support, SLA)
+
+</pre>
+<h3>Reporting Security Issues</h3>.
+<pre>
+// Security vulnerabilities should be reported privately
+// DO NOT open public issues for security problems
+
+// Contact: afolabi.oloruntola@westribbon.com.ng
+
+// Expected response time: 48 hours
+// Security advisories: https://github.com/jephymvc/jephy-mvc-01/security/advisories
+
+</pre>
+
+<h3>Community Code of Conduct</h3>
+
+<pre>
+<small>markdown</small>
+
+# Jephy-MVC Code of Conduct
+
+## Our Pledge
+We pledge to make participation in our community a harassment-free experience.
+
+## Our Standards
+- Use welcoming and inclusive language
+- Respect differing viewpoints
+- Accept constructive criticism
+- Focus on what's best for the community
+
+## Enforcement
+Instances of abusive behavior may be reported to the project team at afolabi.oloruntola@westribbon.com.ng
+</pre>
+
+<h3>Useful Links</h3>
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Resource</th>	
+			<th>URL</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Official Website</td>	
+			<td>https://jephymvc.github.io/jephy-mvc-01/</td>
+		</tr>
+		<tr>
+			<td>Documentation</td>	
+			<td>https://jephymvc.github.io/jephy-mvc-01/</td>
+		</tr>
+		<tr>
+			<td>GitHub Repository</td>	
+			<td>https://github.com/jephymvc/jephy-mvc-01</td>
+		</tr>
+		<tr>
+			<td>Discord</td>	
+			<td></td>
+		</tr>
+		<tr>
+			<td>Twitter</td>	
+			<td></td>
+		</tr>
+		<tr>
+			<td>YouTube Tutorials</td>	
+			<td></td>
+		</tr>
+		<tr>
+			<td>Stack Overflow</td>	
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+
+</div>
+
+						</div>					
+					</div>				
+					
+					<div class="track-column right">
+						<div>
+							<h3>ON THIS PAGE</h3>
+							<ul id="right-column-ul">
+								<!--
+									<li>
+										<a class="active">Meet Jephy MVC</a>
+									</li>
+									<li>
+										<a>Installing Jephy MVC</a>
+									</li>
+									<li>
+										<a>System Requirements</a>
+									</li>
+								-->								
+							</ul>
+						</div>
+						
+						
+					</div>
+						
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+
+<span id="page-data" data-url="/"></span>
+
+<script>
+const pageData = document.querySelector( "#page-data" );
+const header = document.querySelectorAll( "header" )[0];
+header.classList.remove( "fixed-header" );
+window.addEventListener( "scroll", () => {
+	if( window.scrollY > 210 ){
+		header.classList.add( "fixed-header" );
+	}else{
+		header.classList.remove( "fixed-header" );
+	}
+} );
+</script>
+
+<script>
+const rightColumnUl = document.querySelector( "#right-column-ul" );
+const centerColumn = document.querySelector( "#center-column" );
+
+[...centerColumn.querySelectorAll( "h2, h3" )].forEach( ( it ) => {
+	const a = document.createElement( 'a' );
+	const li = document.createElement( 'li' );
+	a.textContent = it.textContent.replace( "<span class=\"sub-heading\">#</span>", "" ); 
+	li.appendChild( a );
+	rightColumnUl.appendChild( li );
+} );
+rightColumnUl.querySelectorAll( "li > a" )[0].classList.add( "active" );
+
+
+const asideHeading =  document.querySelectorAll( ".aside-heading > span" );
+[...asideHeading].forEach( ( it ) => {
+	it.style.cursor = "pointer";
+	it.addEventListener( "click", ( evt ) => {
+		location.href = pageData.getAttribute( "data-url" ) + "docs/" + it.getAttribute( "data-target" );
+	} );
+} );
+
+const getColumnOffsets = ( el, column ) => {
+	var rect 		= el.getBoundingClientRect(),
+	scrollLeft 		= window.pageXOffset || document.documentElement.scrollLeft,
+	scrollTop 		= window.pageYOffset || document.documentElement.scrollTop;
+	return { 
+		top: rect.top + scrollTop, 
+		left: rect.left + scrollLeft, 
+		width: rect.width, 
+		height: rect.height, 
+	};	
+}
+
+const scrollColumnSection = ( columnId ) => {
+	const column 	= document.querySelector( columnId );
+	const pathData 	= location.pathname.split( "/" ).filter( ( it ) => it !== "" );
+	if( pathData.length > 0 ){
+		let targetSection 	= column.querySelector( "#" + pathData[ pathData.length - 1 ] );
+		let sectionOffsets 	= getColumnOffsets( targetSection, column );
+		column.scroll( {
+			top: sectionOffsets.top - 210,
+			left: 0,
+			behavior: 'smooth'
+		} );
+	}	
+}
+
+//	scrollColumnSection( "#center-column" );
+
+const locationPathData 	= location.href.split( "#" ).filter( ( it ) => it !== "" );
+if( locationPathData.length > 1 || locationPathData.length == 2 ){
+	
+	const leftColumnMenu 	= document.querySelectorAll( "#left-column > div > ul > li > a" );
+	console.log( 'Got here!' );
+	console.log( leftColumnMenu );
+	[ ...leftColumnMenu ].forEach( ( it ) => {		
+		if( it.getAttribute( "data-target" ) == locationPathData[1] ){
+			it.classList.add( "active" );
+		}else{
+			it.classList.remove( "active" );
+		}		
+	} );
+
+}
+
+console.log( locationPathData );
+
+</script>
+
+<script>
+
+
+const asideMenu = document.querySelectorAll('#left-column > div > ul > li:not(.aside-heading):not(.aside-sub-heading)');
+window.onload 	= function () {
+	const locationData = location.href.split( "#" );
+	if( locationData.length == 2){
+		[ ...asideMenu ].forEach( ( btn ) => {
+			console.log( `${btn.getAttribute( "data-target" )} == ${locationData[1]}` );			
+				
+			if( btn.querySelectorAll( "a" )[0].getAttribute( "data-target" ) == locationData[1]?.toString()?.trim() ){
+				btn.scrollIntoView( {
+					behavior: 'smooth',
+					block: 'center'
+				} );
+				//	break;
+			}
+		} );
+	}			
+};
+
+
+
+
+</script>
+
+</body>
+</html>

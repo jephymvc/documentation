@@ -1,0 +1,2217 @@
+---
+layout: docs
+title: Database
+---
+
+<div class="center-breadcrumbs mt-1 mb-4">
+	<div>
+		<a href="{{ site.repo_url }}docs/overview">Docs</a>
+	</div>
+	<span class="breadcrumb-divider">
+		<img src="{{ site.repo_url }}assets/images/icons/arrow-right.svg" />
+	</span>
+
+	<div>Database </div>															
+</div>
+
+<h1>Database</h1>
+<div id="database-overview">
+<h2>Database Overview</h2>
+
+<p>
+	{{site.title}} supports RDMS CRUD transactions with the QueryBuilder and Model core classes.
+</p>
+<p>
+	Query Builder provides a fluent, intuitive interface for building database 
+	queries programmatically. It supports method chaining, relationships, eager loading, 
+	batch operations, and raw expressions.
+</p>
+
+<p>
+	ORM provides an elegant Active Record implementation with support for relationships, 
+	query building, eager loading, and event hooks. Each database table has a corresponding Model 
+	class that interacts with that table.
+</p>
+
+</div>
+<br><br>
+<div id="querybuilder">
+<h2>Getting Started with QueryBuilder</h2>
+<h3>Basic Usage:</h3>
+
+<pre>
+<small>php</small>
+
+use App\Core\QueryBuilder;
+
+// Create a new query builder instance
+$query = new QueryBuilder('users');
+
+// Or use with entity class for ORM-style
+$query = (new QueryBuilder('users'))->setEntity(User::class);
+
+</pre>
+</div>
+
+
+<div id="querybuilder-select-queries">
+<h2>QueryBuilder Select Queries</h2>
+<h3>Basic Select</h3>
+
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Select all users
+$users = $db->get();
+
+// Select specific columns
+$users = $db->select('id', 'name', 'email')->get();
+
+// Select with array
+$users = $db->select(['id', 'name', 'email'])->get();
+
+// Select first record
+$user = $db->first();
+
+// Find by ID
+$user = $db->find(1);
+
+</pre>
+
+<h3>Where Clauses</h3>
+<pre>
+<small>php</small>
+
+$db = new QueryBuilder('users');
+
+// Basic where
+$users = $db->where('status', 'active')->get();
+
+// Where with operator
+$users = $db->where('age', '>', 18)->get();
+
+// Multiple where clauses (AND)
+$users = $db->where('status', 'active')
+           ->where('role', 'admin')
+           ->get();
+
+// OR where
+$users = $db->where('status', 'active')
+           ->orWhere('status', 'pending')
+           ->get();
+
+// Where IN
+$users = $db->whereIn('role', ['admin', 'editor', 'moderator'])->get();
+
+// Where NULL
+$users = $db->whereNull('deleted_at')->get();
+
+// Where NOT NULL
+$users = $db->whereNotNull('email_verified_at')->get();
+
+</pre>
+
+<h3>Ordering and Limits</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Order by
+$users = $db->orderBy('name', 'ASC')->get();
+$users = $db->orderBy('created_at', 'DESC')->get();
+
+// Multiple order by
+$users = $db->orderBy('status', 'ASC')
+           ->orderBy('name', 'ASC')
+           ->get();
+
+// Limit
+$users = $db->limit(10)->get();
+
+// Offset (for pagination)
+$users = $db->limit(10)->offset(20)->get();
+</pre>
+
+<h3>Aggregates</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Count
+$total = $db->count();
+$activeCount = $db->where('status', 'active')->count();
+
+// Sum
+$totalSalary = $db->sum('salary');
+
+// Average
+$averageAge = $db->avg('age');
+
+// Maximum
+$maxAge = $db->max('age');
+
+// Minimum
+$minAge = $db->min('age');
+
+// Pluck (get single column values)
+$names = $db->pluck('name'); // Returns ['John', 'Jane', ...]
+$namesById = $db->pluck('name', 'id'); // Returns [1 => 'John', 2 => 'Jane']
+
+</pre>
+
+<h3>Joins</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('orders');
+
+// Inner join
+$orders = $db->join('users', 'orders.user_id', '=', 'users.id')
+             ->select('orders.*', 'users.name as user_name')
+             ->get();
+
+// Left join
+$orders = $db->leftJoin('users', 'orders.user_id', '=', 'users.id')
+             ->get();
+
+// Right join
+$orders = $db->rightJoin('users', 'orders.user_id', '=', 'users.id')
+             ->get();
+
+// Multiple joins
+$orders = $db->join('users', 'orders.user_id', '=', 'users.id')
+             ->join('products', 'orders.product_id', '=', 'products.id')
+             ->get();
+</pre>
+
+</div>
+
+
+<div id="querybuilder-insert-queries">
+
+<h2>QueryBuilder Insert Queries</h2>
+<h3>Single Insert</h3>
+
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Insert single record
+$userId = $db->insert([
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'password' => password_hash('secret', PASSWORD_DEFAULT),
+    'status' => 'active'
+]);
+
+echo "Inserted user ID: " . $userId;
+</pre>
+
+<h3>Batch Insert</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Insert multiple records
+$inserted = $db->insertBatch([
+    ['name' => 'User 1', 'email' => 'user1@example.com'],
+    ['name' => 'User 2', 'email' => 'user2@example.com'],
+    ['name' => 'User 3', 'email' => 'user3@example.com']
+]);
+
+echo "Inserted {$inserted} records";
+
+</pre>
+
+<h3>Upsert (Insert or Update)</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Insert or update on duplicate key
+$affected = $db->upsert(
+    ['email' => 'john@example.com', 'name' => 'John Updated', 'status' => 'active'],
+    ['name' => 'John Updated', 'status' => 'active'] // Data to update if exists
+);
+</pre>
+</div>
+
+
+<div id="querybuilder-update-queries">
+
+<h2>QueryBuilder Update Queries</h2>
+<h3>Basic Update</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Method 1: Using set() and update()
+$updated = $db->where('id', 1)
+              ->set('name', 'Updated Name')
+              ->set('status', 'inactive')
+              ->update();
+echo "Rows updated: " . $updated;
+
+// Method 2: Using setMultiple()
+$updated = $db->where('id', 1)
+              ->setMultiple([
+                  'name' => 'Updated Name',
+                  'status' => 'inactive'
+              ])
+              ->update();
+
+// Method 3: Using updateArray()
+$updated = $db->where('id', 1)
+              ->updateArray([
+                  'name' => 'Updated Name',
+                  'status' => 'inactive'
+              ]);
+
+// Method 4: Using updateAlt()
+$updated = $db->where('id', 1)
+              ->updateAlt([
+                  'name' => 'Updated Name',
+                  'status' => 'inactive'
+              ]);
+</pre>
+
+<h3>Increment and Decrement</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Increment
+$db->where('id', 1)->increment('views');
+$db->where('id', 1)->increment('login_count', 5);
+
+// Decrement
+$db->where('id', 1)->decrement('stock');
+$db->where('id', 1)->decrement('stock', 2);
+</pre>
+
+<h3>Raw Expressions in Updates</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Using RawExpression for complex updates
+use App\Core\RawExpression;
+
+$db->where('id', 1)
+   ->setRaw('views', 'views + 1')
+   ->setRaw('last_login', 'NOW()')
+   ->update();
+
+// Or use setRaw method
+$db->where('id', 1)
+   ->set('views', new RawExpression('views + 1'))
+   ->update();
+</pre>
+
+<h3>Batch Update</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Update multiple records with different values
+$data = [
+    ['id' => 1, 'status' => 'active', 'role' => 'admin'],
+    ['id' => 2, 'status' => 'inactive', 'role' => 'user'],
+    ['id' => 3, 'status' => 'active', 'role' => 'editor']
+];
+
+$updated = $db->updateBatch($data, 'id');
+echo "Rows updated: " . $updated;
+</pre>
+
+<h3>Update with Join</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('orders');
+
+// Update using JOIN
+$updated = $db->join('users', 'orders.user_id', '=', 'users.id')
+              ->where('users.status', 'inactive')
+              ->set('orders.status', 'cancelled')
+              ->updateJoin('users', 'orders.user_id', '=', 'users.id');
+</pre>
+
+<h3>Delete Queries</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Delete with conditions
+$deleted = $db->where('status', 'inactive')
+              ->where('last_login', '<', date('Y-m-d', strtotime('-90 days')))
+              ->delete();
+
+// Delete single record
+$deleted = $db->where('id', 1)->delete();
+
+// Delete all records (be careful!)
+$deleted = $db->delete(); // No WHERE clause
+</pre>
+</div>
+
+
+<div id="querybuilder-with-entities">
+
+<h2>QueryBuilder with Entities (ORM Style)</h2>
+<h3>Setting Entity Class</h3>
+
+<pre>
+<small>php</small>
+
+// Define your entity class
+class User
+{
+    public $id;
+    public $name;
+    public $email;
+    public $status;
+    
+    private $relations = [];
+    
+    public function __construct($data = [])
+    {
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+    
+    public function getKey()
+    {
+        return $this->id;
+    }
+    
+    public function setRelation($key, $value)
+    {
+        $this->relations[$key] = $value;
+    }
+    
+    // Relationship methods
+    public function posts()
+    {
+        return (new QueryBuilder('posts'))
+            ->setEntity(Post::class)
+            ->where('user_id', $this->id);
+    }
+    
+    public function profile()
+    {
+        return (new QueryBuilder('profiles'))
+            ->setEntity(Profile::class)
+            ->where('user_id', $this->id);
+    }
+}
+
+// Use QueryBuilder with entity
+$users = (new QueryBuilder('users'))
+    ->setEntity(User::class)
+    ->where('status', 'active')
+    ->get();
+
+foreach ($users as $user) {
+    echo $user->name . "\n"; // Access as object
+}
+
+</pre>
+
+<h3>Eager Loading Relationships</h3>
+<pre>
+<small>php</small>
+// Eager load relationships (prevents N+1 queries)
+$users = (new QueryBuilder('users'))
+    ->setEntity(User::class)
+    ->with('posts', 'profile')
+    ->where('status', 'active')
+    ->get();
+
+// With nested relationships
+$users = (new QueryBuilder('users'))
+    ->setEntity(User::class)
+    ->with(['posts' => function($query) {
+        $query->where('status', 'published')->orderBy('created_at', 'DESC');
+    }])
+    ->get();
+
+// Load relationship counts
+$users = (new QueryBuilder('users'))
+    ->setEntity(User::class)
+    ->withCount('posts', 'comments')
+    ->get();
+
+// Lazy load after query
+$users = (new QueryBuilder('users'))->setEntity(User::class)->get();
+$users = $users->load('posts'); // Load relationship
+</pre>
+
+<h3>Raw Expressions</h3>
+<pre>
+<small>php</small>
+
+use App\Core\RawExpression;
+
+$db = new QueryBuilder('users');
+
+// Use RawExpression in select
+$users = $db->select(new RawExpression('COUNT(*) as total'))->get();
+
+// Use in where
+$users = $db->where(new RawExpression('YEAR(created_at)'), '2024')->get();
+
+// Use in update
+$db->where('id', 1)
+   ->set('last_login', new RawExpression('NOW()'))
+   ->set('views', new RawExpression('views + 1'))
+   ->update();
+
+// Use in order by
+$users = $db->orderBy(new RawExpression('RAND()'))->get();
+</pre>
+
+<h3>Pagination</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Simple pagination
+$result = $db->where('status', 'active')
+             ->orderBy('created_at', 'DESC')
+             ->paginate(15); // 15 items per page
+
+// Access pagination data
+$users = $result['data'];
+$total = $result['total'];
+$perPage = $result['per_page'];
+$currentPage = $result['current_page'];
+$lastPage = $result['last_page'];
+$from = $result['from'];
+$to = $result['to'];
+
+// Custom page
+$page = $_GET['page'] ?? 1;
+$result = $db->paginate(20, $page);
+</pre>
+</div>
+
+
+<div id="advanced-querybuilder-query-building">
+
+<h2>Advanced QueryBuilder Query Building</h2>
+<h3>Complex Where Conditions</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('products');
+
+// Combine multiple conditions
+$products = $db->where('status', 'active')
+               ->where('price', '>', 10)
+               ->where('stock', '>', 0)
+               ->orWhere('featured', 1)
+               ->get();
+
+// WHERE IN with array
+$products = $db->whereIn('category_id', [1, 2, 3, 4])->get();
+
+// WHERE NULL checks
+$products = $db->whereNull('deleted_at')->get();
+$products = $db->whereNotNull('published_at')->get();
+</pre>
+
+<h3>Chunked Results (Memory Efficient)</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Process large datasets in chunks
+$page = 1;
+$perPage = 100;
+
+while (true) {
+    $users = $db->limit($perPage)
+                ->offset(($page - 1) * $perPage)
+                ->get();
+    
+    if (empty($users)) {
+        break;
+    }
+    
+    foreach ($users as $user) {
+        // Process user
+        processUser($user);
+    }
+    
+    $page++;
+}
+</pre>
+
+<h3>Subqueries</h3>
+<pre>
+<small>php</small>
+// Using multiple query builders
+$posts = new QueryBuilder('posts');
+
+// Get users with posts
+$users = (new QueryBuilder('users'))
+    ->whereIn('id', function($query) use ($posts) {
+        return $posts->select('user_id')->get();
+    })
+    ->get();
+</pre>
+</div>
+
+
+<div id="querybBuilder-debugging">
+
+<h2>QueryBuilder Debugging</h2>
+<h3>Get SQL Query</h3>
+<pre>
+<small>php</small>
+$db = new QueryBuilder('users');
+
+// Build query without executing
+$sql = $db->where('status', 'active')
+          ->orderBy('created_at', 'DESC')
+          ->limit(10)
+          ->toSql();
+
+echo $sql; // SELECT * FROM users WHERE status = :where_0 ORDER BY created_at DESC LIMIT 10
+
+// Get bindings
+$bindings = $db->getBindings();
+print_r($bindings); // [':where_0' => 'active']
+</pre>
+
+</div>
+
+<div id="queryBuilder-practical-examples">
+<h2>QueryBuilder Practical Examples</h2>
+<h3>User Repository with QueryBuilder</h3>
+
+<pre>
+<small>php</small>
+class UserRepository
+{
+    private $query;
+    
+    public function __construct()
+    {
+        $this->query = new QueryBuilder('users');
+    }
+    
+    public function getAllActive($page = 1, $perPage = 20)
+    {
+        return $this->query->where('status', 'active')
+                           ->orderBy('name', 'ASC')
+                           ->paginate($perPage, $page);
+    }
+    
+    public function findByEmail($email)
+    {
+        return $this->query->where('email', $email)->first();
+    }
+    
+    public function createUser($data)
+    {
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        $data['created_at'] = date('Y-m-d H:i:s');
+        
+        return $this->query->insert($data);
+    }
+    
+    public function updateUser($id, $data)
+    {
+        return $this->query->where('id', $id)
+                           ->setMultiple($data)
+                           ->update();
+    }
+    
+    public function deleteUser($id)
+    {
+        return $this->query->where('id', $id)->delete();
+    }
+    
+    public function getUsersWithRecentOrders()
+    {
+        return $this->query->join('orders', 'users.id', '=', 'orders.user_id')
+                           ->where('orders.created_at', '>', date('Y-m-d', strtotime('-30 days')))
+                           ->select('users.*', 'orders.total', 'orders.created_at as order_date')
+                           ->orderBy('orders.created_at', 'DESC')
+                           ->get();
+    }
+    
+    public function bulkUpdateStatus($userIds, $status)
+    {
+        $data = [];
+        foreach ($userIds as $userId) {
+            $data[] = ['id' => $userId, 'status' => $status];
+        }
+        
+        return $this->query->updateBatch($data, 'id');
+    }
+}
+</pre>
+
+<h3>Product Catalog with QueryBuilder</h3>
+<pre>
+<small>php</small>
+class ProductRepository
+{
+    private $query;
+    
+    public function __construct()
+    {
+        $this->query = new QueryBuilder('products');
+    }
+    
+    public function search($filters)
+    {
+        $query = $this->query->where('status', 'active');
+        
+        if (!empty($filters['category'])) {
+            $query->where('category_id', $filters['category']);
+        }
+        
+        if (!empty($filters['min_price'])) {
+            $query->where('price', '>=', $filters['min_price']);
+        }
+        
+        if (!empty($filters['max_price'])) {
+            $query->where('price', '<=', $filters['max_price']);
+        }
+        
+        if (!empty($filters['search'])) {
+            $query->where('name', 'LIKE', "%{$filters['search']}%")
+                  ->orWhere('description', 'LIKE', "%{$filters['search']}%");
+        }
+        
+        if (!empty($filters['sort'])) {
+            switch ($filters['sort']) {
+                case 'price_asc':
+                    $query->orderBy('price', 'ASC');
+                    break;
+                case 'price_desc':
+                    $query->orderBy('price', 'DESC');
+                    break;
+                case 'name_asc':
+                    $query->orderBy('name', 'ASC');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'DESC');
+            }
+        }
+        
+        $perPage = $filters['per_page'] ?? 20;
+        $page = $filters['page'] ?? 1;
+        
+        return $query->paginate($perPage, $page);
+    }
+    
+    public function updateStock($productId, $quantity)
+    {
+        return $this->query->where('id', $productId)
+                           ->set('stock', new RawExpression("stock - {$quantity}"))
+                           ->update();
+    }
+    
+    public function getLowStockProducts($threshold = 10)
+    {
+        return $this->query->where('stock', '<=', $threshold)
+                           ->where('status', 'active')
+                           ->orderBy('stock', 'ASC')
+                           ->get();
+    }
+    
+    public function bulkPriceUpdate($percentage, $operation = 'increase')
+    {
+        $operator = $operation === 'increase' ? '+' : '-';
+        $expression = "price {$operator} (price * {$percentage} / 100)";
+        
+        return $this->query->set('price', new RawExpression($expression))
+                           ->update();
+    }
+}
+</pre>
+
+<h3>Order Processing with Transactions</h3>
+<pre>
+<small>php</small>
+class OrderService
+{
+    private $db;
+    
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
+    }
+    
+    public function createOrder($userId, $items)
+    {
+        try {
+            $this->db->beginTransaction();
+            
+            // Calculate total
+            $total = 0;
+            foreach ($items as $item) {
+                $product = (new QueryBuilder('products'))
+                    ->where('id', $item['product_id'])
+                    ->first();
+                
+                if (!$product || $product['stock'] < $item['quantity']) {
+                    throw new \Exception("Insufficient stock for product ID: {$item['product_id']}");
+                }
+                
+                $total += $product['price'] * $item['quantity'];
+            }
+            
+            // Create order
+            $orderId = (new QueryBuilder('orders'))->insert([
+                'user_id' => $userId,
+                'total' => $total,
+                'status' => 'pending',
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+            
+            // Create order items and update stock
+            foreach ($items as $item) {
+                (new QueryBuilder('order_items'))->insert([
+                    'order_id' => $orderId,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity']
+                ]);
+                
+                (new QueryBuilder('products'))
+                    ->where('id', $item['product_id'])
+                    ->set('stock', new RawExpression("stock - {$item['quantity']}"))
+                    ->update();
+            }
+            
+            $this->db->commit();
+            
+            return $orderId;
+            
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+    
+    public function getOrderWithDetails($orderId)
+    {
+        $order = (new QueryBuilder('orders'))
+            ->where('id', $orderId)
+            ->first();
+        
+        if ($order) {
+            $order['items'] = (new QueryBuilder('order_items'))
+                ->join('products', 'order_items.product_id', '=', 'products.id')
+                ->select('order_items.*', 'products.name', 'products.price')
+                ->where('order_items.order_id', $orderId)
+                ->get();
+            
+            $order['user'] = (new QueryBuilder('users'))
+                ->where('id', $order['user_id'])
+                ->first();
+        }
+        
+        return $order;
+    }
+}
+</pre>
+
+<h3>Method Reference</h3>
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Method</th>	
+			<th>Description</th>		
+			<th>Example</th>	
+		</tr>
+	</thead>
+	<tbody>
+		
+		<tr>
+			<td><code>select()</code></td>	
+			<td>Specify columns to select</td>	
+			<td><code>->select('id', 'name')</code></td>
+		</tr>
+		<tr>
+			<td><code>where()</code></td>	
+			<td>Add WHERE condition</td>	
+			<td><code>->where('status', 'active')</code></td>
+		</tr>
+		<tr>
+			<td><code>orWhere()</code></td>	
+			<td>Add OR WHERE condition</td>	
+			<td><code>->orWhere('role', 'admin')</code></td>
+		</tr>
+		<tr>
+			<td><code>whereIn()</code></td>	
+			<td>WHERE IN clause</td>	
+			<td>->whereIn('id', [1,2,3])</code></td>
+		</tr>
+		<tr>
+			<td><code>whereNull()</code></td>	
+			<td>WHERE IS NULL</td>	
+			<td><code>->whereNull('deleted_at')</code></td>
+		</tr>
+		<tr>
+			<td><code>whereNotNull()</code></td>	
+			<td>WHERE IS NOT NULL</td>	
+			<td><code>->whereNotNull('email')</code></td>
+		</tr>
+		<tr>
+			<td><code>orderBy()</code></td>	
+			<td>Add ORDER BY</td>	
+			<td><code>->orderBy('name', 'ASC')</code></td>
+		</tr>
+		<tr>
+			<td><code>limit()</code></td>	
+			<td>Set LIMIT</td>	
+			<td><code>->limit(10)</code></td>
+		</tr>
+		<tr>
+			<td><code>offset()</code></td>	
+			<td>Set OFFSET</td>	
+			<td><code>->offset(20)</code></td>
+		</tr>
+		<tr>
+			<td><code>join()</code></td>	
+			<td>INNER JOIN</td>	
+			<td><code>->join('table', 'col1', '=', 'col2')</code></td>
+		</tr>
+		<tr>
+			<td><code>leftJoin()</code></td>	
+			<td>LEFT JOIN</td>	
+			<td><code>->leftJoin('table', 'col1', '=', 'col2')</code></td>
+		</tr>
+		<tr>
+			<td><code>rightJoin()</code></td>	
+			<td>RIGHT JOIN</td>	
+			<td><code>->rightJoin('table', 'col1', '=', 'col2')</code></td>
+		</tr>
+		<tr>
+			<td><code>get()</code></td>	
+			<td>Execute SELECT and get results</td>	
+			<td><code>->get()</code></td>
+		</tr>
+		<tr>
+			<td><code>first()</code></td>	
+			<td>Get first record</td>	
+			<td><code>->first()</code></td>
+		</tr>
+		<tr>
+			<td><code>find()</code></td>	
+			<td>Find by ID</td>	
+			<td><code>->find(1)</code></td>
+		</tr>
+		<tr>
+			<td><code>pluck()</code></td>
+			<td>Get single column values</td>	
+			<td><code>->pluck('name')</code></td>
+		</tr>
+		<tr>
+			<td><code>count()</code></td>	
+			<td>Get record count</td>	
+			<td><code>->count()</code></td>
+		</tr>
+		<tr>
+			<td><code>sum()</code></td>	
+			<td>Sum of column</td>	
+			<td><code>->sum('price')</code></td>
+		</tr>
+		<tr>
+			<td><code>avg()</code></td>	
+			<td>Average of column</td>	
+			<td><code>->avg('price')</code></td>
+		</tr>
+		<tr>
+			<td><code>max()</td>	
+			<td>Maximum value</td>	
+			<td><code>->max('price')</td>
+		</tr>
+		<tr>
+			<td><code>min()</code></td>	
+			<td>Minimum value</td>	
+			<td><code>->min('price')</code></td>
+		</tr>
+		<tr>
+			<td><code>insert()</code></td>	
+			<td>Insert single record</td>	
+			<td><code>->insert($data)</code></td>
+		</tr>
+		<tr>
+			<td><code>insertBatch()</code></td>	
+			<td>Insert multiple records</td>	
+			<td><code>->insertBatch($data)</code></td>
+		</tr>
+		<tr>
+			<td><code>update()</code></td>	
+			<td>Update records</td>	
+			<td><code>->set('col', 'val')->update()</code></td>
+		</tr>
+		<tr>
+			<td><code>updateArray()</code></td>	
+			<td>Update with array</td>	
+			<td><code>->updateArray($data)</code></td>
+		</tr>
+		<tr>
+			<td><code>updateBatch()</code></td>	
+			<td>Batch update</td>	
+			<td><code>->updateBatch($data, 'id')</code></td>
+		</tr>
+		<tr>
+			<td><code>delete()</code></td>	
+			<td>Delete records</td>	
+			<td><code>->where('id',1)->delete()</code></td>
+		</tr>
+		<tr>
+			<td><code>upsert()</code></td>	
+			<td>Insert or update</td>	
+			<td><code>->upsert($insert, $update)</code></td>
+		</tr>
+		<tr>
+			<td><code>increment()</code></td>	
+			<td>Increment column</td>	
+			<td><code>->increment('views')</code></td>
+		</tr>
+		<tr>
+			<td><code>decrement()</td>	
+			<td>Decrement column</td>	
+			<td><code>->decrement('stock')</td>
+		</tr>
+		<tr>
+			<td><code>set()</code></td>	
+			<td>Set value for update</td>	
+			<td><code>->set('name', 'John')</code></td>
+		</tr>
+		<tr>
+			<td><code>setMultiple()</code></td>	
+			<td>Set multiple values	</td>
+			<td><code>->setMultiple($data)</code></td>
+		</tr>
+		<tr>
+			<td><code>setRaw()</code></td>	
+			<td>Set raw expression</td>	
+			<td><code>->setRaw('views', 'views+1')</code></td>
+		</tr>
+		<tr>
+			<td><code>paginate()</code></td>	
+			<td>Paginate results</td>	
+			<td><code>->paginate(15)</code></td>
+		</tr>
+		<tr>
+			<td><code>toSql()</code></td>	
+			<td>Get SQL query</td>	
+			<td><code>->toSql()</code></td>
+		</tr>
+		<tr>
+			<td><code>getBindings()</code></td>	
+			<td>Get query bindings	</td>
+			<td><code>->getBindings()</code></td>
+		</tr>
+		<tr>
+			<td><code>with()</code></td>	
+			<td>Eager load relations</td>	
+			<td><code>->with('posts')</code></td>
+		</tr>
+		<tr>
+			<td><code>withCount()</code></td>	
+			<td>Load relation counts</td>	
+			<td><code>->withCount('comments')</code></td>
+		</tr>
+		<tr>
+			<td><code>setEntity()</code></td>	
+			<td>Set entity class</td>	
+			<td><code>->setEntity(User::class)</code></td>
+		</tr>
+	</tbody>
+
+</table>
+</div>
+
+
+<div id="queryBuilder-best-practices">
+
+<h2>QueryBuilder Best Practices</h2>
+<h3>1. Always Use Parameter Binding</h3>
+<pre>
+<small>php</small>
+// GOOD - QueryBuilder automatically binds parameters
+$users = $db->where('email', $userInput)->get();
+
+// DON'T - Never concatenate strings
+// $db->where("email = '{$userInput}'"); // SQL injection risk!
+</pre>
+
+<h3>2. Use Entities for Complex Logic</h3>
+<pre>
+<small>php</small>
+// GOOD - Use entities when you have business logic
+$users = (new QueryBuilder('users'))
+    ->setEntity(User::class)
+    ->with('posts')
+    ->get();
+
+// SIMPLE - Use array results for simple queries
+$count = (new QueryBuilder('users'))->count();
+</pre>
+
+<h3>3. Batch Process Large Datasets</h3>
+<pre>
+<small>php</small>
+// GOOD - Process in chunks
+$page = 1;
+while ($users = $db->limit(1000)->offset(($page-1)*1000)->get()) {
+    foreach ($users as $user) {
+        // Process
+    }
+    $page++;
+}
+</pre>
+
+<h3>4. Use RawExpression Carefully</h3>
+<pre>
+<small>php</small>
+// GOOD - Use RawExpression for database functions
+$db->set('last_login', new RawExpression('NOW()'))->update();
+
+// GOOD - Use for increment/decrement
+$db->set('views', new RawExpression('views + 1'))->update();
+</pre>
+
+<h3>5. Always Use Transactions for Related Operations</h3>
+<pre>
+<small>php</small>
+// GOOD - Transaction ensures data consistency
+$db->beginTransaction();
+try {
+    $orderId = $orderQuery->insert($orderData);
+    $itemQuery->insertBatch($items);
+    $db->commit();
+} catch (\Exception $e) {
+    $db->rollBack();
+    throw $e;
+}
+</pre>
+
+</div>
+
+
+<div id="getting-started-with-orm">
+<h2>Getting Started with ORM</h2>
+<h3>Basic Model Definition</h3>
+
+<pre>
+<small>php</small>
+// jephy-mvc/app/models/User.php
+namespace App\Models;
+
+use App\Core\Model;
+
+class User extends Model
+{
+    protected static $table = 'users';
+    
+    // Define relationships (optional)
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+    
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+    
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles');
+    }
+}
+</pre>
+
+<h3>Model Properties</h3>
+<pre>
+<small>php</small>
+// Model automatically handles these properties
+// No need to define them - they come from database columns
+
+$user = new User();
+$user->name = 'John Doe';
+$user->email = 'john@example.com';
+$user->password = password_hash('secret', PASSWORD_DEFAULT);
+$user->save();
+</pre>
+</div>
+
+
+<div id="orm-crud-operations">
+
+<h2>ORM CRUD Operations</h2>
+<h3>Create Records</h3>
+<pre>
+<small>php</small>
+// Method 1: Create and save
+$user = new User();
+$user->name = 'John Doe';
+$user->email = 'john@example.com';
+$user->password = password_hash('secret', PASSWORD_DEFAULT);
+$user->save();
+
+// Method 2: Using create() static method
+$user = User::create([
+    'name' => 'Jane Doe',
+    'email' => 'jane@example.com',
+    'password' => password_hash('secret', PASSWORD_DEFAULT)
+]);
+
+// Method 3: With timestamps (auto-set if columns exist)
+$user = User::create([
+    'name' => 'Bob Smith',
+    'email' => 'bob@example.com',
+    'created_at' => date('Y-m-d H:i:s')
+]);
+</pre>
+
+<h3>Read Records</h3>
+<pre>
+<small>php</small>
+// Find by ID
+$user = User::find(1);
+
+// Find with conditions using findFirst
+$user = User::findFirst([
+    'where' => ['email' => 'john@example.com']
+]);
+
+// Find many records
+$users = User::findMany([
+    'where' => ['status' => 'active'],
+    'orderBy' => 'name ASC',
+    'take' => 10,
+    'skip' => 20  // For pagination
+]);
+
+// Alternative: findMany with whereNot
+$users = User::findMany([
+    'where' => ['status' => 'active'],
+    'whereNot' => ['role' => 'banned']
+]);
+
+// Get all records
+$users = User::all();
+$users = User::all('name ASC'); // With order by
+
+// Using where() fluent interface
+$users = User::where(['status' => 'active'])
+            ->orderBy('name ASC')
+            ->limit(10)
+            ->get();
+
+// Get first matching record
+$user = User::where(['email' => 'john@example.com'])->first();
+
+// Count records
+$count = User::where(['status' => 'active'])->count();
+
+// Check if records exist
+$exists = User::exists(['where' => ['email' => 'john@example.com']]);
+</pre>
+
+<h3>Update Records</h3>
+<pre>
+<small>php</small>
+// Method 1: Update via instance
+$user = User::find(1);
+$user->name = 'Updated Name';
+$user->status = 'inactive';
+$user->save();
+
+// Method 2: Using update() method
+$user = User::find(1);
+$user->update([
+    'name' => 'New Name',
+    'status' => 'active',
+    'updated_at' => date('Y-m-d H:i:s')
+]);
+
+// Method 3: Direct update (using where conditions via class)
+// Note: Your Model class doesn't have a direct static update method,
+// but you can use QueryBuilder for bulk updates
+$queryBuilder = new QueryBuilder('users');
+$queryBuilder->where('status', 'inactive')
+             ->set('status', 'archived')
+             ->update();
+
+// Check if model changed
+if ($user->isDirty()) {
+    $changes = $user->getDirty();
+    echo "Changed fields: " . implode(', ', array_keys($changes));
+    $user->save();
+}
+</pre>
+
+<h3>Delete Records</h3>
+<pre>
+<small>php</small>
+// Method 1: Delete via instance
+$user = User::find(1);
+$user->delete();
+
+// Method 2: Delete with conditions
+User::deleteWhere(['status' => 'inactive']);
+
+// Method 3: Delete with multiple conditions
+User::deleteWhere([
+    'status' => 'inactive',
+    'last_login' => ['operator' => '<', 'value' => '2023-01-01']
+]);
+</pre>
+
+</div>
+
+<div id="orm-query-methods">
+
+<h2>ORM Query Methods</h2>
+<h3>findFirst() - Get Single Record</h3>
+<pre>
+<small>php</small>
+// Basic findFirst
+$user = User::findFirst([
+    'where' => ['email' => 'john@example.com']
+]);
+
+// With NOT conditions
+$user = User::findFirst([
+    'where' => ['status' => 'active'],
+    'whereNot' => ['role' => 'banned']
+]);
+
+// With complex where conditions
+$user = User::findFirst([
+    'where' => [
+        'age' => ['operator' => '>', 'value' => 18],
+        'status' => 'active'
+    ]
+]);
+
+// Using LIKE with contains
+$user = User::findFirst([
+    'where' => [
+        'name' => ['contains' => 'John']
+    ]
+]);
+
+// Using LIKE with startsWith
+$users = User::findMany([
+    'where' => [
+        'name' => ['startsWith' => 'Jo']
+    ]
+]);
+
+// Using LIKE with endsWith
+$users = User::findMany([
+    'where' => [
+        'email' => ['endsWith' => '@example.com']
+    ]
+]);
+</pre>
+
+<h3>findMany() - Get Multiple Records</h3>
+<pre>
+<small>php</small>
+// Basic findMany
+$users = User::findMany([
+    'where' => ['status' => 'active'],
+    'orderBy' => 'name ASC',
+    'take' => 20,
+    'skip' => 0
+]);
+
+// Complex conditions
+$users = User::findMany([
+    'where' => [
+        'status' => 'active',
+        'age' => ['operator' => '>=', 'value' => 18],
+        'role' => ['operator' => 'IN', 'value' => ['admin', 'editor']]
+    ],
+    'orderBy' => 'created_at DESC',
+    'take' => 50
+]);
+
+// With NOT conditions
+$users = User::findMany([
+    'where' => ['status' => 'active'],
+    'whereNot' => ['role' => 'banned', 'deleted_at' => null]
+]);
+</pre>
+
+<h3>where() - Fluent Query Builder</h3>
+<pre>
+<small>php</small>
+// Get users with fluent interface
+$users = User::where(['status' => 'active'])
+            ->orderBy('name ASC')
+            ->limit(10)
+            ->get();
+
+// First record from fluent query
+$user = User::where(['email' => 'john@example.com'])->first();
+
+// Count from fluent query
+$count = User::where(['status' => 'active'])->count();
+
+// Chain multiple conditions
+$users = User::where(['status' => 'active'])
+            ->where(['role' => 'admin'])
+            ->orderBy('name ASC')
+            ->get();
+</pre>
+</div>
+
+<div id="orm-model-relationships">
+<h2>ORM Model Relationships</h2>
+<h3>One-to-One (hasOne)</h3>
+<pre>
+<small>php</small>
+// User model
+class User extends Model
+{
+    protected static $table = 'users';
+    
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+}
+
+// Profile model
+class Profile extends Model
+{
+    protected static $table = 'profiles';
+}
+
+// Usage
+$user = User::find(1);
+$profile = $user->profile; // Returns Profile object or null
+
+// Access profile data
+if ($profile) {
+    echo $profile->bio;
+    echo $profile->avatar;
+}
+</pre>
+
+<h3>One-to-Many (hasMany)</h3>
+<pre>
+<small>php</small>
+// User model
+class User extends Model
+{
+    protected static $table = 'users';
+    
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+}
+
+// Post model
+class Post extends Model
+{
+    protected static $table = 'posts';
+}
+
+// Usage
+$user = User::find(1);
+$posts = $user->posts; // Returns array of Post objects
+
+foreach ($posts as $post) {
+    echo $post->title;
+    echo $post->content;
+}
+</pre>
+
+<h3>Belongs To (belongsTo)</h3>
+<pre>
+<small>php</small>
+// Post model (belongs to User)
+class Post extends Model
+{
+    protected static $table = 'posts';
+    
+    public function author()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+
+// Usage
+$post = Post::find(1);
+$author = $post->author; // Returns User object or null
+
+echo "Written by: " . $author->name;
+</pre>
+
+<h3>Many-to-Many (belongsToMany)</h3>
+<pre>
+<small>php</small>
+// User model
+class User extends Model
+{
+    protected static $table = 'users';
+    
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles');
+    }
+}
+
+// Role model
+class Role extends Model
+{
+    protected static $table = 'roles';
+    
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_roles');
+    }
+}
+
+// Usage
+$user = User::find(1);
+$roles = $user->roles; // Returns array of Role objects
+
+foreach ($roles as $role) {
+    echo $role->name;
+}
+
+// Access pivot table data (if needed - your implementation returns related models)
+</pre>
+
+<h3>Custom Foreign Keys</h3>
+<pre>
+<small>php</small>
+class User extends Model
+{
+    // hasOne with custom foreign key
+    public function profile()
+    {
+        // hasOne($relatedClass, $foreignKey, $localKey)
+        return $this->hasOne(Profile::class, 'user_profile_id', 'id');
+    }
+    
+    // hasMany with custom foreign key
+    public function posts()
+    {
+        // hasMany($relatedClass, $foreignKey, $localKey)
+        return $this->hasMany(Post::class, 'author_id', 'id');
+    }
+    
+    // belongsTo with custom keys
+    public function department()
+    {
+        // belongsTo($relatedClass, $foreignKey, $ownerKey)
+        return $this->belongsTo(Department::class, 'dept_id', 'id');
+    }
+    
+    // belongsToMany with custom pivot keys
+    public function tags()
+    {
+        // belongsToMany($relatedClass, $pivotTable, $foreignPivotKey, $relatedPivotKey, $localKey)
+        return $this->belongsToMany(Tag::class, 'post_tags', 'post_id', 'tag_id', 'id');
+    }
+}
+</pre>
+
+<h3>Loading Relationships</h3>
+<pre>
+<small>php</small>
+// Lazy loading (automatically when accessed)
+$user = User::find(1);
+$posts = $user->posts; // Queries database
+
+// Eager loading using load() method
+$user = User::find(1);
+$user->load('posts', 'profile'); // Loads both relationships
+
+// Load multiple relationships
+$user->load(['posts', 'profile', 'roles']);
+
+// Check if relationship is loaded
+// Your implementation caches relationships automatically
+$user->posts; // First call queries DB
+$user->posts; // Second call uses cache
+</pre>
+
+</div>
+
+<div id="orm-advanced-query-features">
+<h2>ORM Advanced Query Features</h2>
+<h3>LIKE Queries</h3>
+<pre>
+<small>php</small>
+// Using contains (Prisma-style)
+$users = User::findMany([
+    'where' => [
+        'name' => ['contains' => 'John']
+    ]
+]);
+
+// Using startsWith
+$users = User::findMany([
+    'where' => [
+        'name' => ['startsWith' => 'Jo']
+    ]
+]);
+
+// Using endsWith
+$users = User::findMany([
+    'where' => [
+        'email' => ['endsWith' => '@example.com']
+    ]
+]);
+
+// Using like directly
+$users = User::findMany([
+    'where' => [
+        'name' => ['like' => '%John%']
+    ]
+]);
+
+// Using notLike
+$users = User::findMany([
+    'where' => [
+        'name' => ['notLike' => '%test%']
+    ]
+]);
+</pre>
+
+<h3>Comparison Operators</h3>
+<pre>
+<small>php</small>
+// Greater than
+$users = User::findMany([
+    'where' => [
+        'age' => ['operator' => '>', 'value' => 18]
+    ]
+]);
+
+// Less than
+$users = User::findMany([
+    'where' => [
+        'age' => ['operator' => '<', 'value' => 65]
+    ]
+]);
+
+// Not equal
+$users = User::findMany([
+    'where' => [
+        'status' => ['operator' => '!=', 'value' => 'banned']
+    ]
+]);
+
+// IN operator
+$users = User::findMany([
+    'where' => [
+        'role' => ['operator' => 'IN', 'value' => ['admin', 'editor']]
+    ]
+]);
+</pre>
+
+<h3>Pagination Example</h3>
+<pre>
+<small>php</small>
+class UserController
+{
+    public function index($page = 1)
+    {
+        $perPage = 20;
+        $offset = ($page - 1) * $perPage;
+        
+        $users = User::findMany([
+            'where' => ['status' => 'active'],
+            'orderBy' => 'name ASC',
+            'take' => $perPage,
+            'skip' => $offset
+        ]);
+        
+        $total = User::count(['where' => ['status' => 'active']]);
+        $lastPage = ceil($total / $perPage);
+        
+        return [
+            'users' => $users,
+            'current_page' => $page,
+            'per_page' => $perPage,
+            'total' => $total,
+            'last_page' => $lastPage
+        ];
+    }
+}
+</pre>
+
+
+</div>
+
+<div id="working-with-model-instances-in-orm">
+<h2>Working with Model Instances in ORM</h2>
+<h3>Accessing Attributes</h3>
+<pre>
+<small>php</small>
+$user = User::find(1);
+
+// Get attributes
+echo $user->name;
+echo $user->email;
+
+// Set attributes
+$user->name = 'New Name';
+$user->status = 'inactive';
+
+// Check if attribute exists
+if (isset($user->name)) {
+    echo "Name exists";
+}
+
+// Get all attributes as array
+$data = $user->toArray();
+print_r($data);
+</pre>
+
+<h3>Dirty Checking</h3>
+<pre>
+<small>php</small>
+$user = User::find(1);
+$user->name = 'Changed Name';
+
+// Check if model has unsaved changes
+if ($user->isDirty()) {
+    // Get only changed fields
+    $changes = $user->getDirty();
+    print_r($changes); // ['name' => 'Changed Name']
+    
+    // Save changes
+    $user->save();
+}
+</pre>
+
+<h3>Refreshing Models</h3>
+<pre>
+<small>php</small>
+$user = User::find(1);
+$user->name = 'Temporary Name';
+
+// Refresh from database (discards changes)
+$user->refresh();
+echo $user->name; // Original name from database
+</pre>
+
+<h3>Converting to Array</h3>
+<pre>
+<small>php</small>
+$user = User::find(1);
+$array = $user->toArray();
+
+// Useful for API responses
+return json_encode($user->toArray());
+</pre>
+
+
+</div>
+
+
+<div id="orm-practical-examples">
+<h2>ORM Practical Examples</h2>
+<h3>User Authentication System</h3>
+<pre>
+<small>php</small>
+class AuthController
+{
+    public function register($data)
+    {
+        // Check if email exists
+        if (User::exists(['where' => ['email' => $data['email']]])) {
+            return ['error' => 'Email already exists'];
+        }
+        
+        // Create user
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+            'status' => 'active',
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+        
+        return $user;
+    }
+    
+    public function login($email, $password)
+    {
+        $user = User::findFirst([
+            'where' => ['email' => $email, 'status' => 'active']
+        ]);
+        
+        if ($user && password_verify($password, $user->password)) {
+            $_SESSION['user_id'] = $user->id;
+            return $user;
+        }
+        
+        return null;
+    }
+    
+    public function updateProfile($userId, $data)
+    {
+        $user = User::find($userId);
+        
+        if (!$user) {
+            return null;
+        }
+        
+        $user->update($data);
+        return $user;
+    }
+}
+</pre>
+
+<h3>Blog System with Relationships</h3>
+<pre>
+<small>php</small>
+// Models
+class User extends Model
+{
+    protected static $table = 'users';
+    
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+    
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+}
+
+class Post extends Model
+{
+    protected static $table = 'posts';
+    
+    public function author()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+}
+
+class Comment extends Model
+{
+    protected static $table = 'comments';
+    
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+
+// Usage
+class BlogController
+{
+    public function showPost($postId)
+    {
+        $post = Post::find($postId);
+        
+        if (!$post) {
+            return null;
+        }
+        
+        // Load relationships
+        $post->load('author', 'comments');
+        
+        // Load user for each comment
+        foreach ($post->comments as $comment) {
+            $comment->load('user');
+        }
+        
+        return $post;
+    }
+    
+    public function userPosts($userId)
+    {
+        $user = User::find($userId);
+        
+        if (!$user) {
+            return [];
+        }
+        
+        // Get user's posts with comments count
+        $posts = $user->posts;
+        
+        foreach ($posts as $post) {
+            $post->commentCount = count($post->comments);
+        }
+        
+        return $posts;
+    }
+}
+</pre>
+
+<h3>Product Catalog with Search</h3>
+<pre>
+<small>php</small>
+class Product extends Model
+{
+    protected static $table = 'products';
+    
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+}
+
+class ProductController
+{
+    public function search($filters)
+    {
+        $where = ['status' => 'active'];
+        
+        // Price range
+        if (isset($filters['min_price'])) {
+            $where['price'] = ['operator' => '>=', 'value' => $filters['min_price']];
+        }
+        
+        if (isset($filters['max_price'])) {
+            $where['price'] = ['operator' => '<=', 'value' => $filters['max_price']];
+        }
+        
+        // Category filter
+        if (isset($filters['category_id'])) {
+            $where['category_id'] = $filters['category_id'];
+        }
+        
+        // Search term
+        if (isset($filters['search'])) {
+            $where['name'] = ['contains' => $filters['search']];
+        }
+        
+        $orderBy = $filters['sort'] ?? 'created_at DESC';
+        $perPage = $filters['per_page'] ?? 20;
+        $page = $filters['page'] ?? 1;
+        $offset = ($page - 1) * $perPage;
+        
+        $products = Product::findMany([
+            'where' => $where,
+            'orderBy' => $orderBy,
+            'take' => $perPage,
+            'skip' => $offset
+        ]);
+        
+        $total = Product::count(['where' => $where]);
+        
+        // Load category for each product
+        foreach ($products as $product) {
+            $product->load('category');
+        }
+        
+        return [
+            'products' => $products,
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $perPage,
+            'total_pages' => ceil($total / $perPage)
+        ];
+    }
+}
+</pre>
+
+<h3>Bulk Operations</h3>
+<pre>
+<small>php</small>
+class AdminController
+{
+    public function bulkDeleteUsers($userIds)
+    {
+        // Delete multiple users by ID
+        foreach ($userIds as $id) {
+            $user = User::find($id);
+            if ($user) {
+                $user->delete();
+            }
+        }
+        
+        // Or use deleteWhere for condition-based deletion
+        User::deleteWhere([
+            'status' => 'inactive',
+            'last_login' => ['operator' => '<', 'value' => '2023-01-01']
+        ]);
+        
+        return true;
+    }
+    
+    public function bulkUpdateStatus($userIds, $status)
+    {
+        foreach ($userIds as $id) {
+            $user = User::find($id);
+            if ($user) {
+                $user->update(['status' => $status]);
+            }
+        }
+        
+        return true;
+    }
+}
+</pre>
+</div>
+
+<div id="orm-method-reference">
+<h2>ORM Method Reference</h2>
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Method</th>	
+			<th>Description</th>	
+			<th>Example</th>
+		</tr>
+	</thead>
+	<tbody>
+	
+		<tr>
+			<th><code>find($id)	</code></td>
+			<th>Find record by primary key</td>	
+			<th><code>User::find(1)</code></td>
+		</tr>
+		<tr>
+			<th><code>findFirst($params)</code></td>	
+			<th>Find first matching record</td>	
+			<th><code>User::findFirst(['where' => ['email' => 'x']])</code></td>
+		</tr>
+		<tr>
+			<th><code>findMany($params)</code></td>	
+			<th>Find multiple records</td>	
+			<th><code>User::findMany(['where' => ['status' => 'active']])</code></td>
+		</tr>
+		<tr>
+			<th><code>all($orderBy)</code></td>	
+			<th>Get all records	</td>
+			<th><code>User::all('name ASC')</code></td>
+		</tr>
+		<tr>
+			<th><code>where($conditions)</code></td>	
+			<th>Fluent query builder</td>	
+			<th><code>User::where(['status' => 'active'])->get()</code></td>
+		</tr>
+		<tr>
+			<th><code>create($data)</code></td>	
+			<th>Create and save new record</td>	
+			<th><code>User::create(['name' => 'John'])</code></td>
+		</tr>
+		<tr>
+			<th><code>save()</code></td>	
+			<th>Save model changes</td>	
+			<th><code>$user->save()</code></td>
+		</tr>
+		<tr>
+			<th><code>update($data)</code></td>	
+			<th>Update model attributes</td>	
+			<th><code>$user->update(['name' => 'New'])</code></td>
+		</tr>
+		<tr>
+			<th><code>delete()</code></td>	
+			<th>Delete model</td>	
+			<th><code>$user->delete()</code></td>
+		</tr>
+		<tr>
+			<th><code>deleteWhere($where)</code></td>	
+			<th>Delete with conditions</td>	
+			<th><code>User::deleteWhere(['status' => 'inactive'])</code></td>
+		</tr>
+		<tr>
+			<th><code>count($params)</code></td>	
+			<th>Count records	
+			<th><code>User::count(['where' => ['status' => 'active']])</code></td>
+		</tr>
+		<tr>
+			<th><code>exists($params)</code></td>	
+			<th>Check if records exist</td>	
+			<th><code>User::exists(['where' => ['email' => 'x']])</code></td>
+		</tr>
+		<tr>
+			<th><code>refresh()	</code></td>
+			<th>Reload from database</td>	
+			<th><code>$user->refresh()</code></td>
+		</tr>
+		<tr>
+			<th><code>isDirty()</code></td>	
+			<th>Check if model changed</td>	
+			<th><code>$user->isDirty()</code></td>
+		</tr>
+		<tr>
+			<th><code>getDirty()</code></td>	
+			<th>Get changed attributes</td>	
+			<th><code>$user->getDirty()</code></td>
+		</tr>
+		<tr>
+			<th><code>toArray()</code></td>
+			<th>Convert to array</td>	
+			<th><code>$user->toArray()</code></td>
+		</tr>
+		<tr>
+			<th><code>load($relations)</code></td>	
+			<th>Eager load relationships</td>	
+			<th><code>$user->load('posts', 'profile')</code></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+
+<div id="orm-relationship-methods">
+<h2>ORM Relationship Methods</h2>
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Method</th>	
+			<th>Description</th>	
+			<th>Example</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><code>hasOne($class, $fk, $lk)</code></td>	
+			<td>One-to-one relationship</td>		
+			<td><code>$this->hasOne(Profile::class)</code></td>	
+		</tr>
+		<tr>
+			<td><code>hasMany($class, $fk, $lk)</code></td>	
+			<td>One-to-many relationship</td>		
+			<td><code>$this->hasMany(Post::class)</code></td>	
+		</tr>
+		<tr>
+			<td><code>belongsTo($class, $fk, $ok)</code></td>		
+			<td>Inverse relationship</td>		
+			<td><code>$this->belongsTo(User::class)</code></td>	
+		</tr>
+		<tr>
+			<td><code>belongsToMany($class, $pivot, $fk, $rk, $lk)</code></td>		
+			<td>Many-to-many</td>		
+			<td><code>$this->belongsToMany(Role::class, 'user_roles')</code></td>	
+		</tr>
+	</tbody>
+</table>
+</div>
+
+<div id="orm-best-practices">
+<h2>ORM Best Practices</h2>
+<h3>1. Define Table Names Properly</h3>
+<pre>
+<small>php</small>
+class User extends Model
+{
+    // Always define table name
+    protected static $table = 'users';
+}
+</pre>
+
+<h3>2. Use Relationship Methods for Complex Queries</h3>
+<pre>
+<small>php</small>
+class User extends Model
+{
+    public function activePosts()
+    {
+        // Custom relationship with condition
+        $posts = $this->hasMany(Post::class);
+        return array_filter($posts, fn($post) => $post->status === 'published');
+    }
+}
+</pre>
+
+<h3>3. Handle Null Results</h3>
+<pre>
+<small>php</small>
+$user = User::find(1);
+if ($user) {
+    // Process user
+} else {
+    // Handle not found
+}
+</pre>
+
+<h3>4. Use Dirty Checking for Conditional Updates</h3>
+<pre>
+<small>php</small>
+$user = User::find(1);
+$user->last_login = date('Y-m-d H:i:s');
+
+if ($user->isDirty()) {
+    $user->save();
+}
+</pre>
+
+<h3>5. Load Relationships When Needed</h3>
+<pre>
+<small>php</small>
+// Lazy load (automatically when accessed)
+$posts = $user->posts; // Queries when accessed
+
+// Eager load (multiple at once)
+$user->load('posts', 'profile', 'roles');
+</pre>
+
+<h3>Summary</h3>
+
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Feature</th>	
+			<th>Implementation</th>
+		</tr>
+	</thead>
+	<tbody>
+	
+		<tr>
+			<td>CRUD</td>	
+			<td><code>find(), create(), save(), update(), delete()</code></td>
+		</tr>
+		<tr>
+			<td>Queries</td>	
+			<td><code>findFirst(), findMany(), where()</code></td>
+		</tr>
+		<tr>
+			<td>Relationships</td>	
+			<td><code>hasOne(), hasMany(), belongsTo(), belongsToMany()</code></td>
+		</tr>
+		<tr>
+			<td>Advanced Queries</td>	
+			<td><code>LIKE with contains/startsWith/endsWith, operators</code></td>
+		</tr>
+		<tr>
+			<td>Dirty Checking</td>	
+			<td><code>isDirty(), getDirty()</code></td>
+		</tr>
+		<tr>
+			<td>Eager Loading</td>	
+			<td><code>load() method</code></td>
+		</tr>
+
+	</tbody>
+</table>
+
+
+</div>

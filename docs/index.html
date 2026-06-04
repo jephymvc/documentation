@@ -1,0 +1,263 @@
+---
+layout: docs
+title: Getting Started
+---
+
+{% include breadcrumbs.html %}
+
+
+<h2><span class="sub-heading">#</span>  Overview</h2>
+<div>
+	<p>
+		{{ site.title }} is a lightweight, modular PHP MVC framework built for developers 
+		who want clean architecture, high performance, and full control over their web 
+		applications. It follows the Model-View-Controller pattern to separate business 
+		logic, presentation, and data handling—making your code more maintainable, scalable, 
+		and testable.
+	</p>
+	
+	<div class="block">
+		<p>
+			<strong>Template Engine</strong>: Unlike many lightweight frameworks that rely on raw PHP in views, 
+			{{ site.title }} natively integrates the <strong>Smarty Engine</strong>—a powerful, feature-rich 
+			template system that keeps your presentation layer clean, secure, and easy to manage.
+		</p>
+	</div>
+	
+</div>
+
+
+<div class="my-4">
+	<h2>Key Features</h2>
+
+	<ul>
+		<li><strong>Modular MVC Structure</strong> – Clear separation of concerns with Models, Views, and Controllers.</li>
+		<li><strong>Smarty Template Engine</strong> – Write clean, logic-free templates with caching, layouts, custom functions, and built-in security against XSS.</li>
+		<li><strong>Simple Routing</strong> – Define clean, RESTful routes with support for dynamic parameters and middleware.</li>
+		<li><strong>Lightweight & Fast</strong> – Minimal overhead with no unnecessary dependencies.</li>
+		<li><strong>Database Abstraction</strong> – Built-in query builder and active record pattern (or ORM).</li>
+		<li><strong>Middleware Support</strong> – Filter HTTP requests before they reach your controllers.</li>
+		<li><strong>Request & Response Handling</strong> – Object-oriented wrappers for input, session, cookies, and output.</li>
+		<li><strong>CSRF & XSS Protection</strong> – Built-in security helpers (Smarty auto-escaping adds an extra layer).</li>
+		<li><strong>Error Handling & Debugging</strong> – Custom error pages and debug mode with detailed logs.</li>
+	</ul>
+</div>
+
+
+
+<h2><span class="sub-heading">#</span>  Getting Started</h2>
+<h3>System Requirements - Option 1</h3>
+
+<ul>
+	<li>PHP 8.2+</li>
+	<li>XAMPP</li>	
+</ul>
+
+<h3>System Requirements - Option 2</h3>
+
+<ul>
+	<li>PHP 8.2+</li>
+	<li>Apache/Nginx</li>
+	<li>MySQL/MariaDB, Postgres or SQLite</li>
+</ul>
+
+<h2><span class="sub-heading">#</span>  Installation</h2>
+<div>
+	<p>
+		To install JephyPHP, visit https://github.com/jephymvc/jephy-mvc-01.git and
+		clone the repository or download the zip file.	
+	</p>
+	
+	<h3>Working with Windows</h3>
+	<p>
+		If you are working with option 1, extract the zip file into the C:/xampp/htdocs path.
+		That is the contents of /src directory.
+	</p>
+	
+	
+</div>
+
+<h2><span class="sub-heading">#</span>  Configuration</h2>
+<div>
+	<p>
+		Open the config.conf file located in <code>src/jephy-mvc/</code> folder and configure based on your system setup.
+		You can see the table below for the explanation of each configurable fields:	
+	</p>
+	
+	<table class="table table-striped table-config-info">
+		<thead>
+			<tr>
+				<th style="min-width: 140px;">Field</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+			<tr>
+				<td><code>site.app_debug</code></td>
+				<td>
+					Allows to enable the display of debug data. 
+					It is set to true by default. You will need 
+					to set to false on the production server.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.version</code></td>
+				<td>This states the current version of your application.</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.name</code></td>
+				<td>This specifies the name of your website or project.</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.email</code></td>
+				<td>Optional - this specifies the contact email that is available for the public to reach when on your website.</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.phone</code></td>
+				<td>Optional - this specifies the contact phone that is available for the public to reach when on your website.</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.home</code></td>
+				<td>The URL of your website.</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.app_path</code></td>
+				<td>
+					This specifies the absolute path to your App\ namespace. It is usually
+					<code>{your_absolute_path}/jephy-mvc/app</code>. You only need to update according to
+					your setup.
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td><code>site.encryption_key</code></td>
+				<td>
+					Login session data are encrypted using AES algorithm for security purpose. 
+					So, you only need to come up a difficult to guess set of characters and It
+					is advised to change regularly.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.jwt_secret_key</code></td>
+				<td>
+					Tokenized session data are encrypted using JWT algorithm for security purpose. 
+					So, you only need to come up a difficult to guess set of characters and It
+					is advised to change regularly.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.jwt_algo</code></td>
+				<td>
+					This is the JSON Web Token algorithm used in encryption. It usually defaults
+					to HS256.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.jwt_ttl</code></td>
+				<td>
+					This is the time it takes JSON Web Tokens to get expire.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.address</code></td>
+				<td>
+					Company location address.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.title</code></td>
+				<td>
+					Default title to your home page. It is for SEO needs.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.keywords</code></td>
+				<td>
+					Suitable keywords for your business in case it is being 
+					searched on Search engines. Good for SEO.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.description</code></td>
+				<td>
+					Suitable description for your business in case it is being 
+					searched on Search engines. Good for SEO.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.url.home</code></td>
+				<td>
+					It is alternative to <code>site.home</code>.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.url.third_party_platform.github </code></td>
+				<td>
+					Optional.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.author.fullname </code></td>
+				<td>
+					Optional - usually for the lead or developer in charge.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>site.author.email</code></td>
+				<td>
+					Optional - usually for the lead or developer in charge.
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td><code>database.driver</code></td>
+				<td>
+					This specifies the database driver the application is working.
+					You have option between mysql, pgsql and sqlite for 
+					MySQL/MariaDB, PostgresDB and SQLite respectively.
+				</td>
+			</tr>
+			
+			<tr>
+				<td><code>database.driver</code></td>
+				<td>
+					This specifies the database driver the application is working.
+					You have option between mysql, pgsql and sqlite for 
+					MySQL/MariaDB, PostgresDB and SQLite respectively.
+				</td>
+			</tr>
+			
+			
+		</tbody>
+	</table>
+	
+</div>
+
+<h2><span class="sub-heading">#</span>  Directory Structure</h2>
+<div>
+<pre>
+{% include path-structure.md %}
+</pre>
+</div>
+<h2><span class="sub-heading">#</span>  Deployment</h2>
+<h2><span class="sub-heading">#</span>  Sample Project</h2>

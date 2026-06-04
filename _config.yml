@@ -1,0 +1,107 @@
+# Site settings
+title: "JephyMVC"
+description: "Complete documentation for the JephyPHP Framework"
+url: "https://jephymvc.github.io"
+#   baseurl: "/jephy-mvc-01"  # Change for project pages  
+baseurl: ""  # Change for project pages  
+theme: null
+
+# Framework info
+framework_name: "JephyMVC"
+framework_version: "2.0.0"
+#   repo_url: "https://jephymvc.github.io/jephy-mvc-01/"
+repo_url: "/"
+official_website: "https://jephymvc.github.io/jephy-mvc-01/"
+documentation_url: "https://jephymvc.github.io/jephy-mvc-01/"
+base_repo_url: "https://github.com/jephymvc/jephy-mvc-01"
+discord_url: ""
+twitter_url: ""
+youtube_url: ""
+youtube_url: ""
+stackoverflow_url: ""
+support_url: "https://westribbon.com.ng/projects/support/jephy-mvc"
+support_email: "afolabi.oloruntola@westribbon.com.ng"
+community_email: "afolabi.oloruntola@westribbon.com.ng"
+conduct_email: "afolabi.oloruntola@westribbon.com.ng"
+
+# Documentation settings
+docs:
+  default_version: "2.0"
+  versions:
+    - "2.0"
+    - "1.8"
+    - "1.7"
+  sidebar_depth: 3  # How deep to show navigation
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+      start_line: 1
+
+# Collections for versioned docs
+collections:
+  docs_v2:
+    output: true
+    permalink: /2.0/:path/
+  docs_v1_8:
+    output: true
+    permalink: /1.8/:path/
+
+# Defaults for documentation pages
+defaults:
+  - scope:
+      path: "docs"
+      type: "pages"
+    values:
+      layout: "docs"
+      sidebar: true
+      toc: true  # Table of contents
+  - scope:
+      path: "docs/getting-started"
+    values:
+      category: "Getting Started"
+  - scope:
+      path: "docs/core-concepts"
+    values:
+      category: "Core Concepts"
+  - scope:
+      path: "docs/database"
+    values:
+      category: "Database"
+  - scope:
+      path: "docs/security"
+    values:
+      category: "Security"
+
+# Plugins (FIXED: 'plugins' is correct for loading plugins, not 'plugins_dir')
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-redirect-from
+  - jemoji
+
+# Exclude from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - README.md
+  - .gitignore
+  - node_modules
+  - .sass-cache
+  - .jekyll-cache
+
+# Include these for GitHub Pages (FIXED: removed _plugins from include)
+include:
+  - _data
+  - _includes
+  - _layouts

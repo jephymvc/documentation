@@ -1,0 +1,357 @@
+---
+---
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Noto+Color+Emoji&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --color-primary: #aa0000;
+  --color-light-primary: #007bff;
+  --color-secondary: #007bff;
+  --color-theme-blue: #6bd6D0;
+}
+
+*,body{
+	font-family: "Roboto", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: normal;
+	font-style: normal;
+	font-variation-settings: "width" 100;
+	box-sizing: border-box;
+	overflow-y: hidden;
+}
+	
+p{
+	color: #444444;
+}
+
+h1, h2, h3, h4, h5, h6{
+	font-weight: bold;
+	color: #666666;
+}
+
+h1{
+	font-size: 28px;
+	margin-bottom: 28px;
+}
+h2{
+	font-size: 21px;
+	margin-bottom: 21px;
+}
+
+h3{
+	font-size: 18px;
+	margin-bottom: 14px;
+}
+
+h4{
+	font-size: 14px;
+	margin-bottom: 14px;
+}
+
+.sub-heading{
+	color: #aa0000;
+}
+
+header{
+	background-color: #ffffff;
+	border: 1px solid #eeeeee;
+}
+
+.flex-1{
+	flex: 1;
+}
+
+.doc-nav-bar{
+	display: flex;
+	border: 0px solid #f00;
+	justify-content: space-between;
+	align-items: center;
+	padding: 14px 0;
+}
+
+.header-logo > a > img{
+	width: 100px;
+	margin-right: 49px;
+}
+
+.border-radius-14{
+	border-radius: 14px !important;
+}
+
+.logo-menu-wrapper > ul{
+	display: flex;
+	margin: 0px;
+	justify-content: flex-start;
+	gap:14px;
+	align-items: center;
+}
+
+.logo-menu-wrapper > ul > li{
+	list-style-type: none;
+}
+
+.logo-menu-wrapper > ul > li > a{
+	text-decoration: none;
+	color: #808080;
+}
+
+.header-menu > a > img{
+	width: 14px;
+	margin-right: 10px;	
+}
+
+.search-cta-wrapper > ul{
+	display: flex;
+	margin: 0px;
+	justify-content: flex-end;
+	align-items: center;
+	gap:7px;
+	width: 97%;
+}
+
+pre{
+	display: block !important;
+	width: 100%;
+	border: 0px solid #f00;
+	margin: 21px 0 !important;
+	padding:14px 14px !important;
+	background-color: #666;
+	color: #fff;
+	border-radius: 10px;
+}
+
+pre > small{
+	font-size: 10px;
+}
+
+li, p{
+	color: #444444;
+	font-size: 14px;
+	line-height: 24px;
+}
+
+table.table-config-info tbody > tr > td:first-child{
+	font-size: 14px;
+	font-weight: bold;
+	color: #aa0000;
+}
+
+table.table-config-info tbody > tr > td:last-child{
+	font-size: 14px;
+}
+
+.search-cta-wrapper > ul > li{
+	list-style-type: none;
+}
+
+.block{
+	border-left: 3px solid #cccccc;
+	padding: 0 14px;
+}
+
+a.header-cta{
+	background-color: #aa0000;
+	color: #ffffff;
+	padding: 9px 14px;
+	font-size: 12px;
+	font-weight: bold;
+	border-radius: 4px;
+	text-decoration: none;
+}
+
+.grid-layout{
+	display: grid;
+	grid-template-columns: 350px 1fr 0px;
+	padding:28px 0;
+	
+	height: 90vh; /* Full viewport height */
+	overflow: hidden; /* Prevents body scrolling */
+  
+}
+
+.left > div > ul{
+	height: 77vh; /* Full viewport height */	
+	border: 0px solid #f00;
+	overflow-y: auto; 
+	overflow-x: hidden; 	
+}
+
+.right > div{
+	padding: 14px;
+}
+
+
+.right > div > ul{
+	height: 70vh; /* Full viewport height */	
+	border: 0px solid #f00;
+	overflow-y: auto;
+	overflow-x: hidden; 
+}
+
+.left, .right {
+	border: 0px solid #f00;
+	overflow-y: auto; /* Allows these to scroll if content overflows */
+  /* Or use overflow: hidden to prevent scrolling */
+}
+
+.center {
+	overflow-y: auto; /* Makes center scrollable */
+}
+
+/* For fixed positioning that stays during scroll */
+.left, .right {
+  position: sticky;
+  top: 0;
+  align-self: start;
+}
+
+aside{
+	padding-right: 14px;
+}
+aside > ul{
+	margin: 0px;
+	padding: 0px;
+}
+
+aside > div > ul > li, aside > div > ul > li > a{
+	list-style-type: none;
+	font-size: 14px;
+	color: #737373;	
+	text-decoration: none !important;
+}
+
+aside > div > ul > li.aside-heading{
+	margin-top: 21px;
+	padding: 4px 14px;
+	font-size: 14px;
+}
+
+ aside > div > ul > li.aside-sub-heading{
+	margin-top: 0px;
+	padding: 4px 14px;
+	font-size: 14px;
+	font-weight: 900 !important;
+	color: #aa0000;
+}
+
+aside > div > ul > li.aside-heading:first-child{
+	margin-top: 0px !important;
+}
+
+ aside > div > ul > li.aside-sub-heading:first-child{
+	margin-top: 0px !important;
+}
+
+
+aside > div > ul > li.aside-heading > span{
+	font-weight: bold !important;
+	color: #737373;
+}
+
+aside > div > ul > li{
+	
+}
+
+aside > div > ul > li > a{
+	display: block;
+	padding: 7px 14px;
+	line-height: 21px;
+}
+
+aside > div > ul > li > a.active{
+	background-color: #f5f5f5;
+	border-radius: 4px;
+	color: #444444 !important;
+	font-weight: bold;
+}
+
+.header-search-form{
+	display: block;
+	position: relative;
+}
+.header-search-form > input{
+	display: block;
+	position: relative;
+	display: block;
+	width: 100%;
+	border: 1px solid #eeeeee;
+	background-color: #eeeeee;
+	padding: 5px 14px;
+	border-radius: 4px;
+	outline: none;
+	font-size: 14px;
+}
+
+#center-column ul, #center-column ol{
+	padding: 0px 0px 49px 0px !important;
+	margin: 0px !important;
+}
+
+.center-breadcrumbs{
+	display: flex;
+	justify-content: flex-start;
+	gap: 14px;
+}
+
+.breadcrumb-divider, span.breadcrumb-divider{
+	display: inline-block;	
+}
+
+.breadcrumb-divider > img, span.breadcrumb-divider > img{
+	width: 14px;
+}
+
+.center-breadcrumbs, .center-breadcrumbs a{
+	font-size: 14px !important;
+	text-decoration: none;
+}
+
+.track-column{
+	
+}
+
+.track-column > div > ul{
+	margin: 0px !important;
+	padding: 0px !important;
+	padding: 14px 0;
+}
+
+.track-column > div > ul > li{
+	list-style-type: none;
+	padding: 7px 0;
+}
+
+.track-column > div > ul > li > a{
+	display: block;
+	font-size: 14px;
+	line-height: 28px;
+	border-left: 4px solid #aa0000;
+	border-left: 2px solid #ccc;
+	padding: 1px 12px !important;
+	line-height: 14px;
+}
+
+.track-column > div > ul > li > a.active{
+	display: block;
+	font-size: 14px;
+	line-height: 28px;
+	color: #aa0000 !important;
+	border-left: 0px solid #ccc;
+	padding: 1px 12px !important;
+	font-weight: bold;
+}
+
+.fixed-header {
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 100;
+    background-color: #ffffff;
+    border-bottom: 2px solid #f7f7f7;
+}
+
+@media (max-width: 768px) {
+	
+
+}
+

@@ -1,0 +1,2522 @@
+---
+layout: docs
+title: Core Concepts
+---
+
+<div class="center-breadcrumbs mt-1 mb-4">
+	<div>
+		<a href="{{ site.repo_url }}docs/overview">Docs</a>
+	</div>
+	<span class="breadcrumb-divider">
+		<img src="{{ site.repo_url }}assets/images/icons/arrow-right.svg" />
+	</span>
+
+	<div>Core Concepts </div>															
+</div>
+
+<h1>Core Concepts</h1>
+<h2><span class="sub-heading">#</span>  Overview</h2>
+<div id="overview">
+	<p>
+		{{ site.title }} follows a clean, modular architecture that separates concerns 
+		while maintaining high performance and flexibility. This section explains the 
+		core architectural patterns and how different components interact to handle 
+		HTTP requests
+	</p>
+	
+	
+	
+</div>
+
+
+<div id="mvc-model-view-controller" class="my-4">
+<h2>Routing</h2>
+<p>
+	Routing maps HTTP requests to specific controller methods. Jephy-MVC provides a 
+	flexible and expressive router that supports RESTful routes, parameters, 
+	middleware, and route groups.
+</p>
+
+<h2>Basic Routing</h2>
+<p>Define routes in <code>jephy-mvc/routes.php</code>:</p>
+
+<pre>
+
+php
+
+// Basic GET route
+$router->get('/', 'HomeController@index');
+
+// Basic POST route
+$router->post('/contact', 'ContactController@submit');
+
+// Basic PUT route
+$router->put('/users/{id}', 'UserController@update');
+
+// Basic DELETE route
+$router->delete('/users/{id}', 'UserController@delete');
+</pre>
+
+<h2>Route Parameters</h2>
+
+<pre>
+php
+
+use App\Core\Router;
+
+// Required parameters
+$router->get('/users/{id}', 'UserController@show');
+// Example: /users/123 -> $id = 123
+
+// Multiple parameters
+$router->get('/posts/{category}/{slug}', 'PostController@show');
+// Example: /posts/tech/my-article -> $category = 'tech', $slug = 'my-article'
+
+// Optional parameters (using regex)
+$router->get('/profile/{id?}', 'ProfileController@show');
+// Example: /profile/123 -> $id = 123, /profile -> $id = null
+</pre>
+
+<h2>Named Routes</h2>
+
+<pre>
+ php
+ 
+ // Define named route
+$router->get('/dashboard', 'DashboardController@index')->name('dashboard');
+
+// Generate URL from route name
+$url = $router->route('dashboard'); // Returns '/dashboard'
+$url = $router->route('user.profile', ['id' => 123]); // '/users/123/profile'
+
+</pre>
+
+<h2>Route Groups</h2>
+<pre>
+// Group with prefix
+$router->group(['prefix' => 'admin'], function($router) {
+    $router->get('/users', 'AdminController@users');
+    $router->get('/settings', 'AdminController@settings');
+    // Full URLs: /admin/users, /admin/settings
+});
+
+// Group with middleware
+$router->group(['middleware' => ['AuthMiddleware', 'AdminMiddleware']], function($router) {
+    $router->get('/dashboard', 'DashboardController@index');
+    $router->get('/reports', 'ReportController@index');
+});
+
+// Nested groups
+$router->group(['prefix' => 'api', 'middleware' => ['ApiMiddleware']], function($router) {
+    $router->group(['prefix' => 'v1'], function($router) {
+        $router->get('/users', 'Api\UserController@index');
+        $router->get('/users/{id}', 'Api\UserController@show');
+    });
+});
+</pre>
+
+<h2>HTTP Method Spoofing</h2>
+<pre>
+
+// HTML forms only support GET and POST. Use _method parameter for others:
+// In your form:
+// <input type="hidden" name="_method" value="PUT">
+
+// Route will still work
+$router->put('/users/{id}', 'UserController@update');
+</pre>
+
+<h2>Resource Controllers</h2>
+
+<pre>
+
+// Define all resource routes at once
+$router->resource('products', 'ProductController');
+// Generates:
+// GET    /products           -> index
+// GET    /products/create    -> create
+// POST   /products           -> store
+// GET    /products/{id}      -> show
+// GET    /products/{id}/edit -> edit
+// PUT    /products/{id}      -> update
+// DELETE /products/{id}      -> destroy
+
+</pre>
+
+<h2>Route Caching</h2>
+<pre>
+
+// In production, cache routes for performance
+// jephy-mvc/core/Router.php
+public function cache() {
+    $routes = serialize($this->routes);
+    file_put_contents(FRAMEWORK_PATH . '/storage/cache/routes.php', '&lt;?php return ' . var_export($routes, true) . ';');
+}
+
+</pre>
+
+
+
+
+</div>
+
+<div id="orm-active-record-styled">
+<h2>ORM - Active Record Styled</h2>
+<p>
+Jephy-MVC includes a lightweight Active Record implementation that maps database 
+tables to PHP objects, making database operations intuitive and expressive.
+</p>
+
+<h3>What is Active Record?</h3>
+
+<p>
+Active Record is a design pattern where each database table corresponds to a 
+PHP class, and each record instance represents a row in that table.
+</p>
+
+<h3>Basic Model Setup</h3>
+
+<pre>
+
+php
+
+// jephy-mvc/app/models/User.php
+namespace App\Models;
+
+use Core\Model;
+
+class User extends Model
+{
+    // Table name (optional - defaults to pluralized class name)
+    protected $table = 'users';
+    
+    // Primary key (defaults to 'id')
+    protected $primaryKey = 'id';
+    
+    // Fillable fields (mass assignment protection)
+    protected $fillable = ['name', 'email', 'password', 'role'];
+    
+    // Hidden fields (not shown in JSON)
+    protected $hidden = ['password'];
+    
+    // Guarded fields (opposite of fillable)
+    protected $guarded = ['id', 'created_at', 'updated_at'];
+    
+    // Timestamps (true by default)
+    public $timestamps = true;
+}
+
+
+</pre>
+
+<h3>CRUD Operations</h3>
+
+
+<pre>
+
+php
+
+// CREATE - Create new record
+$user = new User();
+$user->name = 'John Doe';
+$user->email = 'john@example.com';
+$user->password = password_hash('secret', PASSWORD_DEFAULT);
+$user->save();
+
+// CREATE using mass assignment
+$user = User::create([
+    'name' => 'Jane Doe',
+    'email' => 'jane@example.com',
+    'password' => password_hash('secret', PASSWORD_DEFAULT)
+]);
+
+// READ - Find by ID
+$user = User::find(1);
+
+// READ - Find by attribute
+$user = User::where('email', 'john@example.com')->first();
+$users = User::where('role', 'admin')->get();
+
+// READ - All records
+$users = User::all();
+
+// UPDATE
+$user = User::find(1);
+$user->name = 'John Updated';
+$user->save();
+
+// UPDATE using mass assignment
+User::where('role', 'user')->update(['status' => 'inactive']);
+
+// DELETE
+$user = User::find(1);
+$user->delete();
+
+// DELETE by ID
+User::destroy(1);
+User::destroy([1, 2, 3]);
+
+// DELETE with condition
+User::where('status', 'inactive')->delete();
+
+
+</pre>
+
+<h3>Query Builder Methods</h3>
+<pre>
+php
+
+// Select specific columns
+$users = User::select('id', 'name', 'email')->get();
+
+// Where conditions
+$users = User::where('status', 'active')
+            ->where('role', 'admin')
+            ->get();
+
+// Or where conditions
+$users = User::where('status', 'active')
+            ->orWhere('role', 'superadmin')
+            ->get();
+
+// Where between
+$users = User::whereBetween('created_at', ['2024-01-01', '2024-12-31'])->get();
+
+// Where in array
+$users = User::whereIn('role', ['admin', 'editor'])->get();
+
+// Where null
+$users = User::whereNull('deleted_at')->get();
+
+// Order by
+$users = User::orderBy('name', 'asc')->orderBy('created_at', 'desc')->get();
+
+// Limit and offset
+$users = User::limit(10)->offset(20)->get();
+
+// Pagination
+$users = User::paginate(15, 1); // 15 per page, page 1
+
+// Aggregates
+$count = User::count();
+$max = User::max('age');
+$min = User::min('age');
+$avg = User::avg('age');
+$sum = User::sum('salary');
+
+</pre>
+
+<h3>Relationships</h3>
+
+<pre>
+// User model
+class User extends Model
+{
+    // One-to-One
+    public function profile()
+    {
+        return $this->hasOne(Profile::class, 'user_id');
+    }
+    
+    // One-to-Many
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'user_id');
+    }
+    
+    // Many-to-Many
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
+    }
+    
+    // Belongs To (inverse of hasMany)
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'dept_id');
+    }
+}
+
+// Using relationships
+$user = User::find(1);
+$profile = $user->profile; // Access related profile
+$posts = $user->posts; // Access all user posts
+
+// Eager loading (prevent N+1 queries)
+$users = User::with('profile', 'posts')->get();
+foreach ($users as $user) {
+    echo $user->profile->bio;
+    foreach ($user->posts as $post) {
+        echo $post->title;
+    }
+}
+
+// Nested eager loading
+$users = User::with('profile.settings', 'posts.comments')->get();
+
+// Lazy eager loading
+$users = User::all();
+$users->load('profile', 'posts');
+
+</pre>
+
+<h3>Soft Deletes</h3>
+<pre>
+// Add SoftDelete trait to model
+use Core\Traits\SoftDeletes;
+
+class User extends Model
+{
+    use SoftDeletes;
+    
+    protected $dates = ['deleted_at'];
+}
+
+// Delete softly
+$user->delete(); // Sets deleted_at timestamp
+
+// Get including soft deleted
+$users = User::withTrashed()->get();
+
+// Get only soft deleted
+$users = User::onlyTrashed()->get();
+
+// Restore soft deleted
+$user->restore();
+
+// Force delete (permanent)
+$user->forceDelete();
+
+</pre>
+
+<h3>Scopes for Reusable Queries</h3>
+
+<pre>
+
+// In model
+class User extends Model
+{
+    // Local scope
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+    
+    public function scopeAdmin($query)
+    {
+        return $query->where('role', 'admin');
+    }
+    
+    public function scopeRecent($query, $days = 30)
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+}
+
+// Using scopes
+$activeAdmins = User::active()->admin()->get();
+$recentUsers = User::recent(7)->get();
+$activeRecent = User::active()->recent()->get();
+
+</pre>
+
+<h3>Raw Queries</h3>
+<pre>
+php
+
+// When you need raw SQL
+$users = User::raw('SELECT * FROM users WHERE status = ?', ['active']);
+
+// Using query builder with raw
+$users = User::selectRaw('COUNT(*) as total, MONTH(created_at) as month')
+            ->groupBy('month')
+            ->get();
+</pre>
+
+<h3>Dependency Injection</h3>
+<p>
+	Dependency Injection (DI) is a design pattern where objects receive their 
+	dependencies from external sources rather than creating them internally. 
+	This promotes loose coupling, testability, and maintainability.
+</p>
+
+<h3>What is Dependency Injection?</h3>
+<p>Without Dependency Injection (Tight Coupling)</p>
+<pre>
+
+php
+
+class UserController
+{
+    private $userService;
+    
+    public function __construct()
+    {
+        // Tight coupling - UserController is responsible for creating its dependencies
+        $this->userService = new UserService();
+    }
+}
+
+</pre>
+
+<h3>With Dependency Injection (Loose Coupling)</h3>
+<pre>
+
+class UserController
+{
+    private $userService;
+    
+    // Dependencies are injected from outside
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+}
+
+</pre>
+
+<h3>Constructor Injection</h3>
+<pre>
+
+php
+
+namespace App\Controllers;
+
+use App\Services\UserService;
+use App\Repositories\UserRepository;
+use App\Services\MailService;
+
+class UserController extends Controller
+{
+    private $userService;
+    private $userRepository;
+    private $mailService;
+    
+    // All dependencies injected via constructor
+    public function __construct(
+        UserService $userService,
+        UserRepository $userRepository,
+        MailService $mailService
+    ) {
+        $this->userService = $userService;
+        $this->userRepository = $userRepository;
+        $this->mailService = $mailService;
+    }
+    
+    public function show($id)
+    {
+        $user = $this->userService->getUserById($id);
+        return $this->json($user);
+    }
+}
+
+</pre>
+
+<h3>Setter Injection</h3>
+<pre>
+
+class UserController extends Controller
+{
+    private $logger;
+    
+    // Optional dependency via setter
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+        return $this;
+    }
+    
+    public function update($id)
+    {
+        // Use logger if available
+        if ($this->logger) {
+            $this->logger->info('Updating user', ['id' => $id]);
+        }
+    }
+}
+
+// Usage
+$controller = new UserController();
+$controller->setLogger(new FileLogger());
+
+</pre>
+
+
+<h3>Interface Injection</h3>
+<pre>
+php
+
+// Define interface
+interface InjectLoggerInterface
+{
+    public function injectLogger(LoggerInterface $logger);
+}
+
+// Implement interface
+class UserController extends Controller implements InjectLoggerInterface
+{
+    private $logger;
+    
+    public function injectLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+}
+
+// Container automatically injects
+$container->make(UserController::class); // Logger automatically injected
+
+</pre>
+
+<h3>Method Injection</h3>
+<pre>
+php 
+
+class ReportController extends Controller
+{
+    // Dependencies injected at method level
+    public function generate(ReportGenerator $generator, ExportService $exporter)
+    {
+        $report = $generator->generate();
+        return $exporter->export($report);
+    }
+}
+
+</pre>
+
+<h3>Type Hinting with Interfaces</h3>
+<pre>
+
+// Define interfaces
+interface UserRepositoryInterface
+{
+    public function find($id);
+    public function save(User $user);
+}
+
+interface MailerInterface
+{
+    public function send($to, $subject, $body);
+}
+
+// Implement interfaces
+class DatabaseUserRepository implements UserRepositoryInterface
+{
+    public function find($id) { /* ... */ }
+    public function save(User $user) { /* ... */ }
+}
+
+class SmtpMailer implements MailerInterface
+{
+    public function send($to, $subject, $body) { /* ... */ }
+}
+
+// Controller depends on interfaces
+class UserController extends Controller
+{
+    private $userRepository;
+    private $mailer;
+    
+    public function __construct(
+        UserRepositoryInterface $userRepository,
+        MailerInterface $mailer
+    ) {
+        $this->userRepository = $userRepository;
+        $this->mailer = $mailer;
+    }
+}
+
+// Bind interfaces to implementations in container
+$container->bind(UserRepositoryInterface::class, DatabaseUserRepository::class);
+$container->bind(MailerInterface::class, SmtpMailer::class);
+
+</pre>
+
+<h3>Benefits of Dependency Injection</h3>
+<ol>
+<li><strong>Testability</strong> - Easy to mock dependencies during unit testing</li>
+<li><strong>Loose Coupling</strong> - Classes don't need to know how to create dependencies</li>
+<li><strong>Flexibility</strong> - Swap implementations without changing dependent classes</li>
+<li><strong>Single Responsibility</strong> - Classes focus on their core logic, not object creation</li>
+<li><strong>Reusability</strong> - Dependencies can be shared across multiple classes</li>
+</ol>
+
+
+</div>
+
+<div id="unit-testing-with-di">
+<h2>Unit Testing with DI</h2>
+<pre>
+
+// Test class
+class UserControllerTest extends TestCase
+{
+    public function testShow()
+    {
+        // Create mock dependencies
+        $mockService = $this->createMock(UserService::class);
+        $mockService->method('getUserById')
+                    ->willReturn(['id' => 1, 'name' => 'John']);
+        
+        // Inject mock
+        $controller = new UserController($mockService);
+        
+        $result = $controller->show(1);
+        
+        $this->assertEquals(['id' => 1, 'name' => 'John'], $result);
+    }
+}
+
+</pre>
+
+<h3>Automatic Dependency Resolution</h3>
+<p>The container automatically resolves dependencies:</p>
+<pre>
+// No need to manually instantiate
+$controller = $container->make(UserController::class);
+
+// Container will:
+// 1. See UserController needs UserService
+// 2. See UserService needs UserRepository and MailService
+// 3. Recursively resolve all dependencies
+// 4. Inject them automatically
+</pre>
+</div>
+
+<div id="smarty-engine-templating">
+<h2>Smarty Engine Templating</h2>
+<p>
+{{ site.title }} integrates Smarty as its primary template engine, 
+providing clean, secure, and feature-rich templating capabilities.
+</p>
+
+<h3>Why Smarty?</h3>
+<ul>
+<li><strong>Logic-free templates</strong> - No PHP in your views</li>
+<li><strong>Automatic escaping</strong> - Built-in XSS protection</li>
+<li><strong>Template caching</strong> - Improved performance</li>
+<li><strong>Layout inheritance</strong> - DRY templates</li>
+<li><strong>Custom functions</strong> - Extensible functionality</li>
+</ul>
+
+<h3>Basic Template Structure</h3>
+<pre>
+
+<small>php</small>
+
+{* jephy-mvc/app/views/layouts/app.tpl *}
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;{$pageTitle|default:"Jephy-MVC"}&lt;/title&gt;
+    &lt;link rel="stylesheet" href="{asset('css/style.css')}"&gt;
+&lt;/head&gt;
+&lt;body>
+    &lt;header&gt;
+        {include file="partials/header.tpl"}
+    &lt;/header&gt;
+    
+    &lt;main&gt;
+        {block name="content"}{/block}
+    &lt;/main&gt;
+    
+    &lt;footer&gt;
+        {include file="partials/footer.tpl"}
+    &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+{* jephy-mvc/app/views/users/index.tpl *}
+{extends file="layouts/app.tpl"}
+
+{block name="content"}
+    &lt;h1&gt;{$pageTitle}</h1&gt;
+    
+    {if $users|count > 0}
+        &lt;ul&gt;
+        {foreach $users as $user}
+            &lt;li&gt;
+                &lt;a href="/users/{$user->id}"&gt;{$user->name|escape}&lt;/a&gt;
+                - {$user->email|escape}
+            &lt;/li&gt;
+        {/foreach}
+        &lt;/ul&gt;
+    {else}
+        &lt;p&gt;No users found. &lt;/p&gt;
+    {/if}
+    
+    {include file="partials/pagination.tpl" pagination=$pagination}
+{/block}
+
+</pre>
+
+<h3>Variables and Data Passing</h3>
+
+<pre>
+
+php
+
+// In controller
+class UserController extends Controller
+{
+    public function index()
+    {
+        $users = User::all();
+        
+        // Assign single variable
+        $this->view->assign('pageTitle', 'User List');
+        
+        // Assign array of variables
+        $this->view->assign([
+            'users' => $users,
+            'total' => count($users),
+            'isAdmin' => true
+        ]);
+        
+        // Render template
+        return $this->view->display('users/index.tpl');
+    }
+}
+</pre>
+
+<pre>
+
+<small>Smarty</small>
+
+{* Accessing variables in template *}
+{$pageTitle}
+{$users}
+{$user->name}
+{$array.key}
+{$object->property}
+
+{* Default values *}
+{$title|default:"No Title"}
+
+{* Escape output (XSS protection) *}
+{$userInput|escape}
+{$userInput|escape:'html'}
+{$userInput|escape:'url'}
+
+{* Variable modifiers *}
+{$name|upper}           {* UPPERCASE *}
+{$name|lower}           {* lowercase *}
+{$date|date_format:"%Y-%m-%d"}
+{$number|string_format:"%02d"}
+{$text|truncate:50:"..."}
+{$html|strip_tags}
+</pre>
+
+<h3>Control Structures</h3>
+<pre>
+
+<small>Smarty</small>
+
+{* Conditional statements *}
+{if $user.isAdmin}
+    &lt;a href="/admin"&gt;Admin Panel&lt;/a&gt;
+{elseif $user.isEditor}
+    &lt;a href="/editor"&gt;Editor Panel&lt;/a&gt;
+{else}
+    &lt;a href="/profile"&gt;Profile&lt;/a&gt;
+{/if}
+
+{* Loops *}
+{foreach $users as $user}
+&lt;tr&gt;
+	&lt;td&gt;{$user@iteration}&lt;/td&gt;   {* Current iteration (1-based) *}
+	&lt;td&gt;{$user@index}&lt;/td&gt;       {* Current index (0-based) *}
+	&lt;td&gt;{$user@first}&lt;/td&gt;       {* Is first iteration *}
+	&lt;td&gt;{$user@last}&lt;/td&gt;        {* Is last iteration *}
+	&lt;td&gt;{$user->name}&lt;/td&gt;
+&lt;/tr&gt;
+{forelse}
+&lt;tr&gt;
+	&lt;td colspan="3"&gt;No users found&lt;/td&gt;
+&glt;/tr&gt;
+{/foreach}
+
+{* While loop *}
+{while $counter < 10}
+    {$counter++}
+{/while}
+
+</pre>
+
+<h3>Layouts and Template Inheritance</h3>
+<pre>
+<small>php</small>
+
+{* Base layout: layouts/base.tpl *}
+<!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;{block name="title"}Default Title{/block}&lt;/title&gt;
+    {block name="styles"}{/block}
+&lt;/head&gt;
+&lt;body>
+    &lt;div id="sidebar"&gt;
+        {block name="sidebar"}
+            &lt;ul&gt;
+                &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        {/block}
+    &lt;/div&gt;
+    
+    &lt;div id="content"&gt;
+        {block name="content"}{/block}
+    &lt;/div&gt;
+    
+    {block name="scripts"}{/block}
+&lt;/body&gt;
+&lt;/html&gt;
+
+{* Child template *}
+{extends file="layouts/base.tpl"}
+
+{block name="title"}User Profile - {$user.name}{/block}
+
+{block name="styles"}
+    &lt;link rel="stylesheet" href="/css/profile.css"&gt;
+{/block}
+
+{block name="sidebar"}
+    {* Optionally show parent content *}
+    {$smarty.block.parent}
+    
+    &lt;div class="user-info"&gt;
+        Welcome, {$user.name}!
+    &lt;/div&gt;
+{/block}
+
+{block name="content"}
+    &lt;h1&gt;Profile of {$user.name}&lt;/h1&gt;
+    &lt;div class="profile-content"&gt;
+        {* Content here *}
+    &lt;/div&gt;
+{/block}
+
+</pre>
+
+<h3>Partials and Includes</h3>
+<pre>
+
+<small>Smarty</small>
+
+{* Include another template *}
+{include file="partials/header.tpl"}
+
+{* Pass variables to included template *}
+{include file="partials/card.tpl" title="My Card" content="Card content"}
+
+{* Dynamic include *}
+{include file="partials/{$templateName}.tpl"}
+
+{* Include with scope control *}
+{include file="sidebar.tpl" scope="parent"}    {* Access parent variables *}
+{include file="sidebar.tpl" scope="global"}    {* Access global variables *}
+
+</pre>
+
+<h3>Custom Functions and Plugins</h3>
+<pre>
+<small></small>
+
+// Register custom Smarty function
+$smarty->registerPlugin('function', 'csrf_field', function($params, $smarty) {
+    $token = $_SESSION['csrf_token'] ?? '';
+    return '<input type="hidden" name="csrf_token" value="' . $token . '">';
+});
+
+// Register block plugin
+$smarty->registerPlugin('block', 'cache', function($params, $content, $smarty, &$repeat) {
+    if (!$repeat && $content !== null) {
+        $key = $params['key'] ?? 'default';
+        // Cache logic here
+        return $content;
+    }
+});
+
+</pre>
+
+<pre>
+<small></small>
+
+{* Using custom function *}
+{csrf_field}
+
+{* Function with parameters *}
+{button text="Click Me" class="btn-primary"}
+
+{* Block plugin *}
+{cache key="user_list" ttl="3600"}
+    {foreach $users as $user}
+        {$user->name}
+    {/foreach}
+{/cache}
+
+</pre>
+
+<h3>Template Caching</h3>
+<pre>
+
+<small>php</small>
+
+// Enable caching globally
+$smarty->caching = true;
+$smarty->cache_lifetime = 3600; // 1 hour
+
+// In controller
+$this->view->caching = true;
+$this->view->cache_lifetime = 86400; // 24 hours
+$this->view->display('products/list.tpl');
+
+// Cache by ID
+$this->view->display('products/show.tpl', $productId);
+
+// Clear cache
+$smarty->clearCache('products/list.tpl');
+$smarty->clearAllCache();
+
+</pre>
+
+<h3>Security Features</h3>
+<pre>
+
+<small>php</small>
+
+{* Auto-escaping (enabled by default) *}
+{$userInput}  {* Automatically escaped *}
+
+{* Manual escaping *}
+{$userInput|escape}
+{$userInput|escape:'html'}
+{$userInput|escape:'javascript'}
+
+{* Disable escaping (use with caution) *}
+{$trustedHtml nofilter}
+
+{* Remove HTML tags *}
+{$userInput|strip_tags}
+
+{* Safe HTML filtering *}
+{$userInput|purify}
+
+</pre>
+
+</div>
+
+<div id="queues">
+<h2>Queues</h2>
+<p>
+The Queue system allows you to defer time-consuming tasks 
+(like sending emails, processing images, or API calls) to be 
+processed in the background, improving application response time.
+</p>
+
+<h3>Queue Configuration</h3>
+<pre>
+
+<small>.conf</small>
+// jephy-mvc/config.conf
+[queue]
+driver = "database"  // database, redis, beanstalkd, sync
+connection = "default"
+default_queue = "default"
+
+[redis]
+host = "127.0.0.1"
+port = 6379
+database = 1
+
+[beanstalkd]
+host = "127.0.0.1"
+port = 11300
+
+</pre>
+
+<h3>Creating Jobs</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/jobs/SendWelcomeEmail.php
+namespace App\Jobs;
+
+use Core\Queue\Job;
+use App\Services\MailService;
+
+class SendWelcomeEmail extends Job
+{
+    protected $user;
+    protected $email;
+    
+    public function __construct($user)
+    {
+        $this->user = $user;
+        $this->email = $user->email;
+    }
+    
+    public function handle(MailService $mailer)
+    {
+        // This runs in background
+        $mailer->sendWelcomeEmail($this->user);
+        
+        // Log the action
+        error_log("Welcome email sent to {$this->email}");
+    }
+    
+    // Optional: Handle failures
+    public function failed(\Exception $e)
+    {
+        error_log("Failed to send welcome email to {$this->email}: " . $e->getMessage());
+    }
+}
+
+// jephy-mvc/app/jobs/ProcessImage.php
+namespace App\Jobs;
+
+use Core\Queue\Job;
+
+class ProcessImage extends Job
+{
+    protected $imagePath;
+    protected $options;
+    
+    public function __construct($imagePath, $options = [])
+    {
+        $this->imagePath = $imagePath;
+        $this->options = $options;
+    }
+    
+    public function handle()
+    {
+        // Resize image
+        $image = imagecreatefromjpeg($this->imagePath);
+        $resized = imagescale($image, 800, 600);
+        imagejpeg($resized, $this->imagePath);
+        imagedestroy($image);
+        imagedestroy($resized);
+        
+        return true;
+    }
+}
+</pre>
+
+<h3>Dispatching Jobs</h3>
+<pre>
+<small>php</small>
+
+// In controller or anywhere
+use App\Jobs\SendWelcomeEmail;
+use App\Jobs\ProcessImage;
+
+class UserController extends Controller
+{
+    public function store()
+    {
+        // Create user
+        $user = User::create($this->request->post());
+        
+        // Dispatch job to queue (non-blocking)
+        dispatch(new SendWelcomeEmail($user));
+        
+        // Dispatch with delay (10 minutes)
+        dispatch(new SendWelcomeEmail($user))->delay(600);
+        
+        // Dispatch on specific queue
+        dispatch(new ProcessImage($path))->onQueue('images');
+        
+        // Response sent immediately, email sent in background
+        return $this->json(['message' => 'User created', 'user' => $user]);
+    }
+}
+
+</pre>
+
+<h3>Queue Workers</h3>
+<pre>
+
+<small>php</small>
+
+// Run queue worker (CLI command)
+php jephy-mvc/cli.php queue:work
+
+// Run with options
+php jephy-mvc/cli.php queue:work --queue=high,default --sleep=3 --tries=3
+
+// Run a single job
+php jephy-mvc/cli.php queue:work --once
+
+// Process specific queue
+php jephy-mvc/cli.php queue:work --queue=emails
+
+</pre>
+
+<h3>Queue Worker Implementation</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/core/Queue/Worker.php
+namespace Core\Queue;
+
+class Worker
+{
+    public function process($queueName = null, $options = [])
+    {
+        $queue = QueueManager::connection();
+        
+        while (true) {
+            $job = $queue->pop($queueName);
+            
+            if ($job) {
+                try {
+                    $this->processJob($job);
+                } catch (\Exception $e) {
+                    $this->handleFailedJob($job, $e);
+                }
+            } else {
+                // No jobs, sleep for specified seconds
+                sleep($options['sleep'] ?? 3);
+            }
+        }
+    }
+    
+    protected function processJob($job)
+    {
+        // Set memory limit
+        set_time_limit(0);
+        
+        // Execute job
+        $job->handle();
+        
+        // Delete job from queue
+        $job->delete();
+        
+        echo "Job processed successfully\n";
+    }
+}
+
+</pre>
+
+<h3>Database Queue Driver</h3>
+<pre>
+<small>SQL</small>
+
+
+// Database queue table migration
+CREATE TABLE jobs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    queue VARCHAR(255) NOT NULL,
+    payload TEXT NOT NULL,
+    attempts INT DEFAULT 0,
+    available_at INT NOT NULL,
+    created_at INT NOT NULL
+);
+
+CREATE TABLE failed_jobs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    connection VARCHAR(255) NOT NULL,
+    queue VARCHAR(255) NOT NULL,
+    payload TEXT NOT NULL,
+    exception TEXT NOT NULL,
+    failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+</pre>
+
+<h3>Queue Events and Monitoring</h3>
+
+<pre>
+
+<small>php</small>
+
+// Listen to queue events
+class QueueServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        // Before job processed
+        $this->hookManager->registerHook('queue.processing', function($job) {
+            error_log("Processing job: " . get_class($job));
+        });
+        
+        // After job processed
+        $this->hookManager->registerHook('queue.processed', function($job) {
+            error_log("Completed job: " . get_class($job));
+        });
+        
+        // Job failed
+        $this->hookManager->registerHook('queue.failed', function($job, $exception) {
+            error_log("Job failed: " . $exception->getMessage());
+        });
+    }
+}
+
+</pre>
+
+</div>
+
+
+<div id="events">
+<h2>Events</h2>
+<p>
+	The Events system allows you to subscribe and listen for various 
+	events that occur during your application's lifecycle, enabling 
+	loose coupling between different parts of your application.
+</p>
+
+<h3>Event System Overview</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/core/EventDispatcher.php
+namespace Core;
+
+class EventDispatcher
+{
+    private $listeners = [];
+    
+    public function listen($event, $listener, $priority = 0)
+    {
+        if (!isset($this->listeners[$event])) {
+            $this->listeners[$event] = [];
+        }
+        
+        $this->listeners[$event][] = [
+            'listener' => $listener,
+            'priority' => $priority
+        ];
+        
+        // Sort by priority
+        usort($this->listeners[$event], function($a, $b) {
+            return $b['priority'] - $a['priority'];
+        });
+    }
+    
+    public function dispatch($event, $payload = [])
+    {
+        if (!isset($this->listeners[$event])) {
+            return $payload;
+        }
+        
+        foreach ($this->listeners[$event] as $listener) {
+            $result = call_user_func($listener['listener'], $payload);
+            if ($result !== null) {
+                $payload = $result;
+            }
+        }
+        
+        return $payload;
+    }
+}
+</pre>
+
+<h3>Defining Events</h3>
+<pre>
+<small>php</small>
+
+// jephy-mvc/app/events/UserRegistered.php
+namespace App\Events;
+
+use App\Models\User;
+
+class UserRegistered
+{
+    public $user;
+    public $requestData;
+    
+    public function __construct(User $user, $requestData = [])
+    {
+        $this->user = $user;
+        $this->requestData = $requestData;
+    }
+}
+
+// jephy-mvc/app/events/OrderShipped.php
+namespace App\Events;
+
+use App\Models\Order;
+
+class OrderShipped
+{
+    public $order;
+    public $trackingNumber;
+    
+    public function __construct(Order $order, $trackingNumber)
+    {
+        $this->order = $order;
+        $this->trackingNumber = $trackingNumber;
+    }
+}
+
+</pre>
+
+<h3>Creating Listeners</h3>
+<pre>
+<small>php</small>
+
+// jephy-mvc/app/listeners/SendWelcomeEmail.php
+namespace App\Listeners;
+
+use App\Events\UserRegistered;
+use App\Services\MailService;
+
+class SendWelcomeEmail
+{
+    private $mailer;
+    
+    public function __construct(MailService $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+    
+    public function handle(UserRegistered $event)
+    {
+        $this->mailer->sendWelcomeEmail($event->user);
+        error_log("Welcome email sent to {$event->user->email}");
+    }
+}
+
+// jephy-mvc/app/listeners/AssignDefaultRole.php
+namespace App\Listeners;
+
+use App\Events\UserRegistered;
+
+class AssignDefaultRole
+{
+    public function handle(UserRegistered $event)
+    {
+        $event->user->role = 'user';
+        $event->user->save();
+        
+        return $event;
+    }
+}
+
+// jephy-mvc/app/listeners/NotifyAdmin.php
+namespace App\Listeners;
+
+use App\Events\UserRegistered;
+use App\Services\MailService;
+
+class NotifyAdmin
+{
+    private $mailer;
+    
+    public function __construct(MailService $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+    
+    public function handle(UserRegistered $event)
+    {
+        $this->mailer->sendNotification(
+            'admin@example.com',
+            'New User Registered',
+            "User {$event->user->name} has registered."
+        );
+    }
+}
+
+</pre>
+
+<h3>Event Service Provider</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/providers/EventServiceProvider.php
+namespace App\Providers;
+
+use Core\ServiceProvider;
+use Core\EventDispatcher;
+
+class EventServiceProvider extends ServiceProvider
+{
+    protected $listen = [
+        'App\Events\UserRegistered' => [
+            'App\Listeners\SendWelcomeEmail',
+            'App\Listeners\AssignDefaultRole',
+            'App\Listeners\NotifyAdmin',
+        ],
+        'App\Events\OrderShipped' => [
+            'App\Listeners\SendShipmentEmail',
+            'App\Listeners\UpdateInventory',
+        ],
+    ];
+    
+    protected $subscribe = [
+        'App\Listeners\UserEventSubscriber',
+    ];
+    
+    public function boot()
+    {
+        $dispatcher = $this->container->make(EventDispatcher::class);
+        
+        // Register all events
+        foreach ($this->listen as $event => $listeners) {
+            foreach ($listeners as $listener) {
+                $dispatcher->listen($event, function($payload) use ($listener) {
+                    $listenerInstance = $this->container->make($listener);
+                    
+                    if ($payload instanceof $event) {
+                        return $listenerInstance->handle($payload);
+                    }
+                    
+                    // Handle payload as array
+                    return $listenerInstance->handle($payload);
+                });
+            }
+        }
+    }
+}
+
+</pre>
+
+<h3>Dispatching Events</h3>
+<pre>
+
+<small>php</small>
+
+// In controller or model
+use App\Events\UserRegistered;
+use Core\EventDispatcher;
+
+class UserController extends Controller
+{
+    private $dispatcher;
+    
+    public function __construct(EventDispatcher $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
+    
+    public function store()
+    {
+        // Create user
+        $user = User::create($this->request->post());
+        
+        // Create event
+        $event = new UserRegistered($user, $this->request->post());
+        
+        // Dispatch event (all listeners will run)
+        $this->dispatcher->dispatch($event);
+        
+        return $this->json(['message' => 'User created']);
+    }
+}
+
+// Helper function
+function event($event, $payload = [])
+{
+    $dispatcher = Container::getInstance()->make(EventDispatcher::class);
+    
+    if (is_string($event)) {
+        $event = new $event($payload);
+    }
+    
+    return $dispatcher->dispatch($event);
+}
+
+// Usage
+event(new UserRegistered($user));
+
+</pre>
+
+<h3>Event Subscribers</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/listeners/UserEventSubscriber.php
+namespace App\Listeners;
+
+use App\Events\UserRegistered;
+use App\Events\UserDeleted;
+use App\Events\UserUpdated;
+
+class UserEventSubscriber
+{
+    public function onUserRegistered($event)
+    {
+        error_log("User registered: {$event->user->email}");
+    }
+    
+    public function onUserUpdated($event)
+    {
+        error_log("User updated: {$event->user->id}");
+    }
+    
+    public function onUserDeleted($event)
+    {
+        error_log("User deleted: {$event->userId}");
+    }
+    
+    public function subscribe($events)
+    {
+        $events->listen(UserRegistered::class, [$this, 'onUserRegistered']);
+        $events->listen(UserUpdated::class, [$this, 'onUserUpdated']);
+        $events->listen(UserDeleted::class, [$this, 'onUserDeleted']);
+    }
+}
+
+</pre>
+
+<h3>Model Events</h3>
+<pre>
+
+<small>php</small>
+
+// In your Model class
+class User extends Model
+{
+    // Model event callbacks
+    public static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function($user) {
+            // Before user is created
+            $user->api_token = bin2hex(random_bytes(32));
+        });
+        
+        static::created(function($user) {
+            // After user is created
+            event(new UserRegistered($user));
+        });
+        
+        static::updating(function($user) {
+            // Before user is updated
+            error_log("User {$user->id} is being updated");
+        });
+        
+        static::deleting(function($user) {
+            // Before user is deleted
+            if ($user->is_admin) {
+                return false; // Prevent deletion
+            }
+        });
+    }
+}
+
+</pre>
+
+<h3>Built-in Framework Events</h3>
+<pre>
+
+<small>php</small>
+
+// Framework dispatches these events automatically
+// jephy-mvc/core/Framework.php
+
+// Before request handling
+$this->dispatcher->dispatch('request.starting', $request);
+
+// After route matched
+$this->dispatcher->dispatch('route.matched', $route);
+
+// Before controller execution
+$this->dispatcher->dispatch('controller.before', $controller);
+
+// After controller execution
+$this->dispatcher->dispatch('controller.after', $response);
+
+// Before response sent
+$this->dispatcher->dispatch('response.sending', $response);
+
+// After response sent
+$this->dispatcher->dispatch('response.sent');
+
+// On exception
+$this->dispatcher->dispatch('exception.thrown', $exception);
+
+</pre>
+
+<h3>Listening to Framework Events</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/listeners/FrameworkEventSubscriber.php
+namespace App\Listeners;
+
+class FrameworkEventSubscriber
+{
+    public function onRequestStarting($request)
+    {
+        // Log request
+        error_log("Request started: {$request->method()} {$request->uri()}");
+    }
+    
+    public function onResponseSending($response)
+    {
+        // Add custom header
+        header('X-Powered-By: Jephy-MVC');
+    }
+    
+    public function onException($exception)
+    {
+        // Log exception to external service
+        if ($exception instanceof \PDOException) {
+            error_log("Database error: " . $exception->getMessage());
+        }
+    }
+    
+    public function subscribe($events)
+    {
+        $events->listen('request.starting', [$this, 'onRequestStarting']);
+        $events->listen('response.sending', [$this, 'onResponseSending']);
+        $events->listen('exception.thrown', [$this, 'onException']);
+    }
+}
+
+</pre>
+
+
+</div>
+
+<div id="service-container">
+<h2>Service Container</h2>
+<p>
+The Service Container (already covered in Architecture section) is a 
+powerful tool for managing class dependencies and performing dependency 
+injection. See the Architecture section for detailed implementation.
+</p>
+
+<h3>Key Container Methods</h3>
+<pre>
+
+<small>php</small>
+
+// Register a binding
+$container->bind('UserService', function($container) {
+    return new UserService($container->make('UserRepository'));
+});
+
+// Register a singleton
+$container->singleton('Config', function($container) {
+    return Config::getInstance();
+});
+
+// Resolve from container
+$userService = $container->make('UserService');
+
+// Check if bound
+if ($container->has('UserService')) {
+    // ...
+}
+
+// Get all registered bindings
+$bindings = $container->getBindings();
+
+</pre>
+</div>
+
+<div id="view-template-engine">
+<h2>View/Template Engine</h2>
+<p>
+{{ site.title}} uses Smarty as its primary template engine, 
+but the View layer is abstracted to support multiple template 
+engines.
+</p>
+
+<h3>View Abstraction</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/core/View.php
+namespace Core;
+
+interface ViewEngine
+{
+    public function assign($key, $value);
+    public function render($template, $data = []);
+    public function display($template);
+}
+
+class SmartyEngine implements ViewEngine
+{
+    private $smarty;
+    
+    public function __construct()
+    {
+        $this->smarty = new \Smarty();
+        $this->smarty->setTemplateDir(Config::get('smarty.template_dir'));
+        $this->smarty->setCompileDir(Config::get('smarty.compile_dir'));
+        $this->smarty->setCacheDir(Config::get('smarty.cache_dir'));
+    }
+    
+    public function assign($key, $value)
+    {
+        $this->smarty->assign($key, $value);
+        return $this;
+    }
+    
+    public function render($template, $data = [])
+    {
+        foreach ($data as $key => $value) {
+            $this->assign($key, $value);
+        }
+        
+        return $this->smarty->fetch($template);
+    }
+    
+    public function display($template)
+    {
+        $this->smarty->display($template);
+    }
+}
+
+class PlainPhpEngine implements ViewEngine
+{
+    private $data = [];
+    
+    public function assign($key, $value)
+    {
+        $this->data[$key] = $value;
+        return $this;
+    }
+    
+    public function render($template, $data = [])
+    {
+        $data = array_merge($this->data, $data);
+        extract($data);
+        
+        ob_start();
+        include $template;
+        return ob_get_clean();
+    }
+    
+    public function display($template)
+    {
+        echo $this->render($template);
+    }
+}
+
+</pre>
+
+<h3>Using Different Engines</h3>
+<pre>
+
+<small>php</small>
+
+
+// config.conf
+[view]
+engine = "smarty"  // smarty, plainphp, twig
+
+// In controller
+class UserController extends Controller
+{
+    public function index()
+    {
+        $users = User::all();
+        
+        // Works with any engine
+        $this->view->assign('users', $users);
+        $this->view->display('users/index');
+        
+        // OR
+        return $this->view->render('users/index', ['users' => $users]);
+    }
+}
+
+</pre>
+
+<h3>View Composers</h3>
+<pre>
+
+<small>php</small>
+
+// Share data across multiple views
+class ViewComposer
+{
+    public function compose($view)
+    {
+        $view->assign('appName', Config::get('app.name'));
+        $view->assign('currentUser', Auth::user());
+        $view->assign('notifications', Notification::unread());
+    }
+}
+
+// Register composer
+View::composer('*', 'App\Composers\GlobalComposer');
+View::composer(['users.*', 'profile.*'], 'App\Composers\UserComposer');
+
+</pre>
+
+</div>
+
+<div id="models">
+<h2>Models</h2>
+<p>
+	Models represent your data structure and business logic. They 
+	extend the base Model class which provides Active Record functionality.
+</p>
+
+<h3>Basic Model</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/models/Product.php
+namespace App\Models;
+
+use Core\Model;
+
+class Product extends Model
+{
+    protected $table = 'products';
+    protected $primaryKey = 'id';
+    protected $fillable = ['name', 'price', 'description', 'category_id'];
+    protected $hidden = [];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
+    
+    // Cast attributes to specific types
+    protected $casts = [
+        'price' => 'float',
+        'is_active' => 'boolean',
+        'created_at' => 'datetime',
+        'metadata' => 'array'
+    ];
+    
+    // Accessors
+    public function getNameAttribute($value)
+    {
+        return ucfirst($value);
+    }
+    
+    // Mutators
+    public function setPriceAttribute($value)
+    {
+        $this->attributes['price'] = round($value, 2);
+    }
+    
+    // Virtual attributes
+    public function getFormattedPriceAttribute()
+    {
+        return '$' . number_format($this->price, 2);
+    }
+}
+
+</pre>
+
+<h3>Model Relationships</h3>
+<pre>
+
+<small>php</small>
+
+class Product extends Model
+{
+    // Belongs To
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+    
+    // Has Many
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'product_id');
+    }
+    
+    // Belongs To Many
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'product_tags', 'product_id', 'tag_id');
+    }
+    
+    // Has One Through
+    public function inventory()
+    {
+        return $this->hasOneThrough(Inventory::class, Warehouse::class);
+    }
+    
+    // Polymorphic
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+}
+
+// Usage
+$product = Product::with('category', 'reviews')->find(1);
+echo $product->category->name;
+foreach ($product->reviews as $review) {
+    echo $review->comment;
+}
+
+</pre>
+</div>
+
+
+<div id="classes">
+<h2>Classes</h2>
+<p>
+Classes in {{ site.title }} follow PSR-4 autoloading and are organized 
+by their responsibilities.
+</p>
+
+<h3>Core Classes Structure</h3>
+<pre>
+
+jephy-mvc/
+├── core/
+│   ├── Framework.php      # Main application class
+│   ├── Controller.php     # Base controller
+│   ├── Model.php          # Base model
+│   ├── Router.php         # Routing engine
+│   ├── Request.php        # HTTP request handler
+│   ├── Response.php       # HTTP response handler
+│   ├── Container.php      # Service container
+│   ├── Config.php         # Configuration manager
+│   ├── Database.php       # Database connection
+│   ├── Session.php        # Session management
+│   ├── Auth.php           # Authentication
+│   ├── Validation.php     # Validation rules
+│   ├── Middleware.php     # Base middleware
+│   ├── EventDispatcher.php # Event system
+│   ├── Queue.php          # Queue system
+│   └── ...               # And others
+
+</pre>
+
+<h3>Creating Your Own Classes</h3>
+<pre>
+
+// jephy-mvc/app/classes/PaymentProcessor.php
+namespace App\Classes;
+
+class PaymentProcessor
+{
+    private $gateway;
+    private $config;
+    
+    public function __construct($gateway, array $config)
+    {
+        $this->gateway = $gateway;
+        $this->config = $config;
+    }
+    
+    public function process($amount, $currency = 'USD')
+    {
+        // Payment logic
+        return [
+            'success' => true,
+            'transaction_id' => uniqid('txn_'),
+            'amount' => $amount
+        ];
+    }
+}
+
+// Using the class
+$processor = new PaymentProcessor('stripe', ['api_key' => 'sk_test_...']);
+$result = $processor->process(99.99, 'USD');
+
+</pre>
+
+<h3>Class Autoloading</h3>
+<pre>
+
+{
+    "name": "jephy/mvc",
+    "require": {
+        "smarty/smarty": "^4.0",
+        "phpmailer/phpmailer": "^6.8",
+        "nesbot/carbon": "^3.11",
+        "firebase/php-jwt": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Core\\": "jephy-mvc/core",
+            "App\\Core\\Services\\": "jephy-mvc/core/services",
+            "App\\Controllers\\": "jephy-mvc/app/controllers",
+            "App\\Entities\\": "jephy-mvc/app/entities",
+            "App\\Classes\\": "jephy-mvc/app/classes",
+            "App\\Hooks\\": "jephy-mvc/app/hooks",
+            "App\\Traits\\": "jephy-mvc/app/traits",
+            "App\\Image\\": "jephy-mvc/app/image",
+            "App\\Models\\": "jephy-mvc/app/models",
+            "App\\Listeners\\": "jephy-mvc/app/listeners",
+            "App\\Providers\\": "jephy-mvc/app/providers",
+            "App\\Repositories\\": "jephy-mvc/app/repositories",
+            "App\\Services\\": "jephy-mvc/app/services",
+            "App\\Middleware\\": "jephy-mvc/app/middleware",
+            "App\\GraphQL\\Enums\\": "jephy-mvc/app/graphql/enums",
+            "App\\GraphQL\\Inputs\\": "jephy-mvc/app/graphql/inputs",
+            "App\\GraphQL\\Mutations\\": "jephy-mvc/app/graphql/mutations",
+            "App\\GraphQL\\Objects\\": "jephy-mvc/app/graphql/objects",
+            "App\\GraphQL\\Queries\\": "jephy-mvc/app/graphql/queries",
+            "App\\Core\\GraphQL\\Config\\": "jephy-mvc/core/graphql/config",
+            "App\\Core\\GraphQL\\Shield\\": "jephy-mvc/core/graphql/shield",
+            "App\\Core\\GraphQL\\Shield\\Middleware\\": "jephy-mvc/core/graphql/shield/middleware"
+        },
+        "files": [
+            "jephy-mvc/core/Helper.php"
+        ]
+    }
+}
+
+
+</pre>
+
+</div>
+
+<div>
+<h2>Entities</h2>
+<p>
+	Entities represent domain objects with identity and business logic. 
+	Unlike models, entities are database-agnostic and focus purely on 
+	business rules.
+</p>
+
+<h3>Entity vs Model</h3>
+
+<ul>
+<li><strong>Model</strong>: Database-centric, Active Record pattern</li>
+<li><strong>Entity</strong>: Domain-centric, focuses on business rules, no database logic</li>
+</ul>
+
+<h3>Basic Entity Example</h3>
+<pre>
+
+// jephy-mvc/app/entities/UserEntity.php
+namespace App\Entities;
+
+class UserEntity
+{
+    private $id;
+    private $name;
+    private $email;
+    private $password;
+    private $role;
+    private $createdAt;
+    
+    public function __construct($name, $email, $role = 'user')
+    {
+        $this->setName($name);
+        $this->setEmail($email);
+        $this->setRole($role);
+        $this->createdAt = new \DateTime();
+    }
+    
+    // Getters
+    public function getId() { return $this->id; }
+    public function getName() { return $this->name; }
+    public function getEmail() { return $this->email; }
+    public function getRole() { return $this->role; }
+    
+    // Setters with validation
+    public function setName($name)
+    {
+        if (strlen($name) < 2) {
+            throw new \InvalidArgumentException('Name must be at least 2 characters');
+        }
+        $this->name = $name;
+        return $this;
+    }
+    
+    public function setEmail($email)
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException('Invalid email address');
+        }
+        $this->email = $email;
+        return $this;
+    }
+    
+    public function setRole($role)
+    {
+        $allowedRoles = ['user', 'editor', 'admin'];
+        if (!in_array($role, $allowedRoles)) {
+            throw new \InvalidArgumentException("Invalid role: {$role}");
+        }
+        $this->role = $role;
+        return $this;
+    }
+    
+    // Business logic methods
+    public function changePassword($newPassword)
+    {
+        if (strlen($newPassword) < 6) {
+            throw new \InvalidArgumentException('Password must be at least 6 characters');
+        }
+        $this->password = password_hash($newPassword, PASSWORD_DEFAULT);
+        return $this;
+    }
+    
+    public function verifyPassword($password)
+    {
+        return password_verify($password, $this->password);
+    }
+    
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+    
+    public function promoteToAdmin()
+    {
+        $this->setRole('admin');
+        return $this;
+    }
+    
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'role' => $this->role,
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s')
+        ];
+    }
+}
+
+</pre>
+
+<h3>Entity Repository</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/repositories/UserEntityRepository.php
+namespace App\Repositories;
+
+use App\Entities\UserEntity;
+
+class UserEntityRepository
+{
+    private $db;
+    
+    public function find($id)
+    {
+        $data = $this->db->find('users', $id);
+        
+        if (!$data) {
+            return null;
+        }
+        
+        $user = new UserEntity($data['name'], $data['email'], $data['role']);
+        
+        // Hydrate entity
+        $reflection = new \ReflectionClass($user);
+        $prop = $reflection->getProperty('id');
+        $prop->setAccessible(true);
+        $prop->setValue($user, $data['id']);
+        
+        return $user;
+    }
+    
+    public function save(UserEntity $user)
+    {
+        if ($user->getId()) {
+            // Update
+            return $this->db->update('users', $user->getId(), $user->toArray());
+        } else {
+            // Insert
+            $id = $this->db->insert('users', $user->toArray());
+            $reflection = new \ReflectionClass($user);
+            $prop = $reflection->getProperty('id');
+            $prop->setAccessible(true);
+            $prop->setValue($user, $id);
+            return $id;
+        }
+    }
+}
+
+</pre>
+
+<h3>Value Objects</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/entities/valueobjects/Email.php
+namespace App\Entities\ValueObjects;
+
+class Email
+{
+    private $value;
+    
+    public function __construct($email)
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException("Invalid email: {$email}");
+        }
+        $this->value = $email;
+    }
+    
+    public function getValue()
+    {
+        return $this->value;
+    }
+    
+    public function getDomain()
+    {
+        return substr(strrchr($this->value, "@"), 1);
+    }
+    
+    public function equals(Email $other)
+    {
+        return $this->value === $other->getValue();
+    }
+    
+    public function __toString()
+    {
+        return $this->value;
+    }
+}
+
+// jephy-mvc/app/entities/valueobjects/Money.php
+class Money
+{
+    private $amount;
+    private $currency;
+    
+    public function __construct($amount, $currency = 'USD')
+    {
+        if (!is_numeric($amount)) {
+            throw new \InvalidArgumentException('Amount must be numeric');
+        }
+        $this->amount = (float) $amount;
+        $this->currency = strtoupper($currency);
+    }
+    
+    public function getAmount() { return $this->amount; }
+    public function getCurrency() { return $this->currency; }
+    
+    public function add(Money $other)
+    {
+        if ($this->currency !== $other->getCurrency()) {
+            throw new \InvalidArgumentException('Cannot add different currencies');
+        }
+        return new Money($this->amount + $other->getAmount(), $this->currency);
+    }
+    
+    public function subtract(Money $other)
+    {
+        if ($this->currency !== $other->getCurrency()) {
+            throw new \InvalidArgumentException('Cannot subtract different currencies');
+        }
+        return new Money($this->amount - $other->getAmount(), $this->currency);
+    }
+    
+    public function format()
+    {
+        return $this->currency . ' ' . number_format($this->amount, 2);
+    }
+}
+
+// Using value objects in entity
+class ProductEntity
+{
+    private $name;
+    private $price; // Money object
+    private $sku;
+    
+    public function setPrice(Money $price)
+    {
+        $this->price = $price;
+        return $this;
+    }
+    
+    public function applyDiscount($percentage)
+    {
+        $discount = $this->price->getAmount() * ($percentage / 100);
+        $newAmount = $this->price->getAmount() - $discount;
+        $this->price = new Money($newAmount, $this->price->getCurrency());
+        return $this;
+    }
+}
+
+</pre>
+
+<h3>Aggregates</h3>
+<pre>
+
+<small>php</small>
+
+// jephy-mvc/app/entities/OrderAggregate.php
+namespace App\Entities;
+
+use App\Entities\ValueObjects\Money;
+
+class OrderAggregate
+{
+    private $id;
+    private $customer;
+    private $items = [];
+    private $status = 'pending';
+    private $total;
+    
+    public function __construct(UserEntity $customer)
+    {
+        $this->customer = $customer;
+        $this->total = new Money(0);
+    }
+    
+    public function addItem(ProductEntity $product, $quantity = 1)
+    {
+        $this->items[] = [
+            'product' => $product,
+            'quantity' => $quantity,
+            'price' => $product->getPrice()
+        ];
+        
+        $this->recalculateTotal();
+        return $this;
+    }
+    
+    public function removeItem($productId)
+    {
+        foreach ($this->items as $index => $item) {
+            if ($item['product']->getId() === $productId) {
+                unset($this->items[$index]);
+                $this->items = array_values($this->items);
+                $this->recalculateTotal();
+                break;
+            }
+        }
+        return $this;
+    }
+    
+    public function submit()
+    {
+        if (count($this->items) === 0) {
+            throw new \RuntimeException('Cannot submit empty order');
+        }
+        
+        $this->status = 'submitted';
+        return $this;
+    }
+    
+    public function pay()
+    {
+        $this->status = 'paid';
+        return $this;
+    }
+    
+    public function ship()
+    {
+        if ($this->status !== 'paid') {
+            throw new \RuntimeException('Cannot ship unpaid order');
+        }
+        $this->status = 'shipped';
+        return $this;
+    }
+    
+    private function recalculateTotal()
+    {
+        $total = new Money(0);
+        foreach ($this->items as $item) {
+            $itemTotal = new Money(
+                $item['price']->getAmount() * $item['quantity'],
+                $item['price']->getCurrency()
+            );
+            $total = $total->add($itemTotal);
+        }
+        $this->total = $total;
+    }
+    
+    public function getTotal()
+    {
+        return $this->total;
+    }
+    
+    public function getStatus()
+    {
+        return $this->status;
+    }
+}
+
+</pre>
+
+</div>
+
+
+<div id="summary">
+<h2>Summary</h2>
+
+<table class="table table-config-info">
+	<thead>
+		<tr>
+			<th>Concept</th>	
+			<th>Purpose</th>	
+			<th>Key Features</th>
+		</tr>
+	</thead>
+	<tbody>	
+				
+		<tr>
+			<td>Routing</td>	
+			<td>Map URLs to controllers</td>	
+			<td>Parameters, groups, middleware, named routes</td>
+		</tr>
+		<tr>
+			<td>ORM (Active Record)</td>	
+			<td>Database interaction</td>	
+			<td>CRUD, relationships, scopes, soft deletes</td>
+		</tr>
+		<tr>
+			<td>Dependency Injection</td>	
+			<td>Manage class dependencies</td>	
+			<td>Constructor injection, container, interfaces</td>
+		</tr>
+		<tr>
+			<td>Smarty Engine</td>	
+			<td>Template rendering</td>	
+			<td>Layouts, caching, security, custom functions</td>
+		</tr>
+		<tr>
+			<td>Queues</td>	
+			<td>Background job processing</td>	
+			<td>Multiple drivers, delays, retries, failure handling</td>
+		</tr>
+		<tr>
+			<td>Events</td>	
+			<td>Loose coupling, extensibility</td>	
+			<td>Listeners, subscribers, model events</td>
+		</tr>
+		<tr>
+			<td>Service Container</td>	
+			<td>Dependency management</td>	
+			<td>Bindings, singletons, automatic resolution</td>
+		</tr>
+		<tr>
+			<td>View/Template Engine</td>	
+			<td>Presentation layer</td>	
+			<td>Multiple engine support, composers</td>
+		</tr>
+		<tr>
+			<td>Models</td>	
+			<td>Data + database logic</td>	
+			<td>Active Record, relationships, casting</td>
+		</tr>
+		<tr>
+			<td>Classes	</td>
+			<td>Application building blocks</td>	
+			<td>PSR-4 autoloading, organized structure</td>
+		</tr>
+		<tr>
+			<td>Entities</td>	
+			<td>Domain business logic</td>	
+			<td>Validation, value objects, aggregates</td>
+		</tr>
+	</tbody>
+</table>
+
+<!--
+<p>
+	Need more details on any of these core concepts? Check our 
+	<a href="https://github.com/jephymvc/jephy-mvc-01.git">GitHub Discussions</a> or open an issue!
+</p>
+-->
+
+</div>
+
+

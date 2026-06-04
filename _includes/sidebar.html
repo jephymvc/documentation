@@ -1,0 +1,24 @@
+<nav class="docs-nav">
+  {% for section in site.data.navigation.docs %}
+    <div class="nav-section">
+      <div class="nav-section-title">
+        {% if section.icon %}<span class="section-icon">{{ section.icon }}</span>{% endif %}
+        {{ section.title }}
+      </div>
+      <ul class="nav-section-items">
+        {% for item in section.items %}
+          <li class="nav-item {% if page.url == item.url %}active{% endif %}">
+            <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
+            {% if item.subitems and page.url == item.url %}
+              <ul class="nav-subitems">
+                {% for subitem in item.subitems %}
+                  <li><a href="{{ subitem.url | relative_url }}">{{ subitem.title }}</a></li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+</nav>

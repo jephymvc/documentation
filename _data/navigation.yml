@@ -1,0 +1,53 @@
+# Main documentation sidebar structure
+docs:
+  - title: "Getting Started"
+    icon: "🚀"
+    items:
+      - title: "Installation"
+        url: "/docs/getting-started/installation/"
+      - title: "Configuration"
+        url: "/docs/getting-started/configuration/"
+      - title: "Your First App"
+        url: "/docs/getting-started/first-app/"
+  
+  - title: "Core Concepts"
+    icon: "⚙️"
+    items:
+      - title: "Routing"
+        url: "/docs/core-concepts/routing/"
+      - title: "Controllers"
+        url: "/docs/core-concepts/controllers/"
+      - title: "Models"
+        url: "/docs/core-concepts/models/"
+      - title: "Views"
+        url: "/docs/core-concepts/views/"
+  
+  - title: "Database"
+    icon: "🗄️"
+    items:
+      - title: "Query Builder"
+        url: "/docs/database/query-builder/"
+      - title: "Migrations"
+        url: "/docs/database/migrations/"
+      - title: "Eloquent ORM"
+        url: "/docs/database/relationships/"
+  
+  - title: "Security"
+    icon: "🔒"
+    items:
+      - title: "Authentication"
+        url: "/docs/security/authentication/"
+      - title: "Authorization"
+        url: "/docs/security/authorization/"
+      - title: "Validation"
+        url: "/docs/security/validation/"
+  
+  - title: "Advanced Topics"
+    icon: "🎯"
+    items:
+      - title: "Event System"
+        url: "/docs/advanced/events/"
+      - title: "Middleware"
+        url: "/docs/advanced/middleware/"
+      - title: "Testing"
+        url: "/docs/advanced/testing/"
