@@ -94,9 +94,9 @@ title: Getting Started
 <h3>Shared Hosting with Apache</h3>
 <p>
 	If you are working on shared hosting (especially with cPanel), extract the zip file and copy the 
-	contents of <code>/version-x.x/src/public</code> into the <code>/.../public_html</code>. You can 
+	contents of <code>/version-x.x/src/public</code> into the <code>/.../public_html</code> folder. You can 
 	decide to have the  <code>version-x.x/src/jephy-mvc/</code> and <code>version-x.x/src/vendor/</code> 
-	path as a sibling directories to the <code>/.../public_html</code>. The same also applies to working 
+	path as a sibling directories to the <code>/.../public_html</code> folder. The same also applies to working 
 	with XAMPP/WAMP	system. 
 </p>
 <p>
@@ -107,14 +107,22 @@ title: Getting Started
 <h3>Shared Hosting with Nginx</h3>
 <p>
 	If you are working on shared hosting (especially with cPanel), extract the zip file and copy the 
-	contents of <code>/version-x.x/src/public</code> into the <code>/.../html</code>. You can 
+	contents of <code>/version-x.x/src/public</code> into the <code>/.../html</code> folder. You can 
 	decide to have the  <code>version-x.x/src/jephy-mvc/</code> and <code>version-x.x/src/vendor/</code> 
-	path as a sibling directories to the <code>/.../html</code>.
+	path as a sibling directories to the <code>/.../html</code> folder.
 </p>
 <p>
 	See more on 
 	<a href="{{site.documentation_url}}deployment-guide/#shared-hosting-deployment">Shared Hosting Deployment</a>.
 </p>
+
+<p>
+	Make sure you run the following composer code in the path you have <code>composer.json</code>
+	and <code>composer.lock</code>.
+</p>
+<pre>
+composer dump-autoload
+</pre>
 
 <h3>Cloud/VPS/Dedicated Server Hosting</h3>
 <p>
@@ -130,7 +138,7 @@ title: Getting Started
 
 <p>
 	However, you will need a reverse-proxy server setup in between your application docker instances and 
-	the public.
+	the public. See more on <a href="{{site.documentation_url}}deployment-guide/#vps-dedicated-server-deployment">VPS/Dedicated Server Deployment</a>.
 </p>
 
 <h3>Working with Dockerfile</h3>
