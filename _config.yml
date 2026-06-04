@@ -1,7 +1,7 @@
 # Site settings
 title: "JephyMVC"
 description: "Complete documentation for the JephyPHP Framework"
-url: "https://jephymvc.github.io"
+url: "https://jephymvc.github.io/documentation"
 baseurl: "/documentation"  # Change for project pages  
 #   baseurl: ""  # Change for project pages  
 theme: null
